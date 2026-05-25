@@ -2087,6 +2087,51 @@ if (s7Gallery) {
     }
   }, { passive: true });
 }
+
+/* ── S6 STORYBOARD STACK 手機版滑動翻頁手勢補丁 ── */
+const s6MobileStage = document.querySelector('#proj-reflection-combined .stack-stage');
+
+if (s6MobileStage) {
+  let s6TouchStartY = 0;
+  let s6TouchEndY = 0;
+  let s6TouchStartX = 0;
+  let s6TouchEndX = 0;
+
+  // 監聽手指拿上來
+  s6MobileStage.addEventListener('touchstart', (e) => {
+    s6TouchStartY = e.changedTouches[0].screenY;
+    s6TouchStartX = e.changedTouches[0].screenX;
+  }, { passive: true });
+
+  // 監聽手指離開
+  s6MobileStage.addEventListener('touchend', (e) => {
+    s6TouchEndY = e.changedTouches[0].screenY;
+    s6TouchEndX = e.changedTouches[0].screenX;
+
+    const diffY = s6TouchStartY - s6TouchEndY;
+    const diffX = s6TouchStartX - s6TouchEndX;
+
+    // ⚡ 智慧分流判斷：支援上下滑動 或 左右撥動卡片
+    // 只要使用者的滑動距離大於 40px，就判定要翻頁
+    if (Math.abs(diffY) > 40 || Math.abs(diffX) > 40) {
+      
+      // 情況 A：如果是往上滑 (diffY > 0) 或 往左滑 (diffX > 0) -> 翻下一張 (down)
+      if (diffY > 40 || diffX > 40) {
+        // 如果還沒翻到最後一張，就攔截並翻頁
+        if (stackIndex < stackCards.length - 1) {
+          handleStackFlip('down');
+        }
+      } 
+      // 情況 B：如果是往下滑 (diffY < -40) 或 往右滑 (diffX < -40) -> 回上一張 (up)
+      else if (diffY < -40 || diffX < -40) {
+        // 如果不是第一張，就攔截並退回
+        if (stackIndex > 0) {
+          handleStackFlip('up');
+        }
+      }
+    }
+  }, { passive: true });
+}
 /* ── S6 COMBINED — pure JS two-phase transition ── */
 const s6Sec      = document.getElementById('proj-reflection-combined');
 const layerLead  = s6Sec?.querySelector('.s6-layer-lead');
