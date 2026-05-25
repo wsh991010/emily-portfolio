@@ -470,6 +470,9 @@ body.light-bg .hero-title-wrap.scrolled { color: var(--black); }
     scroll-snap-type: y mandatory !important;
     cursor: default !important;
   }
+  body {
+  overflow: scroll !important;
+}
   
   .scroll-container { 
     scroll-snap-type: none !important; 
@@ -503,6 +506,7 @@ body.light-bg .hero-title-wrap.scrolled { color: var(--black); }
   .hero-corner.tl { top: 6rem; left: 1.5rem; }
   .hero-corner.tr { top: 6rem; right: 1.5rem; }
   .hero-corner.bl { bottom: 5rem; left: 1.5rem; }
+  .hero-sub { display: none !important; }
 
   /* ⚡ 4. SECTION 2 — DISCIPLINES 手機版 */
   #disciplines { padding: 0 !important; }
@@ -1471,6 +1475,15 @@ document.addEventListener("DOMContentLoaded", () => {
     }, { passive: true });
   }
 });
+if (isMobile()) {
+  document.body.style.overflow = 'scroll';
+  const sc = document.querySelector('.scroll-container');
+  if (sc) {
+    sc.style.overflowY = 'visible';
+    sc.style.height = 'auto';
+    sc.style.scrollSnapType = 'none';
+  }
+}
 </script>
 </body>
 </html>
