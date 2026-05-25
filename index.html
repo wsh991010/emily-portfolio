@@ -462,24 +462,25 @@ body.light-bg .hero-title-wrap.scrolled { color: var(--black); }
    📱 PREMIUM MOBILE RESPONSIVE (手機窄螢幕終極完美覆蓋)
 ═════════════════════════════════════════════════════════ */
 @media (max-width: 900px) {
-  /* ⚡ 1. 核心大容器吸附：在手機版讓 .scroll-container 依然執行滾動與吸附 */
+  /* ⚡ 1. 解放最頂層滾動，並啟用手機原生 Scroll Snap 吸附 */
   html, body {
-    overflow: hidden !important; /* 防止網頁產生雙重滾動條 */
+    overflow-y: scroll !important;
+    overflow-x: hidden !important;
     height: 100% !important;
+    scroll-snap-type: y mandatory !important;
     cursor: default !important;
   }
   
   .scroll-container { 
-    height: 100vh !important; 
-    height: 100dvh !important;
-    overflow-y: scroll !important; 
-    scroll-snap-type: y mandatory !important; /* 🌟 核心修正：讓主容器負責手機版上下吸附 */
-    -webkit-overflow-scrolling: touch !important;
+    scroll-snap-type: none !important; 
+    height: auto !important; 
+    overflow-y: visible !important; 
+    overflow-x: hidden !important;
   }
   
   section { 
     height: 100vh !important; 
-    height: 100dvh !important;
+    height: 100dvh !important; /* DVH 更能防止手機高低抖動 */
     scroll-snap-align: start !important; 
     scroll-snap-stop: always !important;
     overflow: hidden !important;
@@ -522,7 +523,7 @@ body.light-bg .hero-title-wrap.scrolled { color: var(--black); }
   .disc-desc { max-width: 100% !important; font-size: 0.68rem !important; }
   .disc-isolated-video { right: 0.5rem !important; bottom: 0.5rem !important; width: 140px !important; height: 140px !important; opacity: 0.3 !important; }
 
-  /* ⚡ 5. SECTION 3 — WORKS 手機版重組 (完美的橫向滑動吸附與全螢幕大片模式) */
+  /* ⚡ 5. SECTION 3 — WORKS 手機版重組 (全螢幕橫向大片模式修正版) */
   #works {
     position: relative !important;
     width: 100vw !important;
@@ -530,10 +531,10 @@ body.light-bg .hero-title-wrap.scrolled { color: var(--black); }
     height: 100dvh !important; 
     overflow: hidden !important;
     background: #000 !important; 
-    scroll-snap-align: start !important; 
+    scroll-snap-align: start; 
   }
 
-  /* 頂部細線進度條容器 */
+  /* 頂部細線進度條 */
   .works-progress-bar {
     display: flex !important;
     position: absolute;
@@ -544,21 +545,13 @@ body.light-bg .hero-title-wrap.scrolled { color: var(--black); }
     z-index: 100 !important; 
     pointer-events: none; 
   }
-
   .progress-line {
-    flex: 1;
-    height: 2px; 
-    background: rgba(255, 255, 255, 0.25); 
-    transition: background 0.3s ease, opacity 0.3s ease;
-    border-radius: 2px;
+    flex: 1; height: 2px; background: rgba(255, 255, 255, 0.25); 
+    transition: background 0.3s ease; border-radius: 2px;
   }
+  .progress-line.active { background: rgba(255, 255, 255, 1) !important; }
 
-  .progress-line.active {
-    background: rgba(255, 255, 255, 1) !important;
-    box-shadow: 0 0 4px rgba(255, 255, 255, 0.5);
-  }
-
-  /* 改造作品面板：轉化為精準橫向滑動軌道 */
+  /* 橫向滑動軌道（🌟 核心清洗：轉透明） */
   .works-menu-panel {
     display: flex !important;
     flex-direction: row !important; 
@@ -566,29 +559,31 @@ body.light-bg .hero-title-wrap.scrolled { color: var(--black); }
     height: 100vh !important;
     height: 100dvh !important;
     margin-left: 0 !important;
-    padding: 0 !important;
-    overflow-x: auto !important; /* 開啟橫向滾動 */
-    overflow-y: hidden !important; /* 絕對鎖死垂直滾動 */
-    scroll-snap-type: x mandatory !important; /* CSS 原生硬體加速橫向吸附 */
+    overflow-x: auto !important; 
+    overflow-y: hidden !important; 
+    scroll-snap-type: x mandatory !important; 
     -webkit-overflow-scrolling: touch !important; 
-    border-left: none !important;
+    
+    /* 🌟 清洗殘留： */
+    background: transparent !important; /* 確保外殼透明，透出大圖 */
+    border-left: none !important;      /* 拔掉電腦版的白色細線 */
+    padding: 0 !important;
     z-index: 5 !important;
   }
-  
   .works-menu-panel::-webkit-scrollbar { display: none !important; }
   .works-panel-title { display: none !important; }
 
-  /* 🌟 軌道補丁：解鎖隱形盒子，讓作品真正橫向並排一線 */
+  /* 軌道補丁 */
   .works-list-group {
     display: flex !important;
     flex-direction: row !important; 
     width: max-content !important;  
     height: 100% !important;
-    gap: 0 !important;              
-    padding-bottom: 0 !important;
+    background: transparent !important;
+    gap: 0 !important; padding-bottom: 0 !important;
   }
 
-  /* 每個作品卡片橫向排開，剛好佔滿一整個螢幕寬度，背景設為透明以透出背景圖 */
+  /* 每個作品卡片（🌟 核心清洗：轉透明與拔底線） */
   .work-entry {
     flex: 0 0 100vw !important; 
     width: 100vw !important;
@@ -600,13 +595,18 @@ body.light-bg .hero-title-wrap.scrolled { color: var(--black); }
     justify-content: flex-end !important; 
     padding: 4.5rem 2rem !important; 
     box-sizing: border-box !important;
-    background: transparent !important; /* 🌟 確保卡片透明 */
-    scroll-snap-align: center !important; /* 橫向滑完後咬死在螢幕中央 */
+    
+    /* 🌟 清洗殘留： */
+    background: transparent !important; /* 確保卡片透明，透出圖片 */
+    border-bottom: none !important;    /* 拔掉文字舊底線 */
+    transform: none !important;         /* 拔掉電腦版Hover位移 */
+    
+    scroll-snap-align: center !important; 
     scroll-snap-stop: always !important;
     overflow: hidden !important;
   }
 
-  /* 🌟 由 JS 動態注入的全螢幕專案背景圖 */
+  /* 🌟 JS 動態注入的全螢幕背景大圖 */
   .work-entry-bg {
     position: absolute !important;
     top: 0; left: 0; 
@@ -616,10 +616,11 @@ body.light-bg .hero-title-wrap.scrolled { color: var(--black); }
     background-position: center !important;
     background-repeat: no-repeat !important;
     z-index: 1 !important;
-    transform: scale(1.02); /* 微放大邊緣防白邊 */
+    transform: scale(1.02); /* 微大讓邊緣無白 */
+    will-change: transform;
   }
 
-  /* 🌟 高奢漸層濾鏡遮罩：底部文字易讀，中部透出 3D 渲染圖 */
+  /* 為大片模式加上高奢漸層遮罩：底部黑確保文字易讀 */
   .work-entry-bg::before {
     content: '' !important;
     position: absolute !important;
@@ -650,7 +651,6 @@ body.light-bg .hero-title-wrap.scrolled { color: var(--black); }
     margin-bottom: 0.4rem;
     letter-spacing: 0.1em;
   }
-
   .work-entry .we-title {
     font-size: 1.15rem !important; 
     color: #fff !important;
@@ -658,7 +658,6 @@ body.light-bg .hero-title-wrap.scrolled { color: var(--black); }
     text-transform: uppercase;
     letter-spacing: 0.05em;
   }
-
   .work-entry .we-tag {
     font-size: 0.72rem !important;
     color: rgba(255, 255, 255, 0.4) !important;
@@ -667,7 +666,9 @@ body.light-bg .hero-title-wrap.scrolled { color: var(--black); }
   }
 
   .mobile-entry-img, .we-arrow { display: none !important; }
-  .work-entry:hover { padding-left: 2rem !important; } 
+}
+
+
 
   /* ⚡ 6. SECTION 4 — ABOUT 手機版 */
   #about { padding: 6rem 1.5rem 4rem 1.5rem !important; justify-content: center !important; gap: 2rem !important; }
