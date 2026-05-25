@@ -568,18 +568,23 @@ body.light-bg .hero-title-wrap.scrolled { color: var(--black); }
   .hero-corner.tl { top: 6rem; left: 1.5rem; }
   .hero-corner.tr { top: 6rem; right: 1.5rem; }
   .hero-corner.bl { bottom: 5rem; left: 1.5rem; }
-
+.hero-sub { display: none !important; }
   /* ⚡ 4. SECTION 2 — DISCIPLINES 手機版 */
   #disciplines { 
     padding: 0 !important; 
   }
-  .disc-title-video {
-    top: 5.5rem !important; left: 1.5rem !important;
-    width: 150px !important; z-index: 10 !important;
-  }
+.disc-title-video {
+  top: 5.5rem !important;
+  left: auto !important;
+  right: 1.5rem !important;
+  width: 130px !important;
+  z-index: 10 !important;
+}
   .disc-list { 
     position: absolute !important;
-    top: 55% !important; left: 50% !important;
+    top: 50% !important;
+  max-height: 70vh !important;
+  overflow-y: auto !important; left: 50% !important;
     transform: translate(-50%, -50%) !important;
     grid-template-columns: 1fr !important; /* 單欄直排 */
     width: 88% !important; max-width: 100% !important;
@@ -602,7 +607,7 @@ body.light-bg .hero-title-wrap.scrolled { color: var(--black); }
     background: #000 !important; /* 核心底色 */
     scroll-snap-align: start; /* 網頁上下滑動時咬住 Section 3 */
   }
-
+.works-canvas { display: none !important; }
   /* ⚡ 頂部七格細線進度條容器 */
   .works-progress-bar {
     display: flex !important;
@@ -703,7 +708,13 @@ body.light-bg .hero-title-wrap.scrolled { color: var(--black); }
     transform: translateY(0);
     animation: fadeUpMeta 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
-
+.work-entry .we-left-info {
+  position: relative !important;
+  z-index: 10 !important;
+}
+.work-entry .we-arrow {
+  display: none !important;
+}
   .work-entry .we-num {
     font-family: var(--font-mono, monospace);
     font-size: 0.9rem !important;
