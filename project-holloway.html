@@ -1303,24 +1303,35 @@ nav {
 
 
 /* ─────────────────────────────────────────
-   RESPONSIVE
+   RESPONSIVE (手機窄螢幕終極完美覆蓋)
 ───────────────────────────────────────── */
 @media (max-width: 900px) {
-  body { overflow: hidden; }
+  /* ⚡ 1. 核心解鎖：全面對齊主頁高奢絲滑配方，鎖定外殼 */
   html, body {
-    overflow-y: scroll !important;
-    scroll-snap-type: y mandatory !important;
+    overflow: hidden !important; 
+    height: 100% !important;
   }
-  .scroll-container {
-    scroll-snap-type: none !important;
-    height: auto !important;
-    overflow-y: visible !important;
+  
+  /* ⚡ 2. 權限完整轉移給容器，啟用手機原生垂直吸附 */
+  .scroll-container { 
+    height: 100vh !important; 
+    height: 100dvh !important; /* 消除手機工具列抖動 */
+    overflow-y: scroll !important; 
+    overflow-x: hidden !important;
+    scroll-snap-type: y mandatory !important; 
+    -webkit-overflow-scrolling: touch !important; /* iOS 絲滑滾動 */
   }
-  section {
-    height: 100vh !important;
-    scroll-snap-align: start !important;
+  
+  /* ⚡ 3. 確保每個 Section 在手機上精準鎖定一螢幕，不外洩 */
+  section { 
+    height: 100vh !important; 
+    height: 100dvh !important;
+    scroll-snap-align: start !important; 
+    scroll-snap-stop: always !important;
+    overflow: hidden !important;
   }
 
+  /* ─── 以下是妳原本就寫得很棒的手機版排版微調，保持不動 ─── */
   .proj-hero-content { padding: 0 1.5rem 4rem; }
   .proj-meta-row { gap: 1.5rem; }
 
@@ -1328,9 +1339,8 @@ nav {
   .overview-body { max-width: 100%; }
 
   #proj-process { grid-template-columns: 1fr; }
-  .process-left { padding: 5rem 1.5rem 2rem; border-right: none; border-bottom: 1px solid rgba(10,10,10,0.08); }
+  .process-left { padding: 5rem 1.5rem 2rem; border-right: none; border-bottom: 1px solid rgba(10,10,10,0.08); overflow-y: auto; max-height: 60vh; }
   #proj-process .process-right { height: 40vh; position: relative; }
-.process-left { overflow-y: auto; max-height: 60vh; }
 
   #proj-gallery { grid-template-columns: 1fr; }
   .gallery-cell { height: 50vh; }
