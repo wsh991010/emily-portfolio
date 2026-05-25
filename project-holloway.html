@@ -1944,8 +1944,12 @@ const videoSectionWrap = document.getElementById('videoSectionWrap');
 const videoSection = document.getElementById('proj-img-1');
 let scrollTranslateY = 0;
 
+/* ── 5. S3 影片區塊滾動電影感放大效果（加上手機防穿幫保護） ── */
 if (container) {
   container.addEventListener('scroll', () => {
+    // ⚡ 手機版直接跳出，不執行 3D 視差與放大，維持原生順暢與圖層穩定
+    if (isMobile()) return; 
+
     const sy = container.scrollTop;
     const vh = window.innerHeight;
     
@@ -2154,16 +2158,11 @@ if (container && s6Sec) {
   }, { passive: false });
 }
 
-/* ── 6. MOBILE OPTIMIZATION (手機版安全降級機制) ── */
+/* ── 6. MOBILE OPTIMIZATION (優化安全版，不拆除外殼) ── */
 const isMobile = () => window.innerWidth <= 900;
-if (isMobile()) {
-  document.body.style.overflowY = 'scroll';
-  if(container) {
-    container.style.overflowY = 'visible';
-    container.style.height = 'auto';
-  }
-}
-// 手機版 S6：跳過兩幕切換，直接顯示兩幕
+
+// ⚡ 核心修正：手機版不要去改動 container 的 overflowY 與 height，讓 CSS 完美接管！
+// 只在手機版時，將 S6 雙幕合一強制改為直排解鎖，不依賴滑鼠滾輪
 if (isMobile() && layerLead && layerStack) {
   layerLead.style.position = 'relative';
   layerLead.style.opacity = '1';
