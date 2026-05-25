@@ -386,170 +386,6 @@ body.light-bg .hero-title-wrap.scrolled { color: var(--black); }
 .disc-arrow { position: absolute; bottom: 2rem; right: 2rem; font-size: 1.1rem; color: rgba(248,248,246,0); transition: color .4s, transform .4s; z-index: 2; }
 .disc-item:hover .disc-arrow { color: rgba(248,248,246,0.6); transform: translate(3px,-3px); }
 
-/* ⚡ 5. SECTION 3 — WORKS 手機版重組 (完美的橫向滑動吸附) */
-  #works {
-    position: relative !important;
-    width: 100vw !important;
-    height: 100vh !important;
-    height: 100dvh !important; 
-    overflow: hidden !important;
-    background: #000 !important; 
-    scroll-snap-align: start !important; 
-  }
-
-  /* 頂部細線進度條容器 */
-  .works-progress-bar {
-    display: flex !important;
-    position: absolute;
-    top: 25px; 
-    left: 20px;
-    right: 20px;
-    gap: 6px; 
-    z-index: 100 !important; 
-    pointer-events: none; 
-  }
-
-  .progress-line {
-    flex: 1;
-    height: 2px; 
-    background: rgba(255, 255, 255, 0.25); 
-    transition: background 0.3s ease, opacity 0.3s ease;
-    border-radius: 2px;
-  }
-
-  .progress-line.active {
-    background: rgba(255, 255, 255, 1) !important;
-    box-shadow: 0 0 4px rgba(255, 255, 255, 0.5);
-  }
-
-  /* 改造作品面板：轉化為精準橫向滑動軌道 */
-  .works-menu-panel {
-    display: flex !important;
-    flex-direction: row !important; /* 強制橫向一排 */
-    width: 100vw !important;
-    height: 100vh !important;
-    height: 100dvh !important;
-    margin-left: 0 !important;
-    padding: 0 !important;
-    overflow-x: auto !important; /* 開啟橫向滾動 */
-    overflow-y: hidden !important; /* 絕對鎖死垂直滾動 */
-    
-    /* 🔥 CSS 原生硬體加速橫向吸附 */
-    scroll-snap-type: x mandatory !important; 
-    -webkit-overflow-scrolling: touch !important; 
-    border-left: none !important;
-    z-index: 5 !important;
-  }
-  
-  .works-menu-panel::-webkit-scrollbar { display: none !important; }
-  .works-panel-title { display: none !important; }
-
-  /* 🌟 終極破關補丁：解鎖隱形盒子，讓作品真正往右橫向排開 🌟 */
-  .works-list-group {
-    display: flex !important;
-    flex-direction: row !important; 
-    width: max-content !important;  
-    height: 100% !important;
-    gap: 0 !important;              
-    padding-bottom: 0 !important;
-  }
-
-  /* 每個作品卡片橫向排開，剛好佔滿一整個螢幕寬度 */
-  .work-entry {
-    flex: 0 0 100vw !important; 
-    width: 100vw !important;
-    height: 100vh !important;
-    height: 100dvh !important;
-    position: relative !important;
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: flex-end !important; 
-    padding: 4.5rem 2rem !important; 
-    box-sizing: border-box !important;
-    scroll-snap-align: center !important; /* 橫向滑完後咬死在螢幕中央 */
-    scroll-snap-stop: always !important;
-  }
-
-  /* 獨立作品渲染圖全螢幕背景 */
-  .work-entry-bg {
-    position: absolute !important;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background-size: cover !important;
-    background-position: center !important;
-    background-repeat: no-repeat !important;
-    z-index: 1 !important;
-  }
-
-  .work-entry-bg::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.4) 100%) !important;
-    z-index: 2;
-  }
-
-  /* 作品文字排版（浮在遮罩之上） */
-  .work-mobile-meta {
-    position: relative !important;
-    z-index: 3 !important; 
-    width: 100% !important;
-    transform: translateY(0);
-    animation: fadeUpMeta 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
-  }
-
-  .work-entry .we-num {
-    font-family: var(--font-body), monospace;
-    font-size: 0.75rem !important;
-    color: rgba(255, 255, 255, 0.5) !important;
-    display: block !important;
-    margin-bottom: 0.4rem;
-    letter-spacing: 0.1em;
-  }
-
-  .work-entry .we-title {
-    font-size: 1.15rem !important; 
-    color: #fff !important;
-    margin: 0 0 0.4rem 0 !important;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-
-  .work-entry .we-tag {
-    font-size: 0.72rem !important;
-    color: rgba(255, 255, 255, 0.4) !important;
-    margin: 0 !important;
-    letter-spacing: 0.02em;
-  }
-
-  .mobile-entry-img, .we-arrow { display: none !important; }
-  .work-entry:hover { padding-left: 2rem !important; } 
-}
-
-@keyframes fadeUpMeta {
-  from { opacity: 0; transform: translateY(15px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* ─────────────────────────────────────────
-   剩下的手機版樣式收尾 (確保語法結構不嵌套)
-───────────────────────────────────────── */
-@media (max-width: 900px) {
-  /* ⚡ 6. SECTION 4 — ABOUT 手機版 */
-  #about { padding: 6rem 1.5rem 4rem 1.5rem !important; justify-content: center !important; gap: 2rem !important; }
-  .about-section-label { margin-bottom: 1.5rem !important; }
-  .about-name-large { font-size: 3.2rem !important; text-align: left; width: 100%; }
-  .about-right { margin-top: 1rem !important; justify-content: flex-start !important; }
-  .about-tagline { max-width: 100% !important; font-size: 0.82rem !important; }
-
-  /* ⚡ 7. SECTION 5 — CONTACT 手機版 */
-  #contact { padding: 6rem 1.5rem 4rem 1.5rem !important; justify-content: center !important; gap: 2rem !important; }
-  .contact-section-label { margin-bottom: 1.5rem !important; }
-  .contact-headline { font-size: 3.2rem !important; }
-  .contact-right { margin-top: 1rem !important; margin-bottom: 2rem !important; justify-content: flex-start !important; }
-  .contact-links-row { justify-content: flex-start !important; gap: 1rem !important; }
-  .contact-footer { position: relative !important; left: auto !important; right: auto !important; bottom: auto !important; flex-direction: column !important; gap: 0.8rem !important; text-align: left !important; margin-top: 2rem !important; }
-}
-
 /* ─────────────────────────────────────────
    SECTION 4 — ABOUT
 ───────────────────────────────────────── */
@@ -686,7 +522,7 @@ body.light-bg .hero-title-wrap.scrolled { color: var(--black); }
   .disc-desc { max-width: 100% !important; font-size: 0.68rem !important; }
   .disc-isolated-video { right: 0.5rem !important; bottom: 0.5rem !important; width: 140px !important; height: 140px !important; opacity: 0.3 !important; }
 
-  /* ⚡ 5. SECTION 3 — WORKS 手機版重組 (完美的橫向滑動吸附) */
+  /* ⚡ 5. SECTION 3 — WORKS 手機版重組 (完美的橫向滑動吸附與全螢幕大片模式) */
   #works {
     position: relative !important;
     width: 100vw !important;
@@ -722,10 +558,10 @@ body.light-bg .hero-title-wrap.scrolled { color: var(--black); }
     box-shadow: 0 0 4px rgba(255, 255, 255, 0.5);
   }
 
-  /* 改造作品面板：轉化為精準橫向滑動軌道（🌟 修正完畢，不再卡死） */
+  /* 改造作品面板：轉化為精準橫向滑動軌道 */
   .works-menu-panel {
     display: flex !important;
-    flex-direction: row !important; /* 強制橫向一排 */
+    flex-direction: row !important; 
     width: 100vw !important;
     height: 100vh !important;
     height: 100dvh !important;
@@ -733,9 +569,7 @@ body.light-bg .hero-title-wrap.scrolled { color: var(--black); }
     padding: 0 !important;
     overflow-x: auto !important; /* 開啟橫向滾動 */
     overflow-y: hidden !important; /* 絕對鎖死垂直滾動 */
-    
-    /* 🔥 CSS 原生硬體加速橫向吸附 */
-    scroll-snap-type: x mandatory !important; 
+    scroll-snap-type: x mandatory !important; /* CSS 原生硬體加速橫向吸附 */
     -webkit-overflow-scrolling: touch !important; 
     border-left: none !important;
     z-index: 5 !important;
@@ -744,7 +578,17 @@ body.light-bg .hero-title-wrap.scrolled { color: var(--black); }
   .works-menu-panel::-webkit-scrollbar { display: none !important; }
   .works-panel-title { display: none !important; }
 
-  /* 每個作品卡片橫向排開，剛好佔滿一整個螢幕寬度 */
+  /* 🌟 軌道補丁：解鎖隱形盒子，讓作品真正橫向並排一線 */
+  .works-list-group {
+    display: flex !important;
+    flex-direction: row !important; 
+    width: max-content !important;  
+    height: 100% !important;
+    gap: 0 !important;              
+    padding-bottom: 0 !important;
+  }
+
+  /* 每個作品卡片橫向排開，剛好佔滿一整個螢幕寬度，背景設為透明以透出背景圖 */
   .work-entry {
     flex: 0 0 100vw !important; 
     width: 100vw !important;
@@ -756,32 +600,43 @@ body.light-bg .hero-title-wrap.scrolled { color: var(--black); }
     justify-content: flex-end !important; 
     padding: 4.5rem 2rem !important; 
     box-sizing: border-box !important;
+    background: transparent !important; /* 🌟 確保卡片透明 */
     scroll-snap-align: center !important; /* 橫向滑完後咬死在螢幕中央 */
     scroll-snap-stop: always !important;
+    overflow: hidden !important;
   }
 
-  /* 獨立作品渲染圖全螢幕背景 */
+  /* 🌟 由 JS 動態注入的全螢幕專案背景圖 */
   .work-entry-bg {
     position: absolute !important;
-    top: 0; left: 0; width: 100%; height: 100%;
+    top: 0; left: 0; 
+    width: 100% !important; 
+    height: 100% !important;
     background-size: cover !important;
     background-position: center !important;
     background-repeat: no-repeat !important;
     z-index: 1 !important;
+    transform: scale(1.02); /* 微放大邊緣防白邊 */
   }
 
+  /* 🌟 高奢漸層濾鏡遮罩：底部文字易讀，中部透出 3D 渲染圖 */
   .work-entry-bg::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.4) 100%) !important;
-    z-index: 2;
+    content: '' !important;
+    position: absolute !important;
+    inset: 0 !important;
+    background: linear-gradient(
+      to top, 
+      rgba(10, 10, 10, 0.9) 0%,   
+      rgba(10, 10, 10, 0.3) 50%,  
+      rgba(10, 10, 10, 0.5) 100%
+    ) !important;
+    z-index: 2 !important;
   }
 
-  /* 作品文字排版（浮在遮罩之上） */
+  /* 作品文字排版（強制升到最頂層，浮在遮罩之上） */
   .work-mobile-meta {
     position: relative !important;
-    z-index: 3 !important; 
+    z-index: 10 !important; 
     width: 100% !important;
     transform: translateY(0);
     animation: fadeUpMeta 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
@@ -813,17 +668,7 @@ body.light-bg .hero-title-wrap.scrolled { color: var(--black); }
 
   .mobile-entry-img, .we-arrow { display: none !important; }
   .work-entry:hover { padding-left: 2rem !important; } 
-}
 
-@keyframes fadeUpMeta {
-  from { opacity: 0; transform: translateY(15px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* ─────────────────────────────────────────
-   剩下的手機版樣式收尾 (確保語法結構不嵌套)
-───────────────────────────────────────── */
-@media (max-width: 900px) {
   /* ⚡ 6. SECTION 4 — ABOUT 手機版 */
   #about { padding: 6rem 1.5rem 4rem 1.5rem !important; justify-content: center !important; gap: 2rem !important; }
   .about-section-label { margin-bottom: 1.5rem !important; }
@@ -838,6 +683,11 @@ body.light-bg .hero-title-wrap.scrolled { color: var(--black); }
   .contact-right { margin-top: 1rem !important; margin-bottom: 2rem !important; justify-content: flex-start !important; }
   .contact-links-row { justify-content: flex-start !important; gap: 1rem !important; }
   .contact-footer { position: relative !important; left: auto !important; right: auto !important; bottom: auto !important; flex-direction: column !important; gap: 0.8rem !important; text-align: left !important; margin-top: 2rem !important; }
+}
+
+@keyframes fadeUpMeta {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 </style>
 </head>
@@ -1174,11 +1024,14 @@ document.addEventListener("DOMContentLoaded", () => {
         fullMenu.classList.remove('active');
 
         if (targetSec) {
-          const scrollObj = isMobile() ? window : document.querySelector('.scroll-container');
-          scrollObj.scrollTo({
-            top: targetSec.offsetTop,
-            behavior: 'smooth'
-          });
+          // 修正手機版與電腦版吸附容器的滾動目標
+          const scrollObj = document.querySelector('.scroll-container');
+          if (scrollObj) {
+            scrollObj.scrollTo({
+              top: targetSec.offsetTop,
+              behavior: 'smooth'
+            });
+          }
         }
       });
     });
@@ -1214,22 +1067,16 @@ document.querySelectorAll('a, .about-skill-row').forEach(el => {
 
 /* ── 🖱️ 專案卡片點擊跳轉系統 (電腦與手機全域通用) ── */
 document.querySelectorAll('.work-entry').forEach(entry => {
-  
-  // 設定滑鼠游標樣式（讓使用者知道這可以點擊）
   entry.style.cursor = 'pointer';
-
   entry.addEventListener('click', () => {
     const targetUrl = entry.getAttribute('data-url');
-    
     if (targetUrl) {
-      // 這裡可以加上高奢的離場動畫（如果未來有需要）
-      // 目前直接進行無縫秒速跳轉
       window.location.href = targetUrl;
     }
   });
 });
 
-/* ── WORKS MENU PANEL (右側面板滾輪吸附安全鎖) ── */
+/* ── WORKS MENU PANEL (右側面板滾輪吸附安全鎖 & 📱 手機版 IG 橫滑聯動系統) ── */
 const menuPanel = document.querySelector('.works-menu-panel');
 const workEntries = document.querySelectorAll('.work-entry');
 
@@ -1237,9 +1084,69 @@ if (menuPanel && workEntries.length > 0) {
   let currentIndex = -1; 
   let isAnimating = false; 
 
+  // 🌟 核心新增 (手機版專屬)：一進網頁，自動幫手機版每張卡片掛載專案全螢幕背景圖
+  if (isMobile()) {
+    workEntries.forEach(entry => {
+      const imgSrc = entry.getAttribute('data-img');
+      if (imgSrc) {
+        // 如果卡片內還沒有背景圖層，就動態塞入一個
+        if (!entry.querySelector('.work-entry-bg')) {
+          const bgDiv = document.createElement('div');
+          bgDiv.className = 'work-entry-bg';
+          bgDiv.style.backgroundImage = `url(${imgSrc})`;
+          entry.prepend(bgDiv); // 插到卡片的最底層
+        }
+      }
+    });
+  }
+
+  // 🌟 核心新增 (手機版專屬)：偵測橫向滑動，聯動頂部進度條與文字亂碼
+  let lastMobileIndex = 0;
+  menuPanel.addEventListener('scroll', () => {
+    if (!isMobile()) return; // 電腦版不走這段
+
+    const width = menuPanel.getBoundingClientRect().width || menuPanel.clientWidth;
+    const scrollLeft = menuPanel.scrollLeft;
+    // 計算當前滑到了第幾個專案卡片
+    const currentMobileIndex = Math.floor((scrollLeft + width * 0.5) / width);
+    const progressLines = document.querySelectorAll('.progress-line');
+
+    if (currentMobileIndex >= 0 && currentMobileIndex < workEntries.length) {
+      // 1. 聯動高奢進度條
+      progressLines.forEach((line, idx) => {
+        line.classList.toggle('active', idx === currentMobileIndex);
+      });
+
+      // 2. 觸發轉場標題科幻亂碼動效
+      if (currentMobileIndex !== lastMobileIndex) {
+        lastMobileIndex = currentMobileIndex;
+        const titleEl = workEntries[currentMobileIndex].querySelector('.we-title');
+        
+        if (titleEl && !titleEl.dataset.animating) {
+          const originalText = titleEl.innerText;
+          let iter = 0;
+          titleEl.dataset.animating = "true";
+          const scrId = setInterval(() => {
+            titleEl.innerText = originalText.split("").map((l, i) => {
+              if (i < iter) return originalText[i];
+              if (l === " ") return " ";
+              return "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"[Math.floor(Math.random()*36)];
+            }).join("");
+            iter += 1;
+            if (iter >= originalText.length) { 
+              clearInterval(scrId); 
+              titleEl.innerText = originalText; 
+              delete titleEl.dataset.animating; 
+            }
+          }, 30);
+        }
+      }
+    }
+  }, { passive: true });
+
+  // 💻 電腦版專屬：滑鼠滾輪攔截與大圖切換邏輯
   menuPanel.addEventListener('wheel', (e) => {
-    // 手機窄螢幕時放開攔截，讓右側面板走原生垂直滑動
-    if (isMobile()) return;
+    if (isMobile()) return; // 手機窄螢幕時放開攔截，走原生橫向滑動
 
     if (isAnimating) { e.preventDefault(); return; }
     const direction = e.deltaY > 0 ? 1 : -1; 
