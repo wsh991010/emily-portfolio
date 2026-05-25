@@ -506,13 +506,19 @@ body.light-bg .hero-title-wrap.scrolled { color: var(--black); }
 
   /* ⚡ 4. SECTION 2 — DISCIPLINES 手機版 */
   #disciplines { padding: 0 !important; }
-  .disc-title-video {
-    top: 5.5rem !important; left: 1.5rem !important;
-    width: 150px !important; z-index: 10 !important;
+ .disc-title-video {
+  top: 5.5rem !important;
+  left: auto !important;
+  right: 1.5rem !important;
+  width: 130px !important;
+  z-index: 10 !important;
+}
   }
   .disc-list { 
     position: absolute !important;
-    top: 55% !important; left: 50% !important;
+    top: 50% !important;
+  max-height: 70vh !important;
+  overflow-y: auto !important; left: 50% !important;
     transform: translate(-50%, -50%) !important;
     grid-template-columns: 1fr !important; 
     width: 88% !important; max-width: 100% !important;
@@ -533,7 +539,7 @@ body.light-bg .hero-title-wrap.scrolled { color: var(--black); }
     background: #000 !important; 
     scroll-snap-align: start; 
   }
-
+#works .works-canvas { display: none !important; }
   /* 頂部細線進度條 */
   .works-progress-bar {
     display: flex !important;
@@ -633,7 +639,13 @@ body.light-bg .hero-title-wrap.scrolled { color: var(--black); }
     ) !important;
     z-index: 2 !important;
   }
-
+.work-entry .we-left-info {
+  position: relative !important;
+  z-index: 10 !important;
+}
+.work-entry .we-arrow {
+  display: none !important;
+}
   /* 作品文字排版（強制升到最頂層，浮在遮罩之上） */
   .work-mobile-meta {
     position: relative !important;
@@ -669,7 +681,7 @@ body.light-bg .hero-title-wrap.scrolled { color: var(--black); }
 }
 
 
-
+@media (max-width: 900px) {
   /* ⚡ 6. SECTION 4 — ABOUT 手機版 */
   #about { padding: 6rem 1.5rem 4rem 1.5rem !important; justify-content: center !important; gap: 2rem !important; }
   .about-section-label { margin-bottom: 1.5rem !important; }
