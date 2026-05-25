@@ -1346,15 +1346,31 @@ window.addEventListener('resize', () => {
   }
 });
 
-/* ── 📱 手機版 IG 限動式橫向滑動進度條聯動 ── */
+/* ── 📱 手機版 IG 限動式橫向滑動進度條聯動（融合圖片與亂碼完美合體版） ── */
 document.addEventListener("DOMContentLoaded", () => {
   const mobileScrollContainer = document.querySelector('.works-menu-panel');
   const progressLines = document.querySelectorAll('.progress-line');
   const mobileEntries = document.querySelectorAll('#works .work-entry');
 
-  if (mobileScrollContainer && progressLines.length > 0 && isMobile()) {
+  if (mobileScrollContainer && isMobile()) {
     
-    // 使用高效的 Scroll 監聽配合節流或算術計算當前頁數
+    // 🌟 核心圖片修復：一進網頁，自動把每個專案的 data-img 掛載為手機卡片的背景圖
+    mobileEntries.forEach(entry => {
+      const imgSrc = entry.getAttribute('data-img');
+      if (imgSrc) {
+        // 如果卡片內還沒有全螢幕背景圖層，就動態創造一個，防止重複疊加
+        if (!entry.querySelector('.work-entry-bg')) {
+          const bgDiv = document.createElement('div');
+          bgDiv.className = 'work-entry-bg';
+          bgDiv.style.backgroundImage = `url(${imgSrc})`;
+          entry.prepend(bgDiv); // 塞到卡片的最底層，做為全螢幕背景
+        }
+      }
+    });
+
+    // 將妳原本的進度條控制與文字亂碼效果合併在同一個高效監聽器內，保證不衝突
+    let lastIndex = 0;
+    
     mobileScrollContainer.addEventListener('scroll', () => {
       const width = mobileScrollContainer.clientWidth;
       const scrollLeft = mobileScrollContainer.scrollLeft;
@@ -1362,7 +1378,7 @@ document.addEventListener("DOMContentLoaded", () => {
       // 計算當前滑到第幾個作品 (四捨五入求出最接近的 index)
       const currentIndex = Math.round(scrollLeft / width);
       
-      // 更新進度條狀態
+      // A. 更新頂部 IG 質感進度條狀態
       progressLines.forEach((line, idx) => {
         if (idx === currentIndex) {
           line.classList.add('active');
@@ -1370,28 +1386,24 @@ document.addEventListener("DOMContentLoaded", () => {
           line.classList.remove('active');
         }
       });
-    }, { passive: true });
-    
-    // 解決手動滑動時，文字亂碼效果也想要在手機版觸發的小彩蛋
-    let lastIndex = 0;
-    mobileScrollContainer.addEventListener('scroll', () => {
-      const width = mobileScrollContainer.clientWidth;
-      const currentIndex = Math.round(mobileScrollContainer.scrollLeft / width);
-      
+
+      // B. 觸發妳原本設計的手機版文字亂碼小彩蛋
       if (currentIndex !== lastIndex && mobileEntries[currentIndex]) {
         lastIndex = currentIndex;
         const titleEl = mobileEntries[currentIndex].querySelector('.we-title');
+        
         if (titleEl && !titleEl.dataset.animating) {
-          // 可以在這裡觸發你電腦版原有的 Text Scramble 效果！
           const originalText = titleEl.innerText;
           let iter = 0;
           titleEl.dataset.animating = "true";
+          
           const scrId = setInterval(() => {
             titleEl.innerText = originalText.split("").map((l, i) => {
               if (i < iter) return originalText[i];
               if (l === " ") return " ";
-              return "ABCDEFGHIJKLMNOPQRSTUVWXYZ"[Math.floor(Math.random()*26)];
+              return "ABCDEFGHIJKLMNOPQRSTUVWXYZ"[Math.floor(Math.random() * 26)];
             }).join("");
+            
             iter += 1;
             if (iter >= originalText.length) {
               clearInterval(scrId);
