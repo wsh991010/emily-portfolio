@@ -386,67 +386,169 @@ body.light-bg .hero-title-wrap.scrolled { color: var(--black); }
 .disc-arrow { position: absolute; bottom: 2rem; right: 2rem; font-size: 1.1rem; color: rgba(248,248,246,0); transition: color .4s, transform .4s; z-index: 2; }
 .disc-item:hover .disc-arrow { color: rgba(248,248,246,0.6); transform: translate(3px,-3px); }
 
+/* ⚡ 5. SECTION 3 — WORKS 手機版重組 (完美的橫向滑動吸附) */
+  #works {
+    position: relative !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    height: 100dvh !important; 
+    overflow: hidden !important;
+    background: #000 !important; 
+    scroll-snap-align: start !important; 
+  }
+
+  /* 頂部細線進度條容器 */
+  .works-progress-bar {
+    display: flex !important;
+    position: absolute;
+    top: 25px; 
+    left: 20px;
+    right: 20px;
+    gap: 6px; 
+    z-index: 100 !important; 
+    pointer-events: none; 
+  }
+
+  .progress-line {
+    flex: 1;
+    height: 2px; 
+    background: rgba(255, 255, 255, 0.25); 
+    transition: background 0.3s ease, opacity 0.3s ease;
+    border-radius: 2px;
+  }
+
+  .progress-line.active {
+    background: rgba(255, 255, 255, 1) !important;
+    box-shadow: 0 0 4px rgba(255, 255, 255, 0.5);
+  }
+
+  /* 改造作品面板：轉化為精準橫向滑動軌道 */
+  .works-menu-panel {
+    display: flex !important;
+    flex-direction: row !important; /* 強制橫向一排 */
+    width: 100vw !important;
+    height: 100vh !important;
+    height: 100dvh !important;
+    margin-left: 0 !important;
+    padding: 0 !important;
+    overflow-x: auto !important; /* 開啟橫向滾動 */
+    overflow-y: hidden !important; /* 絕對鎖死垂直滾動 */
+    
+    /* 🔥 CSS 原生硬體加速橫向吸附 */
+    scroll-snap-type: x mandatory !important; 
+    -webkit-overflow-scrolling: touch !important; 
+    border-left: none !important;
+    z-index: 5 !important;
+  }
+  
+  .works-menu-panel::-webkit-scrollbar { display: none !important; }
+  .works-panel-title { display: none !important; }
+
+  /* 🌟 終極破關補丁：解鎖隱形盒子，讓作品真正往右橫向排開 🌟 */
+  .works-list-group {
+    display: flex !important;
+    flex-direction: row !important; 
+    width: max-content !important;  
+    height: 100% !important;
+    gap: 0 !important;              
+    padding-bottom: 0 !important;
+  }
+
+  /* 每個作品卡片橫向排開，剛好佔滿一整個螢幕寬度 */
+  .work-entry {
+    flex: 0 0 100vw !important; 
+    width: 100vw !important;
+    height: 100vh !important;
+    height: 100dvh !important;
+    position: relative !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: flex-end !important; 
+    padding: 4.5rem 2rem !important; 
+    box-sizing: border-box !important;
+    scroll-snap-align: center !important; /* 橫向滑完後咬死在螢幕中央 */
+    scroll-snap-stop: always !important;
+  }
+
+  /* 獨立作品渲染圖全螢幕背景 */
+  .work-entry-bg {
+    position: absolute !important;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-size: cover !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+    z-index: 1 !important;
+  }
+
+  .work-entry-bg::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.4) 100%) !important;
+    z-index: 2;
+  }
+
+  /* 作品文字排版（浮在遮罩之上） */
+  .work-mobile-meta {
+    position: relative !important;
+    z-index: 3 !important; 
+    width: 100% !important;
+    transform: translateY(0);
+    animation: fadeUpMeta 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .work-entry .we-num {
+    font-family: var(--font-body), monospace;
+    font-size: 0.75rem !important;
+    color: rgba(255, 255, 255, 0.5) !important;
+    display: block !important;
+    margin-bottom: 0.4rem;
+    letter-spacing: 0.1em;
+  }
+
+  .work-entry .we-title {
+    font-size: 1.15rem !important; 
+    color: #fff !important;
+    margin: 0 0 0.4rem 0 !important;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .work-entry .we-tag {
+    font-size: 0.72rem !important;
+    color: rgba(255, 255, 255, 0.4) !important;
+    margin: 0 !important;
+    letter-spacing: 0.02em;
+  }
+
+  .mobile-entry-img, .we-arrow { display: none !important; }
+  .work-entry:hover { padding-left: 2rem !important; } 
+}
+
+@keyframes fadeUpMeta {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 /* ─────────────────────────────────────────
-   SECTION 3: WORKS
+   剩下的手機版樣式收尾 (確保語法結構不嵌套)
 ───────────────────────────────────────── */
-#works { 
-  background: var(--black); 
-  display: block; 
-  position: relative;
-  height: 100vh;
-  width: 100%;
-  overflow: hidden;
-}
-.works-canvas {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100vh;
-  z-index: 1;
-  overflow: hidden;
-}
-.sticky-img-inner { width: 100%; height: 100%; position: relative; }
-.sticky-img-inner img { width: 100%; height: 100%; object-fit: cover; transition: opacity 0.3s ease; }
-.sticky-img-label {
-  position: absolute; bottom: 3rem; left: 3rem;
-  font-size: 0.58rem; letter-spacing: 0.22em; text-transform: uppercase;
-  color: rgba(248,248,246,0.5); font-weight: 300; z-index: 3;
-}
-.works-menu-panel {
-  position: relative; z-index: 2; 
-  height: 100vh; width: 30%; margin-left: 70%; 
-  display: flex; flex-direction: column; justify-content: flex-start; 
-  padding: 8vh 4rem 15vh 2rem; border-left: 1px solid rgba(248,248,246,0.05);
-  background: transparent; overflow-y: scroll; scroll-behavior: smooth;
-  scrollbar-width: none; -ms-overflow-style: none; 
-}
-.works-menu-panel::-webkit-scrollbar { display: none; }
+@media (max-width: 900px) {
+  /* ⚡ 6. SECTION 4 — ABOUT 手機版 */
+  #about { padding: 6rem 1.5rem 4rem 1.5rem !important; justify-content: center !important; gap: 2rem !important; }
+  .about-section-label { margin-bottom: 1.5rem !important; }
+  .about-name-large { font-size: 3.2rem !important; text-align: left; width: 100%; }
+  .about-right { margin-top: 1rem !important; justify-content: flex-start !important; }
+  .about-tagline { max-width: 100% !important; font-size: 0.82rem !important; }
 
-.works-panel-title {
-  position: sticky; top: 0; background: transparent;
-  font-size: 0.6rem; letter-spacing: 0.25em; text-transform: uppercase;
-  color: rgba(248,248,246,0.3); padding: 2rem 0; margin-bottom: 1rem; z-index: 4;
+  /* ⚡ 7. SECTION 5 — CONTACT 手機版 */
+  #contact { padding: 6rem 1.5rem 4rem 1.5rem !important; justify-content: center !important; gap: 2rem !important; }
+  .contact-section-label { margin-bottom: 1.5rem !important; }
+  .contact-headline { font-size: 3.2rem !important; }
+  .contact-right { margin-top: 1rem !important; margin-bottom: 2rem !important; justify-content: flex-start !important; }
+  .contact-links-row { justify-content: flex-start !important; gap: 1rem !important; }
+  .contact-footer { position: relative !important; left: auto !important; right: auto !important; bottom: auto !important; flex-direction: column !important; gap: 0.8rem !important; text-align: left !important; margin-top: 2rem !important; }
 }
-.works-list-group { display: flex; flex-direction: column; gap: 0.5rem; padding-bottom: 5vh; }
-.work-entry {
-  padding: 1.5rem 0; border-bottom: 1px solid rgba(248,248,246,0.05);
-  cursor: pointer; display: flex; align-items: center; justify-content: space-between;
-  transition: padding-left .4s cubic-bezier(.16,1,.3,1);
-}
-.mobile-entry-img { display: none; width: 100%; height: 180px; object-fit: cover; margin-bottom: 1rem; opacity: 0.85; }
-
-.work-entry:hover { padding-left: 1rem; border-bottom-color: rgba(248,248,246,0.2); }
-.we-left-info { display: flex; flex-direction: column; gap: 0.4rem; }
-.we-title {
-  font-size: 0.85rem; font-weight: 300; letter-spacing: 0.18em;
-  text-transform: uppercase; color: rgba(248,248,246,0.45);
-  transition: color .4s, letter-spacing .4s cubic-bezier(.16,1,.3,1);
-}
-.work-entry:hover .we-title { color: var(--white); letter-spacing: 0.12em; }
-.we-meta-tag { font-size: 0.52rem; letter-spacing: 0.15em; text-transform: uppercase; color: rgba(248,248,246,0.2); }
-.work-entry:hover .we-meta-tag { color: rgba(248,248,246,0.4); }
-.we-arrow { font-size: 0.9rem; color: rgba(248,248,246,0); transition: color .3s, transform .3s; }
-.work-entry:hover .we-arrow { color: rgba(248,248,246,0.5); transform: translateX(4px); }
 
 /* ─────────────────────────────────────────
    SECTION 4 — ABOUT
