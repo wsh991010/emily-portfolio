@@ -474,13 +474,11 @@ body.light-bg .hero-title-wrap.scrolled { color: var(--black); }
   overflow: scroll !important;
 }
   
-  .scroll-container { 
-    scroll-snap-type: none !important; 
-    height: auto !important; 
-    overflow-y: visible !important; 
-    overflow-x: hidden !important;
-  }
-  
+.scroll-container {
+  height: 100dvh !important;
+  overflow-y: scroll !important;
+  scroll-snap-type: y mandatory !important;
+}
   section { 
     height: 100vh !important; 
     height: 100dvh !important; /* DVH 更能防止手機高低抖動 */
@@ -1484,6 +1482,40 @@ if (isMobile()) {
     sc.style.scrollSnapType = 'none';
   }
 }
+/* ── 手機版 Scroll Snap 強制修復 ── */
+(function fixMobileSnap() {
+  if (!isMobile()) return;
+
+  const sc = document.querySelector('.scroll-container');
+  if (!sc) return;
+
+  // 把 scroll 權限完全歸還給 scroll-container
+  // 但改成讓它的高度跑滿，然後自己做 snap
+  sc.style.cssText = `
+    height: 100dvh;
+    overflow-y: scroll;
+    scroll-snap-type: y mandatory;
+    -webkit-overflow-scrolling: touch;
+  `;
+
+  document.body.style.cssText = `
+    overflow: hidden;
+    height: 100dvh;
+  `;
+
+  document.documentElement.style.cssText = `
+    overflow: hidden;
+    height: 100dvh;
+  `;
+
+  // 確保每個 section 都參與 snap
+  document.querySelectorAll('.scroll-container section').forEach(sec => {
+    sec.style.scrollSnapAlign = 'start';
+    sec.style.scrollSnapStop = 'always';
+    sec.style.height = '100dvh';
+    sec.style.minHeight = 'unset';
+  });
+})();
 </script>
 </body>
 </html>
