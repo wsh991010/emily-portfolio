@@ -845,7 +845,23 @@ nav {
     height: auto !important;
     min-height: 100vh;
   }
-  .s6-fixed-bg { position: fixed; }
+  /* ⚡ 強制將手機版的 S6 固定大背景限制在 Section 盒子內，不准它溢出擋住後面的 Section 7 */
+  .s6-fixed-bg {
+    position: absolute !important; /* 確保它乖乖待在 S6 裡面，不要變成 fixed 全螢幕 */
+    height: 100% !important;
+    width: 100% !important;
+    inset: 0 !important;
+    z-index: 0 !important; /* 讓它退到最底層當背景 */
+  }
+  
+  /* ⚡ 同時確保手機版 S6 裡面的文字和疊紙能依序往下排，不互相重疊擠壓 */
+  .s6-layer-lead, .s6-layer-stack {
+    position: relative !important;
+    height: auto !important;
+    transform: none !important;
+    opacity: 1 !important;
+    z-index: 2 !important; /* 讓文字和內容浮在背景圖之上 */
+  }
   
   .stack-stage { width: 100vw; height: 45vw; padding-top: 2rem; }
   .stack-card { width: 75%; }
