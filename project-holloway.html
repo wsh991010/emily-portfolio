@@ -508,22 +508,30 @@ nav {
   filter: brightness(0.92); 
 }
 
-/* 📱 響應式安全降級 */
+/* 📱 響應式安全降級（手機版：去圖留字、高奢解鎖版） */
 @media (max-width: 1024px) {
   #proj-process {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr; /* 轉為單欄排版 */
+    height: auto !important;     /* ⚡ 核心修正：解除 100vh 鎖定，允許文字長度自由伸展 */
+    min-height: 100vh;           /* 確保基本高度依然撐滿一屏 */
+    overflow-y: auto !important; /* ⚡ 內容過長時，允許在 Section 內部原生滑動 */
   }
+
   .process-left {
-    padding: 3rem 1.5rem 2rem;
+    padding: 6rem 1.5rem 5rem;  /* 上下留出優雅的呼吸空隙 */
     border-right: none;
-    border-bottom: 1px solid rgba(10,10,10,0.06);
-    gap: 3rem;
+    border-bottom: none;         /* 既然沒圖了，就拆掉底部分割線，保持極簡 */
+    gap: 3.5rem;                 /* 讓每個步驟之間有頂級畫廊的呼吸感 */
+    height: auto !important;
   }
+
   .step-desc {
-    max-width: 100%; 
+    max-width: 100%;             /* 文字寬度吃滿螢幕 */
   }
+
+  /* ⚡ 核心修正：徹底蒸發右側圖片舞台，電腦版完全不受影響 */
   .process-right {
-    height: 50vh; 
+    display: none !important;    /* 殺掉圖片區塊與結構，釋放效能與空間 */
   }
 }
 
