@@ -1,0 +1,1469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EMILY WANG — PORTFOLIO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100;0,9..40,200;0,9..40,300;0,9..40,400;1,9..40,200&display=swap" rel="stylesheet">
+<style>
+/* ─────────────────────────────────────────
+   BASE
+───────────────────────────────────────── */
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+:root {
+  --black: #0A0A0A;
+  --white: #F8F8F6;
+  --gray:  #888; 
+  --mid:   #555;
+  --font-display: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+}
+
+html, body { 
+  height: 100%;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--black);
+  color: var(--white);
+  font-family: var(--font-body);
+  font-weight: 300;
+  cursor: none;
+  overflow: hidden; /* 鎖定全局，把滾動完全交給吸附容器 */
+}
+
+/* ─────────────────────────────────────────
+   SCROLL SNAP CONTAINER 
+───────────────────────────────────────── */
+.scroll-container {
+  height: 100vh;
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
+}
+
+section {
+  height: 100vh;
+  width: 100%;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ─────────────────────────────────────────
+   CURSOR — rotating VIEW text ring
+───────────────────────────────────────── */
+#cursor-dot {
+  width: 6px; height: 6px;
+  background: var(--white);
+  border-radius: 50%;
+  position: fixed; z-index: 9999;
+  pointer-events: none;
+  transform: translate(-50%,-50%);
+  transition: width .2s, height .2s, background .3s, opacity .3s;
+}
+#cursor-ring {
+  width: 32px; height: 32px;
+  border: 1px solid rgba(248,248,246,0.5);
+  border-radius: 50%;
+  position: fixed; z-index: 9998;
+  pointer-events: none;
+  transform: translate(-50%,-50%);
+  transition: border-color .3s, width .4s cubic-bezier(.16,1,.3,1),
+              height .4s cubic-bezier(.16,1,.3,1), opacity .3s;
+}
+#cursor-text-ring {
+  position: fixed; z-index: 9997;
+  pointer-events: none;
+  transform: translate(-50%,-50%);
+  width: 90px; height: 90px;
+  opacity: 0;
+  transition: opacity .35s ease;
+}
+#cursor-text-ring svg {
+  width: 100%; height: 100%;
+  animation: ringRotate 6s linear infinite;
+}
+#cursor-text-ring textPath {
+  font-size: 7.5px;
+  letter-spacing: 3.6px;
+  text-transform: uppercase;
+  fill: white;
+  font-family: var(--font-body);
+  font-weight: 300;
+}
+body.light-bg #cursor-text-ring textPath { fill: black; }
+body.cursor-view #cursor-text-ring textPath { fill: white; }
+
+@keyframes ringRotate {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+body.light-bg #cursor-dot  { background: var(--black); }
+body.light-bg #cursor-ring { border-color: rgba(10,10,10,0.35); }
+
+body.cursor-view #cursor-ring  { width: 0; height: 0; border-color: transparent; opacity: 0; }
+body.cursor-view #cursor-dot   { opacity: 0; }
+body.cursor-view #cursor-text-ring { opacity: 1; }
+
+/* ─────────────────────────────────────────
+   NAV & MOBILE MENU
+───────────────────────────────────────── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0;
+  z-index: 500;
+  padding: 2rem 3rem;
+  display: flex; align-items: center; justify-content: space-between;
+  mix-blend-mode: difference;
+}
+.nav-logo {
+  font-size: 0.72rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--white);
+  text-decoration: none;
+  font-weight: 400;
+}
+.nav-links { display: flex; gap: 2.5rem; list-style: none; }
+.nav-links a {
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--white);
+  text-decoration: none;
+  font-weight: 300;
+  opacity: .6;
+  transition: opacity .3s;
+}
+.nav-links a:hover { opacity: 1; }
+
+/* 📱 手機版專屬漢堡按鈕 (預設電腦版隱藏) */
+.mobile-menu-toggle {
+  display: none;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 24px;
+  height: 16px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  z-index: 600;
+}
+.mobile-menu-toggle span {
+  width: 100%;
+  height: 1.5px;
+  background-color: var(--white);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+/* 點擊展開時的三條線變叉叉動畫 */
+.mobile-menu-toggle.active span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.mobile-menu-toggle.active span:nth-child(2) { opacity: 0; }
+.mobile-menu-toggle.active span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* 📱 手機版全螢幕高奢選單 */
+.mobile-full-menu {
+  position: fixed; inset: 0;
+  background-color: var(--black);
+  z-index: 550;
+  display: flex; flex-direction: column;
+  justify-content: center; padding: 4rem;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+.mobile-full-menu.active { opacity: 1; pointer-events: auto; }
+.mobile-nav-links { list-style: none; display: flex; flex-direction: column; gap: 2rem; }
+.mobile-nav-links a {
+  font-size: 1.5rem; letter-spacing: 0.15em; text-transform: uppercase;
+  color: var(--white); text-decoration: none; font-weight: 300;
+}
+
+/* ─────────────────────────────────────────
+   SECTION 1 — HERO
+───────────────────────────────────────── */
+#hero {
+  display: flex; align-items: flex-end; justify-content: flex-end;
+  background: var(--black);
+}
+#hero-video {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  object-position: center;
+  filter: saturate(0.25) brightness(0.65);
+  pointer-events: none;
+  z-index: 0;
+}
+.hero-bg {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse at center, transparent 30%, rgba(10,10,10,0.55) 100%),
+    linear-gradient(to bottom, rgba(10,10,10,0.3) 0%, transparent 25%,
+                    transparent 65%, rgba(10,10,10,0.6) 100%);
+  pointer-events: none;
+  z-index: 1;
+}
+.hero-corner {
+  position: absolute;
+  font-size: 0.6rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: rgba(248,248,246,0.35);
+  font-weight: 300;
+  transition: opacity .4s;
+  will-change: transform;
+  z-index: 2;
+}
+.hero-corner.tl { top: 8rem; left: 3rem; }
+.hero-corner.tr { top: 8rem; right: 3rem; text-align: right; }
+.hero-corner.bl { bottom: 4rem; left: 3rem; }
+
+.hero-title-wrap {
+  position: fixed; 
+  right: 3rem; 
+  bottom: 4.5rem;
+  z-index: 400;
+  text-align: right;
+  will-change: transform, opacity;
+  transform-origin: right bottom;
+  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), color 0.4s ease;
+}
+.hero-name {
+  display: block;
+  font-family: var(--font-body);
+  font-size: clamp(1.2rem, 3vw, 2rem); 
+  font-weight: 400;                     
+  letter-spacing: 0.15em;              
+  line-height: 1.2;                    
+  overflow: hidden;
+  white-space: nowrap;                 
+  text-transform: uppercase;           
+}
+.hero-sub {
+  display: block;
+  font-size: 0.6rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: rgba(248,248,246,0.38);
+  font-weight: 300;
+  margin-top: 0.8rem;
+  opacity: 0;
+  animation: fadeIn 1.2s ease forwards 1s;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+.hero-name span {
+  display: inline-block; 
+  transform: translateY(100%);
+  animation: slideUp 1s cubic-bezier(.16,1,.3,1) forwards;
+  animation-delay: 0.2s; 
+}
+.hero-title-wrap.scrolled {
+  transform: scale(0.25) translate(0, 9rem); 
+}
+.hero-title-wrap.scrolled .hero-sub {
+  opacity: 0 !important;
+  transform: translateY(10px);
+  pointer-events: none;
+}
+body.light-bg .hero-title-wrap.scrolled { color: var(--black); }
+
+@keyframes slideUp { to { transform: translateY(0); } }
+@keyframes fadeIn  { to { opacity: 1; } }
+
+.hero-scroll-hint {
+  position: absolute; bottom: 2.5rem; left: 50%;
+  transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: .5rem;
+  font-size: 0.55rem; letter-spacing: 0.25em; text-transform: uppercase;
+  color: rgba(248,248,246,0.2);
+  animation: fadeIn 1.5s ease forwards 1.5s; opacity: 0;
+  z-index: 2;
+}
+.scroll-line {
+  width: 1px; height: 50px;
+  background: linear-gradient(to bottom, transparent, rgba(248,248,246,0.3));
+  animation: scanDown 2s ease-in-out infinite;
+}
+@keyframes scanDown {
+  0%   { transform: scaleY(0); transform-origin: top; }
+  50%  { transform: scaleY(1); transform-origin: top; }
+  51%  { transform: scaleY(1); transform-origin: bottom; }
+  100% { transform: scaleY(0); transform-origin: bottom; }
+}
+
+/* ─────────────────────────────────────────
+   SECTION 2 — DISCIPLINES
+───────────────────────────────────────── */
+#disciplines {
+  background: var(--white);
+  color: var(--black);
+  min-height: 100vh; 
+  position: relative;
+  overflow: hidden; 
+}
+.disc-list {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%); 
+  z-index: 2; 
+  display: grid; 
+  grid-template-columns: 1fr 1fr;
+  width: 100%; 
+  max-width: 900px;
+  box-sizing: border-box;
+}
+.disc-title-video {
+  position: absolute;
+  top: 2rem; left: 5rem;   
+  width: clamp(600px, 25vw, 340px); 
+  height: auto;
+  pointer-events: none; 
+  z-index: 1;   
+  will-change: transform;
+}
+.disc-title-video video { width: 100%; height: 100%; object-fit: contain; }
+
+.disc-isolated-video {
+  position: absolute;
+  right: 6rem; bottom: 3rem;  
+  width: clamp(360px, 30vw, 360px); 
+  height: clamp(360px, 30vw, 360px);
+  pointer-events: none; 
+  opacity: 0.8;      
+  z-index: 1;        
+  will-change: opacity, transform;
+}
+.disc-isolated-video video { width: 100%; height: 100%; object-fit: contain; }
+
+.disc-item {
+  padding: 2.5rem 2rem;
+  border-top: 1px solid rgba(10,10,10,0.12);
+  position: relative; 
+  overflow: hidden; 
+  cursor: none;
+}
+.disc-item:nth-child(odd)  { border-right: 1px solid rgba(10,10,10,0.12); }
+.disc-item:last-child,
+.disc-item:nth-last-child(2) { border-bottom: 1px solid rgba(10,10,10,0.12); }
+
+.disc-item::before {
+  content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 0;
+  background: var(--black); transition: height .55s cubic-bezier(.16,1,.3,1); z-index: 0;
+}
+.disc-item:hover::before { height: 100%; }
+.disc-item > * { position: relative; z-index: 1; }
+
+.disc-num { font-size: 0.55rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gray); opacity: .4; margin-bottom: 0.8rem; font-weight: 400; }
+.disc-item:hover .disc-num { color: rgba(248,248,246,0.4); opacity: 1; }
+
+.disc-name { 
+  font-size: clamp(1.2rem, 2.7vw, 1.2rem); 
+  font-weight: 300; 
+  letter-spacing: -0.01em; 
+  text-transform: uppercase; 
+  line-height: 1; 
+  margin-bottom: 1.2rem; 
+  transition: color .4s; 
+}
+.disc-item:hover .disc-name { color: var(--white); }
+
+.disc-desc { 
+  font-size: 0.72rem; 
+  line-height: 1.75; 
+  color: var(--mid); 
+  font-weight: 300; 
+  letter-spacing: 0.02em;
+  max-width: 280px; 
+  transition: color .4s; 
+}
+.disc-item:hover .disc-desc { color: rgba(248,248,246,0.55); }
+.disc-arrow { position: absolute; bottom: 2rem; right: 2rem; font-size: 1.1rem; color: rgba(248,248,246,0); transition: color .4s, transform .4s; z-index: 2; }
+.disc-item:hover .disc-arrow { color: rgba(248,248,246,0.6); transform: translate(3px,-3px); }
+
+/* ─────────────────────────────────────────
+   SECTION 3: WORKS
+───────────────────────────────────────── */
+#works { 
+  background: var(--black); 
+  display: block; 
+  position: relative;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+}
+.works-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100vh;
+  z-index: 1;
+  overflow: hidden;
+}
+.sticky-img-inner { width: 100%; height: 100%; position: relative; }
+.sticky-img-inner img { width: 100%; height: 100%; object-fit: cover; transition: opacity 0.3s ease; }
+.sticky-img-label {
+  position: absolute; bottom: 3rem; left: 3rem;
+  font-size: 0.58rem; letter-spacing: 0.22em; text-transform: uppercase;
+  color: rgba(248,248,246,0.5); font-weight: 300; z-index: 3;
+}
+.works-menu-panel {
+  position: relative; z-index: 2; 
+  height: 100vh; width: 30%; margin-left: 70%; 
+  display: flex; flex-direction: column; justify-content: flex-start; 
+  padding: 8vh 4rem 15vh 2rem; border-left: 1px solid rgba(248,248,246,0.05);
+  background: transparent; overflow-y: scroll; scroll-behavior: smooth;
+  scrollbar-width: none; -ms-overflow-style: none; 
+}
+.works-menu-panel::-webkit-scrollbar { display: none; }
+
+.works-panel-title {
+  position: sticky; top: 0; background: transparent;
+  font-size: 0.6rem; letter-spacing: 0.25em; text-transform: uppercase;
+  color: rgba(248,248,246,0.3); padding: 2rem 0; margin-bottom: 1rem; z-index: 4;
+}
+.works-list-group { display: flex; flex-direction: column; gap: 0.5rem; padding-bottom: 5vh; }
+.work-entry {
+  padding: 1.5rem 0; border-bottom: 1px solid rgba(248,248,246,0.05);
+  cursor: pointer; display: flex; align-items: center; justify-content: space-between;
+  transition: padding-left .4s cubic-bezier(.16,1,.3,1);
+}
+/* 手機版專用隱藏大圖，預設電腦版不顯示 */
+.mobile-entry-img { display: none; width: 100%; height: 180px; object-fit: cover; margin-bottom: 1rem; opacity: 0.85; }
+
+.work-entry:hover { padding-left: 1rem; border-bottom-color: rgba(248,248,246,0.2); }
+.we-left-info { display: flex; flex-direction: column; gap: 0.4rem; }
+.we-title {
+  font-size: 0.85rem; font-weight: 300; letter-spacing: 0.18em;
+  text-transform: uppercase; color: rgba(248,248,246,0.45);
+  transition: color .4s, letter-spacing .4s cubic-bezier(.16,1,.3,1);
+}
+.work-entry:hover .we-title { color: var(--white); letter-spacing: 0.12em; }
+.we-meta-tag { font-size: 0.52rem; letter-spacing: 0.15em; text-transform: uppercase; color: rgba(248,248,246,0.2); }
+.work-entry:hover .we-meta-tag { color: rgba(248,248,246,0.4); }
+.we-arrow { font-size: 0.9rem; color: rgba(248,248,246,0); transition: color .3s, transform .3s; }
+.work-entry:hover .we-arrow { color: rgba(248,248,246,0.5); transform: translateX(4px); }
+
+/* ─────────────────────────────────────────
+   SECTION 4 — ABOUT
+───────────────────────────────────────── */
+#about {
+  background: #ffffff; color: #000000; min-height: 100vh; padding: 6rem 5rem;
+  display: flex; flex-direction: column; justify-content: space-between; position: relative;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+.about-left { display: flex; flex-direction: column; align-items: flex-start; }
+.about-section-label { 
+  font-size: 0.65rem; letter-spacing: 0.4em; text-transform: uppercase; 
+  color: #888888; margin-bottom: 4rem; font-weight: 300;
+}
+.about-name-large { 
+  font-size: clamp(3rem, 8vw, 6.5rem); font-weight: 700; letter-spacing: -0.05em; 
+  text-transform: uppercase; line-height: 0.9; margin: 0;
+}
+.about-right { display: flex; justify-content: flex-end; margin-top: 4rem; }
+.about-tagline { 
+  font-size: 0.88rem; line-height: 2; color: #333333; font-weight: 300; 
+  max-width: 420px; text-align: left; border-top: none; padding-top: 0; 
+}
+.decode-text { display: inline-block; }
+
+/* 手繪圈選 */
+.sketch-highlight { position: relative; display: inline-block; padding: 0 4px; }
+.sketch-circle { position: absolute; top: -15%; left: -15%; width: 150%; height: 150%; pointer-events: none; overflow: visible; }
+.sketch-circle path {
+  fill: none; stroke: #000000; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+  stroke-dasharray: 1000; stroke-dashoffset: 1000;
+  transition: stroke-dashoffset 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.sketch-highlight.active .sketch-circle path { stroke-dashoffset: 0; }
+
+/* ─────────────────────────────────────────
+   SECTION 5: CONTACT
+───────────────────────────────────────── */
+#contact {
+  background: #000000; color: #ffffff; min-height: 100vh; padding: 6rem 5rem; position: relative; overflow: hidden;
+  display: flex; flex-direction: column; justify-content: space-between; 
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+.contact-left { display: flex; flex-direction: column; align-items: flex-start; z-index: 2; }
+.contact-section-label { font-size: 0.65rem; letter-spacing: 0.4em; text-transform: uppercase; color: #666666; margin-bottom: 4rem; font-weight: 300; }
+.contact-headline { font-size: clamp(3rem, 8vw, 6.5rem); font-weight: 700; letter-spacing: -0.05em; text-transform: uppercase; line-height: 0.9; margin: 0; color: #ffffff; }
+.contact-right { display: flex; justify-content: flex-end; margin-top: 2rem; margin-bottom: 6rem; z-index: 2; }
+.contact-info-block { max-width: 600px; width: 100%; }
+.contact-links-row { display: flex; flex-direction: row; justify-content: flex-end; gap: 1.2rem; flex-wrap: wrap; }
+
+.capsule-btn {
+  display: inline-flex; align-items: center; justify-content: center; text-decoration: none;
+  background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 100px; cursor: pointer; width: 44px; height: 44px; box-sizing: border-box; padding: 0;
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.5s cubic-bezier(0.4, 0, 0.2, 1), padding 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.capsule-icon { width: 16px; height: 16px; object-fit: contain; flex-shrink: 0; transition: filter 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+.capsule-text-wrapper { display: grid; grid-template-columns: 0fr; opacity: 0; transition: grid-template-columns 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0.05s; }
+.capsule-text { overflow: hidden; white-space: nowrap; font-size: 0.85rem; font-weight: 400; color: #ffffff; padding-left: 0rem; transition: padding 0.5s cubic-bezier(0.4, 0, 0.2, 1), color 0.5s ease; }
+
+.capsule-btn:hover { background-color: #ffffff; border-color: #ffffff; width: max-content; padding-left: 1.1rem; padding-right: 1.2rem; justify-content: flex-start; }
+.capsule-btn:hover .capsule-icon { filter: invert(1); }
+.capsule-btn:hover .capsule-text-wrapper { grid-template-columns: 1fr; opacity: 1; }
+.capsule-btn:hover .capsule-text { color: #000000; padding-left: 0.6rem; }
+
+.contact-social-row { display: flex; flex-wrap: wrap; gap: 1rem; }
+.contact-footer { position: absolute; bottom: 3rem; left: 5rem; right: 5rem; display: flex; justify-content: space-between; font-size: 0.75rem; color: #444444; font-weight: 300; z-index: 2; }
+
+/* .sr 進入動畫基底 */
+.sr { opacity: 0; transform: translateY(24px); transition: opacity .8s ease, transform .8s cubic-bezier(.16,1,.3,1); }
+.sr.in { opacity:1; transform:translateY(0); }
+
+
+/* ═════════════════════════════════════════════════════════
+   📱 PREMIUM MOBILE RESPONSIVE (手機窄螢幕終極完美覆蓋)
+═════════════════════════════════════════════════════════ */
+@media (max-width: 900px) {
+  /* ⚡ 1. 解放最頂層滾動，並啟用手機原生 Scroll Snap 吸附 */
+  html, body {
+    overflow-y: scroll !important;
+    overflow-x: hidden !important;
+    height: 100% !important;
+    scroll-snap-type: y mandatory !important; /* 讓頂層 body 執行手機吸附 */
+    cursor: default !important;
+  }
+  
+  /* 解除原本大容器的滾動，因為權限轉移給 body 了 */
+  .scroll-container { 
+    scroll-snap-type: none !important; 
+    height: auto !important; 
+    overflow-y: visible !important; 
+    overflow-x: hidden !important;
+  }
+  
+  /* 每個 Section 在手機版依舊完美鎖定一螢幕，並參與吸附 */
+  section { 
+    height: 100vh !important; 
+    scroll-snap-align: start !important; 
+    scroll-snap-stop: always !important;
+    overflow: hidden !important;
+  }
+
+  /* ⚡ 2. 導覽列：喚醒手機版漢堡按鈕 */
+  nav { padding: 1.5rem; mix-blend-mode: difference; }
+  .nav-links { display: none; }
+  .mobile-menu-toggle { display: flex; } /* 顯示三條線 */
+
+  /* ⚡ 3. HERO 頁面排版優化：找回奢華呼吸感 */
+  .hero-title-wrap { 
+    position: absolute !important; /* 解除電腦版的 fixed 縮放 */
+    right: 1.5rem !important; 
+    bottom: 5rem !important; 
+    padding: 0; 
+    text-align: right; 
+  }
+  .hero-title-wrap.scrolled { transform: none !important; }
+  .hero-corner.tl { top: 6rem; left: 1.5rem; }
+  .hero-corner.tr { top: 6rem; right: 1.5rem; }
+  .hero-corner.bl { bottom: 5rem; left: 1.5rem; }
+
+  /* ⚡ 4. SECTION 2 — DISCIPLINES 手機版 */
+  #disciplines { 
+    padding: 0 !important; 
+  }
+  .disc-title-video {
+    top: 5.5rem !important; left: 1.5rem !important;
+    width: 150px !important; z-index: 10 !important;
+  }
+  .disc-list { 
+    position: absolute !important;
+    top: 55% !important; left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    grid-template-columns: 1fr !important; /* 單欄直排 */
+    width: 88% !important; max-width: 100% !important;
+    margin-top: 0 !important;
+  }
+  .disc-item { padding: 1.5rem 1rem !important; border-right: none !important; border-bottom: 1px solid rgba(10,10,10,0.12) !important; }
+  .disc-item:last-child { border-bottom: none !important; }
+  .disc-desc { max-width: 100% !important; font-size: 0.68rem !important; }
+  .disc-isolated-video { right: 0.5rem !important; bottom: 0.5rem !important; width: 140px !important; height: 140px !important; opacity: 0.3 !important; }
+
+  /* ⚡ 5. SECTION 3 — WORKS 手機版重組（高級藝廊畫布流） */
+ @media (max-width: 900px) {
+  /* 讓整個 Section 3 變成一個不能上下溢出的全螢幕視窗 */
+  #works {
+    position: relative !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    height: 100dvh !important; /* 確保消除手機瀏覽器工具列的網頁高度抖動 */
+    overflow: hidden !important;
+    background: #000 !important; /* 核心底色 */
+    scroll-snap-align: start; /* 網頁上下滑動時咬住 Section 3 */
+  }
+
+  /* ⚡ 頂部七格細線進度條容器 */
+  .works-progress-bar {
+    display: flex !important;
+    position: absolute;
+    top: 15px; /* 貼近頂部，像 IG 一樣 */
+    left: 15px;
+    right: 15px;
+    gap: 6px; /* 線條之間的間距 */
+    z-index: 100 !important; /* 絕對最上層 */
+    pointer-events: none; /* 防止干擾觸控 */
+  }
+
+  /* 每條單獨的細線 */
+  .progress-line {
+    flex: 1;
+    height: 2px; /* 細細的線 */
+    background: rgba(255, 255, 255, 0.25); /* 未活化時透明度較低 */
+    transition: background 0.3s ease, opacity 0.3s ease;
+    border-radius: 2px;
+  }
+
+  /* 當前滑到的作品線條變亮白色 */
+  .progress-line.active {
+    background: rgba(255, 255, 255, 1) !important;
+    box-shadow: 0 0 4px rgba(255, 255, 255, 0.5);
+  }
+
+  /* 改造作品面板：轉化為橫向滑動軌道（核心絲滑關鍵） */
+  .works-menu-panel {
+    display: flex !important;
+    flex-direction: row !important; /* 強制橫向排列 */
+    width: 100vw !important;
+    height: 100vh !important;
+    height: 100dvh !important;
+    margin-left: 0 !important;
+    padding: 0 !important;
+    overflow-x: auto !important; /* 開啟橫向滑動 */
+    overflow-y: hidden !important; /* 鎖死垂直滑動 */
+    scroll-linecap: round;
+    
+    /* 🔥 CSS 原生硬體加速滑動吸附 */
+    scroll-snap-type: x mandatory !important; 
+    -webkit-overflow-scrolling: touch !important; /* iOS 絲滑滾動 */
+    border-left: none !important;
+    z-index: 5 !important;
+  }
+  
+  /* 隱藏手機版橫向滾動條 */
+  .works-menu-panel::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  /* 隱藏電腦版的標題，把舞台完整留給全螢幕作品 */
+  .works-panel-title { display: none !important; }
+
+  /* ⚡ 每個作品強制定義為滿版全螢幕卡片 */
+  .work-entry {
+    flex: 0 0 100vw !important; /* 每個專案剛好佔滿一整個螢幕寬度 */
+    width: 100vw !important;
+    height: 100vh !important;
+    height: 100dvh !important;
+    position: relative !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: flex-end !important; /* 文字留在最下方 */
+    padding: 3.5rem 2rem !important; /* 留白，防止被手機底部的系統條擋到 */
+    box-sizing: border-box !important;
+    
+    /* 強制每次滑動完都精準鎖定在螢幕正中央 */
+    scroll-snap-align: center !important;
+    scroll-snap-stop: always !important;
+  }
+
+  /* ⚡ 獨立作品渲染圖全螢幕背景（取代原本的 img 標籤） */
+  .work-entry-bg {
+    position: absolute !important;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-size: cover !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+    z-index: 1 !important;
+  }
+
+  /* 為每張滿版渲染圖加上奢華暗色遮罩，確保白色字體絕對清晰 */
+  .work-entry-bg::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.4) 100%) !important;
+    z-index: 2;
+  }
+
+  /* ⚡ 作品文字排版（包含作品名、編號與標籤） */
+  .work-mobile-meta {
+    position: relative !important;
+    z-index: 3 !important; /* 浮在遮罩之上 */
+    width: 100% !important;
+    transform: translateY(0);
+    animation: fadeUpMeta 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .work-entry .we-num {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.9rem !important;
+    color: rgba(255, 255, 255, 0.6) !important;
+    display: block !important;
+    margin-bottom: 0.5rem;
+  }
+
+  .work-entry .we-title {
+    font-size: 1rem !important; /* 大氣的專案名稱 */
+    color: #fff !important;
+    margin: 0 0 0.5rem 0 !important;
+    text-transform: uppercase;
+    letter-spacing: 0px;
+  }
+
+  .work-entry .we-tag {
+    font-size: 0.85rem !important;
+    color: rgba(255, 255, 255, 0.5) !important;
+    margin: 0 !important;
+  }
+
+  /* 隱藏不需要的手機版元素 */
+  .mobile-entry-img, .we-arrow { display: none !important; }
+  .work-entry:hover { padding-left: 2rem !important; } /* 解除電腦版 Hover 位移 */
+}
+
+/* 作品進場微動效 */
+@keyframes fadeUpMeta {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+  /* ⚡ 6. SECTION 4 — ABOUT 手機版 */
+  #about { padding: 6rem 1.5rem 4rem 1.5rem !important; justify-content: center !important; gap: 2rem !important; }
+  .about-section-label { margin-bottom: 1.5rem !important; }
+  .about-name-large { font-size: 3.2rem !important; text-align: left; width: 100%; }
+  .about-right { margin-top: 1rem !important; justify-content: flex-start !important; }
+  .about-tagline { max-width: 100% !important; font-size: 0.82rem !important; }
+
+  /* ⚡ 7. SECTION 5 — CONTACT 手機版 */
+  #contact { padding: 6rem 1.5rem 4rem 1.5rem !important; justify-content: center !important; gap: 2rem !important; }
+  .contact-section-label { margin-bottom: 1.5rem !important; }
+  .contact-headline { font-size: 3.2rem !important; }
+  .contact-right { margin-top: 1rem !important; margin-bottom: 2rem !important; justify-content: flex-start !important; }
+  .contact-links-row { justify-content: flex-start !important; gap: 1rem !important; }
+  .contact-footer { position: relative !important; left: auto !important; right: auto !important; bottom: auto !important; flex-direction: column !important; gap: 0.8rem !important; text-align: left !important; margin-top: 2rem !important; }
+}
+</style>
+</head>
+<body>
+
+<div id="cursor-dot"></div>
+<div id="cursor-ring"></div>
+<div id="cursor-text-ring">
+  <svg viewBox="0 0 100 100">
+    <defs><path id="circlePath" d="M 50,50 m -32,0 a 32,32 0 1,1 64,0 a 32,32 0 1,1 -64,0"/></defs>
+    <text><textPath href="#circlePath">VIEW · VIEW · VIEW · VIEW · </textPath></text>
+  </svg>
+</div>
+
+<!-- ═══════════════════════════════════════
+     NAV
+════════════════════════════════════════ -->
+<nav>
+  <a class="nav-logo" href="#hero">Emily Wang</a>
+  <ul class="nav-links">
+    <li><a href="#disciplines" data-index="1">Work</a></li>
+    <li><a href="#works" data-index="2">Projects</a></li>
+    <li><a href="#about" data-index="3">About</a></li>
+    <li><a href="#contact" data-index="4">Contact</a></li>
+  </ul>
+</nav>
+
+
+<!-- ═══════════════════════════════════════
+     SCROLL CONTAINER
+════════════════════════════════════════ -->
+<div class="scroll-container">
+
+  <!-- SECTION 1: HERO -->
+  <section id="hero">
+    <video id="hero-video" autoplay muted loop playsinline preload="auto" src="showreel.mp4"></video>
+    <div class="hero-bg" id="heroBg"></div>
+    <span class="hero-corner tl" id="hcTL">London · Taipei</span>
+    <span class="hero-corner tr" id="hcTR">Visual Designer<br>& 3D Artist</span>
+    <span class="hero-corner bl" id="hcBL">Portfolio · 2026</span>
+    <div class="hero-title-wrap" id="heroTitle">
+      <span class="hero-name"><span>EMILY WANG</span></span>
+      <span class="hero-sub">Game Environments &nbsp;·&nbsp; Architecture &nbsp;·&nbsp; Interior Rendering</span>
+    </div>
+    <div class="hero-scroll-hint"><div class="scroll-line"></div><span>Scroll</span></div>
+  </section>
+
+  <!-- SECTION 2: DISCIPLINES -->
+ <section id="disciplines">
+
+
+  
+ <div class="disc-title-video">
+  <video muted playsinline id="discTitleVid">
+    <source src="img/disciplines.mov" type="video/quicktime">
+  </video>
+</div>
+
+
+
+  
+  <div class="disc-list">
+    
+    <div class="disc-item sr">
+      <div class="disc-num">01</div>
+      <h3 class="disc-name">Game<br>Environments</h3>
+      <p class="disc-desc">Immersive real-time scene design and world-building for interactive experiences.</p>
+      <span class="disc-arrow">↗</span>
+    </div>
+
+    <div class="disc-item sr">
+      <div class="disc-num">02</div>
+      <h3 class="disc-name">Architectural<br>Design</h3>
+      <p class="disc-desc">Photorealistic visualisations that communicate spatial concepts with precision.</p>
+      <span class="disc-arrow">↗</span>
+    </div>
+
+    <div class="disc-item sr">
+      <div class="disc-num">03</div>
+      <h3 class="disc-name">Interior<br>Design</h3>
+      <p class="disc-desc">Mood-driven renders exploring light, material, and atmosphere in built space.</p>
+      <span class="disc-arrow">↗</span>
+    </div>
+
+    <div class="disc-item sr">
+      <div class="disc-num">04</div>
+      <h3 class="disc-name">Visual<br>Identity</h3>
+      <p class="disc-desc">Translating spatial sensibility into graphic and brand communication systems.</p>
+      <span class="disc-arrow">↗</span>
+    </div>
+  </div>
+
+  <div class="disc-isolated-video">
+    <video autoplay loop muted playsinline>
+      <source src="img/vaccum.mov" type="video/quicktime">
+      </video>
+  </div>
+</section>
+
+
+<!-- SECTION 3: WORKS -->
+<section id="works">
+  <!-- 左側固定畫布：已升級為全螢幕背景 -->
+  <div class="works-canvas">
+    <div class="sticky-img-inner game" id="stickyImg">
+      <img id="worksDisplayImg" src="img/first_photo.jpg" alt="Project Render" style="width: 100%; height: 100%; object-fit: cover; transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1); position: absolute; inset: 0;">
+      
+      <!-- 💡 遮罩層優化：大幅調低環境暗度（從 0.4/0.7 降至 0.15/0.4），釋放 3D 渲染的暗部細節與高光 -->
+      <div style="position: absolute; inset: 0; background: linear-gradient(135deg, rgba(10,10,10,0.15) 0%, rgba(10,10,10,0.4) 100%); pointer-events: none;"></div>
+      
+      <span class="sticky-img-label" id="stickyLabel">01 / NARRATIVE SPACE</span>
+    </div>
+  </div>
+  <div class="works-progress-bar">
+    <div class="progress-line active"></div>
+    <div class="progress-line"></div>
+    <div class="progress-line"></div>
+    <div class="progress-line"></div>
+    <div class="progress-line"></div>
+    <div class="progress-line"></div>
+    <div class="progress-line"></div>
+  </div>
+
+  <!-- 右側滾動選單：浮動於全螢幕圖片上方 -->
+  <div class="works-menu-panel">
+    <p class="works-panel-title">Selected Projects</p>
+    <div class="works-list-group">
+      
+      <!-- 專案 01 -->
+      <div class="work-entry" data-url="project-holloway.html" data-img="img/project1-holloway.jpg" data-label="01 / NARRATIVE SPACE">
+        <div class="we-left-info">
+          <span class="we-meta-tag">001 · Unreal Engine 5 · Blender</span>
+          <h3 class="we-title">When Space Remembers</h3>
+        </div>
+        <span class="we-arrow">→</span>
+      </div>
+      
+      <!-- 專案 02 -->
+      <div class="work-entry" data-url="project-water.html" data-img="img/project2-water.png" data-label="02 / ANIMATION">
+        <div class="we-left-info">
+          <span class="we-meta-tag">002 · C4D · Octane · AfterEffects</span>
+          <h3 class="we-title">Water of Immortality</h3>
+        </div>
+        <span class="we-arrow">→</span>
+      </div>
+      
+      <!-- 專案 03 -->
+      <div class="work-entry" data-img="img/project3-within.jpg" data-label="03 / ARCHITECTURE">
+        <div class="we-left-info">
+          <span class="we-meta-tag">003 · Rhino · AutoCAD · Blender</span>
+          <h3 class="we-title">WITHIN THE BLOCK</h3>
+        </div>
+        <span class="we-arrow">→</span>
+      </div>
+      
+      <!-- 專案 04 -->
+      <div class="work-entry" data-img="img/project4-warm.jpg" data-label="04 / INTERIOR">
+        <div class="we-left-info">
+          <span class="we-meta-tag">004 · Blender · Photoshop</span>
+          <h3 class="we-title">The Warm Living</h3>
+        </div>
+        <span class="we-arrow">→</span>
+      </div>
+
+      <!-- 專案 05 -->
+      <div class="work-entry" data-img="img/project5-forest.jpg" data-label="05 / 3D ENVIRONMENT">
+        <div class="we-left-info">
+          <span class="we-meta-tag">005 · Blender · AfterEffects</span>
+          <h3 class="we-title">Sculpture in the woods</h3>
+        </div>
+        <span class="we-arrow">→</span>
+      </div>
+
+      <!-- 專案 06 -->
+      <div class="work-entry" data-img="img/project6-urban.jpg" data-label="06 / ARCHITECTURE">
+        <div class="we-left-info">
+          <span class="we-meta-tag">006 · Rhino · Blender · Photoshop</span>
+          <h3 class="we-title">URBAN HIDEAWAY</h3>
+        </div>
+        <span class="we-arrow">→</span>
+      </div>
+
+      <!-- ⚡ 全新增加：專案 07 (用以完美拉長整體比例) -->
+      <div class="work-entry" data-img="img/project7-loft.jpg" data-label="07 / 3D ENVIRONMENT">
+        <div class="we-left-info">
+          <span class="we-meta-tag">007 · Blender · Photoshop · AfterEffect</span>
+          <h3 class="we-title">Echoes in the Attic</h3>
+        </div>
+        <span class="we-arrow">→</span>
+      </div>
+
+      <!-- 💡 精緻底部留白撐高器：迫使右側面板高度超過 100vh，確保百分之百能產生獨立滑動 -->
+      <div style="height: 25vh; pointer-events: none;"></div>
+
+    </div>
+  </div>
+</section>
+  <!-- SECTION 4: ABOUT -->
+<section id="about">
+  <!-- 左上與大名字區塊 -->
+  <div class="about-left sr">
+    <p class="about-section-label">About</p>
+    <!-- 將兩行名字拆開，利用 data-value 儲存最終要顯示的正確文字 -->
+    <h2 class="about-name-large">
+      <span class="decode-text" data-value="EMILY">EMILY</span><br>
+      <span class="decode-text" data-value="WANG">WANG</span>
+    </h2>
+  </div>
+  
+  <!-- 右下角區塊 -->
+<div class="about-right">
+  <p class="about-tagline">
+    Emily is a multidisciplinary designer working across spatial design, architecture, animation, and interactive digital environments. Her practice explores how 
+    
+    <!-- 被圈起來的關鍵字 1: narrative -->
+    <span class="sketch-highlight">
+      narrative
+      <svg class="sketch-circle" viewBox="0 0 100 100" preserveAspectRatio="none">
+        <path d="M4,48 C12,12 88,8 94,42 C97,82 18,96 10,58 C6,34 32,14 86,18" />
+      </svg>
+    </span> 
+    can be embedded within 
+    
+    <!-- 被圈起來的關鍵字 2: space -->
+    <span class="sketch-highlight">
+      space,
+      <svg class="sketch-circle" viewBox="0 0 100 100" preserveAspectRatio="none">
+        <path d="M8,42 C14,6 92,10 95,48 C92,88 15,92 6,54 C4,32 38,12 89,22" />
+      </svg>
+    </span> 
+    using tools such as real-time engines and 3D modelling to create immersive and experiential work.
+  </p>
+</div>
+</section>
+
+ <!-- SECTION 5: CONTACT -->
+<section id="contact">
+  <!-- 左上與大標題區塊 -->
+  <div class="contact-left sr">
+    <p class="contact-section-label">Contact</p>
+    <h2 class="contact-headline">
+      <span class="decode-text" data-value="GET IN">GET IN</span><br>
+      <span class="decode-text" data-value="TOUCH">TOUCH</span>
+    </h2>
+  </div>
+  
+  <!-- 右下角互動正圓按鈕區塊 -->
+  <div class="contact-right sr">
+    <div class="contact-info-block">
+      <!-- 三個按鈕水平並排的橫列 -->
+      <div class="contact-links-row">
+        
+        <!-- 1. Email 按鈕 (請把 href 換成你的信箱) -->
+        <a href="mailto:wangxinhui1010@gmail.com" class="capsule-btn">
+          <img src="img/contact-letter.png" alt="Email" class="capsule-icon" />
+          <div class="capsule-text-wrapper">
+            <span class="capsule-text">Email</span>
+          </div>
+        </a>
+        
+        <!-- 2. Instagram 按鈕 (請把 href 換成你的 IG 網址) -->
+        <a href="https://www.instagram.com/hsinnh__/" target="_blank" rel="noopener noreferrer" class="capsule-btn">
+          <img src="img/contact-photo.png" alt="Instagram" class="capsule-icon" />
+          <div class="capsule-text-wrapper">
+            <span class="capsule-text">@hsinnh__</span>
+          </div>
+        </a>
+        
+        <!-- 3. LinkedIn 按鈕 (請把 href 換成你的 LinkedIn 網址) -->
+        <a href="www.linkedin.com/in/emily-wang-4558962b3" target="_blank" rel="noopener noreferrer" class="capsule-btn">
+          <img src="img/contact-business.png" alt="LinkedIn" class="capsule-icon" />
+          <div class="capsule-text-wrapper">
+            <span class="capsule-text">LinkedIn</span>
+          </div>
+        </a>
+        
+      </div>
+    </div>
+  </div>
+
+  <!-- 最底部的 Footer -->
+  <div class="contact-footer">
+    <span>© 2026 Emily Wang</span>
+  </div>
+</section>
+
+</div>
+
+<!-- ═══════════════════════════════════════
+JAVASCRIPT
+════════════════════════════════════════ -->
+<script>
+/* ── 📱 手機版 RWD 智慧型載體判別 ── */
+const isMobile = () => window.innerWidth <= 900;
+
+/* ── 🍔 手機全螢幕高奢選單功能 ── */
+document.addEventListener("DOMContentLoaded", () => {
+  const nav = document.querySelector('nav');
+  if (nav && !document.querySelector('.mobile-menu-toggle')) {
+    // 1. 動態注入手機版漢堡按鈕 (三條線)
+    const toggleBtn = document.createElement('button');
+    toggleBtn.className = 'mobile-menu-toggle';
+    toggleBtn.innerHTML = '<span></span><span></span><span></span>';
+    nav.appendChild(toggleBtn);
+
+    // 2. 動態注入手機版全螢幕菜單盒
+    const fullMenu = document.createElement('div');
+    fullMenu.className = 'mobile-full-menu';
+    fullMenu.innerHTML = `
+      <ul class="mobile-nav-links">
+        <li><a href="#hero" data-target="hero">HOME</a></li>
+        <li><a href="#disciplines" data-target="disciplines">EXPERTISE</a></li>
+        <li><a href="#works" data-target="works">PROJECTS</a></li>
+        <li><a href="#about" data-target="about">ABOUT</a></li>
+        <li><a href="#contact" data-target="contact">CONTACT</a></li>
+      </ul>
+    `;
+    document.body.appendChild(fullMenu);
+
+    // 漢堡按鈕點擊開關
+    toggleBtn.addEventListener('click', () => {
+      toggleBtn.classList.toggle('active');
+      fullMenu.classList.toggle('active');
+    });
+
+    // 手機版選單點擊平滑滾動並關閉選單
+    fullMenu.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const targetId = link.getAttribute('data-target');
+        const targetSec = document.getElementById(targetId);
+        
+        toggleBtn.classList.remove('active');
+        fullMenu.classList.remove('active');
+
+        if (targetSec) {
+          const scrollObj = isMobile() ? window : document.querySelector('.scroll-container');
+          scrollObj.scrollTo({
+            top: targetSec.offsetTop,
+            behavior: 'smooth'
+          });
+        }
+      });
+    });
+  }
+});
+
+/* ── CURSOR SYSTEM (手機版自動停用以維護效能) ── */
+const dot = document.getElementById('cursor-dot');
+const ring = document.getElementById('cursor-ring');
+const textRing = document.getElementById('cursor-text-ring');
+let mx=0, my=0, rx=0, ry=0, trx=0, try_=0;
+
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  if (dot && !isMobile()) { dot.style.left = mx + 'px'; dot.style.top = my + 'px'; }
+});
+(function raf(){
+  rx += (mx - rx) * 0.1; ry += (my - ry) * 0.1;
+  trx += (mx - trx) * 0.07; try_ += (my - try_) * 0.07;
+  if (ring && !isMobile()) { ring.style.left = rx + 'px'; ring.style.top = ry + 'px'; }
+  if (textRing && !isMobile()) { textRing.style.left = trx + 'px'; textRing.style.top = try_ + 'px'; }
+  requestAnimationFrame(raf);
+})();
+
+document.querySelectorAll('.disc-item, .work-entry').forEach(el => {
+  el.addEventListener('mouseenter', () => { if(!isMobile()) document.body.classList.add('cursor-view'); });
+  el.addEventListener('mouseleave', () => { if(!isMobile()) document.body.classList.remove('cursor-view'); });
+});
+document.querySelectorAll('a, .about-skill-row').forEach(el => {
+  el.addEventListener('mouseenter', () => { if(!document.body.classList.contains('cursor-view') && ring && !isMobile()) ring.style.transform='translate(-50%,-50%) scale(2)'; });
+  el.addEventListener('mouseleave', () => { if(ring && !isMobile()) ring.style.transform='translate(-50%,-50%) scale(1)'; });
+});
+
+/* ── 🖱️ 專案卡片點擊跳轉系統 (電腦與手機全域通用) ── */
+document.querySelectorAll('.work-entry').forEach(entry => {
+  
+  // 設定滑鼠游標樣式（讓使用者知道這可以點擊）
+  entry.style.cursor = 'pointer';
+
+  entry.addEventListener('click', () => {
+    const targetUrl = entry.getAttribute('data-url');
+    
+    if (targetUrl) {
+      // 這裡可以加上高奢的離場動畫（如果未來有需要）
+      // 目前直接進行無縫秒速跳轉
+      window.location.href = targetUrl;
+    }
+  });
+});
+
+/* ── WORKS MENU PANEL (右側面板滾輪吸附安全鎖) ── */
+const menuPanel = document.querySelector('.works-menu-panel');
+const workEntries = document.querySelectorAll('.work-entry');
+
+if (menuPanel && workEntries.length > 0) {
+  let currentIndex = -1; 
+  let isAnimating = false; 
+
+  menuPanel.addEventListener('wheel', (e) => {
+    // 手機窄螢幕時放開攔截，讓右側面板走原生垂直滑動
+    if (isMobile()) return;
+
+    if (isAnimating) { e.preventDefault(); return; }
+    const direction = e.deltaY > 0 ? 1 : -1; 
+    if (direction === -1 && currentIndex === -1) return; 
+    if (direction === 1 && currentIndex === workEntries.length - 1) return; 
+
+    e.preventDefault();
+    currentIndex += direction;
+    if (currentIndex < -1) currentIndex = -1;
+    if (currentIndex > workEntries.length - 1) currentIndex = workEntries.length - 1;
+
+    isAnimating = true;
+    let targetScrollTop = 0;
+    if (currentIndex === -1) {
+      targetScrollTop = 0;
+    } else {
+      const targetEntry = workEntries[currentIndex];
+      targetScrollTop = targetEntry.offsetTop - menuPanel.clientHeight * 0.25;
+    }
+
+    menuPanel.scrollTo({ top: targetScrollTop, behavior: 'smooth' });
+
+    if (currentIndex >= 0) {
+      const activeEntry = workEntries[currentIndex];
+      const imgPath = activeEntry.getAttribute('data-img');
+      const labelText = activeEntry.getAttribute('data-label');
+      const displayImg = document.getElementById('worksDisplayImg');
+      const displayLabel = document.getElementById('stickyLabel');
+      
+      if (displayImg && imgPath) displayImg.src = imgPath;
+      if (displayLabel && labelText) displayLabel.innerHTML = labelText;
+    }
+    setTimeout(() => { isAnimating = false; }, 600);
+  }, { passive: false });
+
+  workEntries.forEach((entry, index) => {
+    entry.addEventListener('mouseenter', () => { if(!isMobile()) currentIndex = index; });
+  });
+}
+
+/* ── INTERSECTION OBSERVER (主題色彩切換與影片倒帶) ── */
+const container = document.querySelector('.scroll-container');
+const sections = document.querySelectorAll('section');
+
+const observerOptions = {
+  root: isMobile() ? null : container,
+  threshold: isMobile() ? 0.2 : 0.35 
+};
+
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      // A. 主題黑白色彩切換
+      if (entry.target.id === 'disciplines' || entry.target.id === 'about') {
+        document.body.classList.add('light-bg');
+      } else {
+        document.body.classList.remove('light-bg');
+      }
+      
+      // B. 每次滑入 Section 2 (Disciplines) 時，左上角影片秒速歸零並重播一次
+      if (entry.target.id === 'disciplines') {
+        const titleVid = document.getElementById('discTitleVid');
+        if (titleVid) {
+          titleVid.pause(); titleVid.currentTime = 0;
+          setTimeout(() => { titleVid.play().catch(err => {}); }, 50);
+        }
+      }
+
+      entry.target.querySelectorAll('.sr').forEach(el => el.classList.add('in'));
+    } else {
+      if (entry.target.id === 'disciplines') {
+        const titleVid = document.getElementById('discTitleVid');
+        if (titleVid) { titleVid.pause(); titleVid.currentTime = 0; }
+      }
+    }
+  });
+}, observerOptions);
+
+sections.forEach(sec => observer.observe(sec));
+
+/* ── HERO DRIFT EFFECT & CONSTANT LOGO SCROLL (智慧分流監聽) ── */
+function handleGlobalScroll(scrollTop) {
+  const heroHeight = window.innerHeight;
+  const heroTitle = document.getElementById('heroTitle');
+  if (heroTitle) {
+    if (scrollTop > 50) { heroTitle.classList.add('scrolled'); } 
+    else { heroTitle.classList.remove('scrolled'); }
+  }
+  if (scrollTop < heroHeight) {
+    if (document.getElementById('heroBg'))    document.getElementById('heroBg').style.transform    = `translateY(${scrollTop * 0.1}px)`;
+    if (document.getElementById('hcTL'))      document.getElementById('hcTL').style.transform      = `translate(${-scrollTop*0.4}px, ${-scrollTop*0.4}px)`;
+    if (document.getElementById('hcTR'))      document.getElementById('hcTR').style.transform      = `translate(${scrollTop*0.4}px, ${-scrollTop*0.4}px)`;
+    if (document.getElementById('hcBL'))      document.getElementById('hcBL').style.transform      = `translate(${-scrollTop*0.4}px, ${scrollTop*0.4}px)`;
+  }
+}
+
+if (container) {
+  container.addEventListener('scroll', () => { if (!isMobile()) handleGlobalScroll(container.scrollTop); });
+}
+window.addEventListener('scroll', () => { if (isMobile()) handleGlobalScroll(window.scrollY); });
+
+/* ── WORKS INTERACTIVE CANVAS & TEXT SCRAMBLE EFFECT ── */
+const CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_@#$%-+=*&<>[]{}";
+
+document.querySelectorAll('.work-entry').forEach(entry => {
+  const titleElement = entry.querySelector('.we-title');
+  if (!titleElement) return;
+  const originalTitle = titleElement.innerText;
+  const projectLabel = entry.getAttribute('data-label') || ""; 
+  let intervalId = null;
+
+  // 預先為手機版瀑布流載入圖片路徑
+  const imgPath = entry.getAttribute('data-img');
+  const mobImg = entry.querySelector('.mobile-entry-img');
+  if (mobImg && imgPath) mobImg.src = imgPath;
+
+  entry.addEventListener('mouseenter', () => {
+    if (isMobile()) return; // 手機版跳過 Hover 監聽
+    const imgSrc = entry.getAttribute('data-img');
+    const displayImg = document.getElementById('worksDisplayImg');
+    const stickyLabel = document.getElementById('stickyLabel');
+    
+    if (displayImg) {
+      displayImg.style.opacity = '0.3'; 
+      setTimeout(() => { displayImg.src = imgSrc; displayImg.style.opacity = '1'; }, 120);
+    }
+    if (stickyLabel) stickyLabel.innerText = projectLabel;
+
+    let iteration = 0;
+    clearInterval(intervalId);
+    intervalId = setInterval(() => {
+      titleElement.innerText = originalTitle
+        .split("")
+        .map((letter, index) => {
+          if (index < iteration) return originalTitle[index];
+          if (letter === " ") return " ";
+          return CHARS[Math.floor(Math.random() * CHARS.length)];
+        })
+        .join("");
+      iteration += 1 / 2.5; 
+      if (iteration >= originalTitle.length) { clearInterval(intervalId); titleElement.innerText = originalTitle; }
+    }, 25);
+
+    const cursorTextPath = document.querySelector('#cursor-text-ring textPath');
+    if (cursorTextPath && projectLabel) {
+      let labelIteration = 0;
+      clearInterval(entry.labelInterval);
+      entry.labelInterval = setInterval(() => {
+        cursorTextPath.textContent = projectLabel
+          .split("")
+          .map((letter, index) => {
+            if (index < labelIteration) return projectLabel[index];
+            if (letter === " " || letter === "/") return letter;
+            return CHARS[Math.floor(Math.random() * CHARS.length)];
+          })
+          .join("") + " · ";
+        labelIteration += 1;
+        if (labelIteration >= projectLabel.length) {
+          clearInterval(entry.labelInterval);
+          cursorTextPath.textContent = `${projectLabel} · ${projectLabel} · `;
+        }
+      }, 30);
+    }
+  });
+
+  entry.addEventListener('mouseleave', () => {
+    if (isMobile()) return;
+    clearInterval(intervalId);
+    clearInterval(entry.labelInterval);
+    titleElement.innerText = originalTitle;
+    const cursorTextPath = document.querySelector('#cursor-text-ring textPath');
+    if (cursorTextPath) { cursorTextPath.textContent = "VIEW · VIEW · VIEW · VIEW · "; }
+  });
+});
+
+/* ── 💻 電腦版 NAV LINKS 點擊平滑滾動 ── */
+document.querySelectorAll('.nav-links a, .nav-logo').forEach(link => {
+  link.addEventListener('click', e => {
+    if (isMobile()) return; // 手機版交給上方的專屬選單控制
+    e.preventDefault();
+    const targetId = link.getAttribute('href');
+    if (!targetId || targetId === '#') return;
+    const targetSec = document.querySelector(targetId);
+    if (targetSec && container) {
+      container.scrollTo({ top: targetSec.offsetTop, behavior: 'smooth' });
+    }
+  });
+});
+
+/* ── 📝 ABOUT & CONTACT 專屬黑客亂碼與手繪圈選動畫 (相容 RWD 核心) ── */
+document.addEventListener("DOMContentLoaded", () => {
+  const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ/*-+_@&$#%!=";
+  const decodeSections = document.querySelectorAll("#about, #contact");
+  const sketchHighlights = document.querySelectorAll(".sketch-highlight");
+
+  const startDecodeAnimation = (element) => {
+    let iteration = 0;
+    const originalValue = element.dataset.value;
+    if (!originalValue) return; 
+    
+    clearInterval(element.screenInterval);
+    element.screenInterval = setInterval(() => {
+      element.innerText = originalValue
+        .split("")
+        .map((letter, index) => {
+          if (index < iteration) return originalValue[index];
+          if (letter === " ") return " ";
+          return letters[Math.floor(Math.random() * letters.length)];
+        })
+        .join("");
+
+      if (iteration >= originalValue.length) clearInterval(element.screenInterval);
+      iteration += 1 / 3; 
+    }, 30);
+  };
+
+  const decodeObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          // 觸發黑客解碼效果
+          const currentTargets = entry.target.querySelectorAll(".decode-text");
+          currentTargets.forEach((target) => startDecodeAnimation(target));
+          
+          // 觸發 About 手繪線條劃線圈選效果
+          if (entry.target.id === "about") {
+            setTimeout(() => {
+              sketchHighlights.forEach((highlight) => { highlight.classList.add("active"); });
+            }, 400);
+          }
+        } else {
+          if (entry.target.id === "about") {
+            sketchHighlights.forEach((highlight) => { highlight.classList.remove("active"); });
+          }
+        }
+      });
+    },
+    // 關鍵修復：手機版時將監聽根節點設為 null (代表瀏覽器 window 視窗)
+    { root: isMobile() ? null : container, threshold: isMobile() ? 0.1 : 0.15 }
+  );
+
+  decodeSections.forEach((sec) => {
+    if (sec) decodeObserver.observe(sec);
+  });
+});
+
+/* ── 防範裝置縮放重新整理安全鎖 ── */
+window.addEventListener('resize', () => {
+  if (window.innerWidth > 900 && !container.hasAttribute('data-desktop')) {
+    location.reload();
+  }
+});
+
+/* ── 📱 手機版 IG 限動式橫向滑動進度條聯動 ── */
+document.addEventListener("DOMContentLoaded", () => {
+  const mobileScrollContainer = document.querySelector('.works-menu-panel');
+  const progressLines = document.querySelectorAll('.progress-line');
+  const mobileEntries = document.querySelectorAll('#works .work-entry');
+
+  if (mobileScrollContainer && progressLines.length > 0 && isMobile()) {
+    
+    // 使用高效的 Scroll 監聽配合節流或算術計算當前頁數
+    mobileScrollContainer.addEventListener('scroll', () => {
+      const width = mobileScrollContainer.clientWidth;
+      const scrollLeft = mobileScrollContainer.scrollLeft;
+      
+      // 計算當前滑到第幾個作品 (四捨五入求出最接近的 index)
+      const currentIndex = Math.round(scrollLeft / width);
+      
+      // 更新進度條狀態
+      progressLines.forEach((line, idx) => {
+        if (idx === currentIndex) {
+          line.classList.add('active');
+        } else {
+          line.classList.remove('active');
+        }
+      });
+    }, { passive: true });
+    
+    // 解決手動滑動時，文字亂碼效果也想要在手機版觸發的小彩蛋
+    let lastIndex = 0;
+    mobileScrollContainer.addEventListener('scroll', () => {
+      const width = mobileScrollContainer.clientWidth;
+      const currentIndex = Math.round(mobileScrollContainer.scrollLeft / width);
+      
+      if (currentIndex !== lastIndex && mobileEntries[currentIndex]) {
+        lastIndex = currentIndex;
+        const titleEl = mobileEntries[currentIndex].querySelector('.we-title');
+        if (titleEl && !titleEl.dataset.animating) {
+          // 可以在這裡觸發你電腦版原有的 Text Scramble 效果！
+          const originalText = titleEl.innerText;
+          let iter = 0;
+          titleEl.dataset.animating = "true";
+          const scrId = setInterval(() => {
+            titleEl.innerText = originalText.split("").map((l, i) => {
+              if (i < iter) return originalText[i];
+              if (l === " ") return " ";
+              return "ABCDEFGHIJKLMNOPQRSTUVWXYZ"[Math.floor(Math.random()*26)];
+            }).join("");
+            iter += 1;
+            if (iter >= originalText.length) {
+              clearInterval(scrId);
+              titleEl.innerText = originalText;
+              delete titleEl.dataset.animating;
+            }
+          }, 30);
+        }
+      }
+    }, { passive: true });
+  }
+});
+</script>
+</body>
+</html>

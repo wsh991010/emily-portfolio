@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>作品集測試</title>
+  <style>
+    /* 全域基礎設定 */
+    body {
+      margin: 0;
+      background-color: #0a0a0a;
+      font-family: sans-serif;
+    }
+
+    .portfolio-list-wrapper {
+      padding: 50px 0;
+      width: 100%;
+    }
+
+    /* ===================================================
+       1. CSS 樣式：處理版面比例與左透右黑漸層
+       =================================================== */
+    
+    /* 每個作品項目的容器 */
+    .project-item-container {
+      display: flex;
+      position: relative;
+      width: 100%;
+      height: 500px; /* 可依需求調整高度 */
+      overflow: hidden;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      background-color: #0a0a0a;
+      cursor: pointer;
+    }
+
+    /* 圖片區域擴大：給予渲染圖 65% 的大空間 */
+    .image-display-zone {
+      flex: 0 0 65%;
+      position: relative;
+      height: 100%;
+    }
+
+    .project-image-wrapper {
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      transform: scale(0.98);
+      /* 控制圖片出現時的平滑（Smooth）過渡 */
+      transition: opacity 0.6s cubic-bezier(0.25, 1, 0.5, 1), 
+                  transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    /* 當滑鼠 hover 容器時，動態加上這個 class 讓圖片顯現 */
+    .project-image-wrapper.visible {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .render-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* 文字互動區：佔據 35% 寬度，文字靠右 */
+    .text-interaction-zone {
+      flex: 0 0 35%;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 5%;
+      position: relative;
+      z-index: 10;
+      
+      /* 高級感：左透明、右黑色的漸層背景 */
+      background: linear-gradient(
+        to right, 
+        rgba(10, 10, 10, 0) 0%, 
+        rgba(10, 10, 10, 0.5) 30%, 
+        rgba(10, 10, 10, 0.95) 100%
+      );
+    }
+
+    /* 白色文字：強烈建議使用等寬字型（Monospace），亂碼變換時才不會發抖 */
+    .project-title {
+      color: #ffffff;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 2.5rem;
+      font-weight: 300;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      white-space: nowrap;
+      pointer-events: none; /* 防止滑鼠卡在文字上干擾 hover 事件 */
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 作品集列表區塊 -->
+  <div class="portfolio-list-wrapper">
+    
+    <!-- 作品 1 (你可以複製這個結構，總共放 10 個) -->
+    <!-- data-title 放原始文字，用來給 JavaScript 讀取做亂碼動畫 -->
+    <div class="project-item-container" data-title="Holloway Memorial">
+      <div class="image-display-zone">
+        <div class="project-image-wrapper">
+          <img src="https://picsum.photos/1200/800?random=1" alt="Project 1" class="render-image">
+        </div>
+      </div>
+      <div class="text-interaction-zone">
+        <h2 class="project-title">Holloway Memorial</h2>
+      </div>
+    </div>
+
+    <!-- 作品 2 -->
+    <div class="project-item-container" data-title="Taipei Community Center">
+      <div class="image-display-zone">
+        <div class="project-image-wrapper">
+          <img src="https://picsum.photos/1200/800?random=2" alt="Project 2" class="render-image">
+        </div>
+      </div>
+      <div class="text-interaction-zone">
+        <h2 class="project-title">Taipei Community Center</h2>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ===================================================
+       2. JavaScript 腳本：處理滑鼠 Hover 時的圖片控制與文字亂碼解碼
+       =================================================== -->
+  <script>
+    const CHARS = "ABCDEFGDHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%&";
+
+    // 抓取頁面上所有的作品項目
+    document.querySelectorAll('.project-item-container').forEach(item => {
+      const titleElement = item.querySelector('.project-title');
+      const imageWrapper = item.querySelector('.project-image-wrapper');
+      const originalTitle = item.getAttribute('data-title');
+      
+      let intervalId = null;
+
+      // 當滑鼠移入時 (Hover)
+      item.addEventListener('mouseenter', () => {
+        // 1. 讓圖片顯示
+        imageWrapper.classList.add('visible');
+
+        // 2. 觸發文字亂碼漸進效果
+        let iteration = 0;
+        clearInterval(intervalId);
+
+        intervalId = setInterval(() => {
+          titleElement.innerText = originalTitle
+            .split("")
+            .map((letter, index) => {
+              // 由左至右逐步解碼
+              if (index < iteration) {
+                return originalTitle[index];
+              }
+              if (letter === " ") return " "; // 保持空格，避免排版跳動
+              return CHARS[Math.floor(Math.random() * CHARS.length)];
+            })
+            .join("");
+
+          iteration += 1 / 3; // 控制解碼速度，數值越小解碼越慢、越細緻
+
+          if (iteration >= originalTitle.length) {
+            clearInterval(intervalId);
+            titleElement.innerText = originalTitle;
+          }
+        }, 30); // 每 30 毫秒變換一次亂碼，極致流暢
+      });
+
+      // 當滑鼠移出時 (Leave)
+      item.addEventListener('mouseleave', () => {
+        // 1. 隱藏圖片
+        imageWrapper.classList.remove('visible');
+
+        // 2. 停止動畫並立刻還原文字
+        clearInterval(intervalId);
+        titleElement.innerText = originalTitle;
+      });
+    });
+  </script>
+</body>
+</html>
