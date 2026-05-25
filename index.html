@@ -523,251 +523,11 @@ body.light-bg .hero-title-wrap.scrolled { color: var(--black); }
 
 
 /* ═════════════════════════════════════════════════════════
-   📱 PREMIUM MOBILE RESPONSIVE (手機窄螢幕終極完美覆蓋)
-═════════════════════════════════════════════════════════ */
-@media (max-width: 900px) {
-  /* ⚡ 1. 解放最頂層滾動，並啟用手機原生 Scroll Snap 吸附 */
-  html, body {
-    overflow-y: scroll !important;
-    overflow-x: hidden !important;
-    height: 100% !important;
-    scroll-snap-type: y mandatory !important; /* 讓頂層 body 執行手機吸附 */
-    cursor: default !important;
-  }
-  
-  /* 解除原本大容器的滾動，因為權限轉移給 body 了 */
-  .scroll-container { 
-    scroll-snap-type: none !important; 
-    height: auto !important; 
-    overflow-y: visible !important; 
-    overflow-x: hidden !important;
-  }
-  
-  /* 每個 Section 在手機版依舊完美鎖定一螢幕，並參與吸附 */
-  section { 
-    height: 100vh !important; 
-    scroll-snap-align: start !important; 
-    scroll-snap-stop: always !important;
-    overflow: hidden !important;
-  }
-
-  /* ⚡ 2. 導覽列：喚醒手機版漢堡按鈕 */
-  nav { padding: 1.5rem; mix-blend-mode: difference; }
-  .nav-links { display: none; }
-  .mobile-menu-toggle { display: flex; } /* 顯示三條線 */
-
-  /* ⚡ 3. HERO 頁面排版優化：找回奢華呼吸感 */
-  .hero-title-wrap { 
-    position: absolute !important; /* 解除電腦版的 fixed 縮放 */
-    right: 1.5rem !important; 
-    bottom: 5rem !important; 
-    padding: 0; 
-    text-align: right; 
-  }
-  .hero-title-wrap.scrolled { transform: none !important; }
-  .hero-corner.tl { top: 6rem; left: 1.5rem; }
-  .hero-corner.tr { top: 6rem; right: 1.5rem; }
-  .hero-corner.bl { bottom: 5rem; left: 1.5rem; }
-.hero-sub { display: none !important; }
-  /* ⚡ 4. SECTION 2 — DISCIPLINES 手機版 */
-  #disciplines { 
-    padding: 0 !important; 
-  }
-.disc-title-video {
-  top: 5.5rem !important;
-  left: auto !important;
-  right: 1.5rem !important;
-  width: 130px !important;
-  z-index: 10 !important;
-}
-  .disc-list { 
-    position: absolute !important;
-    top: 50% !important;
-  max-height: 70vh !important;
-  overflow-y: auto !important; left: 50% !important;
-    transform: translate(-50%, -50%) !important;
-    grid-template-columns: 1fr !important; /* 單欄直排 */
-    width: 88% !important; max-width: 100% !important;
-    margin-top: 0 !important;
-  }
-  .disc-item { padding: 1.5rem 1rem !important; border-right: none !important; border-bottom: 1px solid rgba(10,10,10,0.12) !important; }
-  .disc-item:last-child { border-bottom: none !important; }
-  .disc-desc { max-width: 100% !important; font-size: 0.68rem !important; }
-  .disc-isolated-video { right: 0.5rem !important; bottom: 0.5rem !important; width: 140px !important; height: 140px !important; opacity: 0.3 !important; }
-
-  /* ⚡ 5. SECTION 3 — WORKS 手機版重組（高級藝廊畫布流） */
- @media (max-width: 900px) {
-  /* 讓整個 Section 3 變成一個不能上下溢出的全螢幕視窗 */
-  #works {
-    position: relative !important;
-    width: 100vw !important;
-    height: 100vh !important;
-    height: 100dvh !important; /* 確保消除手機瀏覽器工具列的網頁高度抖動 */
-    overflow: hidden !important;
-    background: #000 !important; /* 核心底色 */
-    scroll-snap-align: start; /* 網頁上下滑動時咬住 Section 3 */
-  }
-.works-canvas { display: none !important; }
-  /* ⚡ 頂部七格細線進度條容器 */
-  .works-progress-bar {
-    display: flex !important;
-    position: absolute;
-    top: 15px; /* 貼近頂部，像 IG 一樣 */
-    left: 15px;
-    right: 15px;
-    gap: 6px; /* 線條之間的間距 */
-    z-index: 100 !important; /* 絕對最上層 */
-    pointer-events: none; /* 防止干擾觸控 */
-  }
-
-  /* 每條單獨的細線 */
-  .progress-line {
-    flex: 1;
-    height: 2px; /* 細細的線 */
-    background: rgba(255, 255, 255, 0.25); /* 未活化時透明度較低 */
-    transition: background 0.3s ease, opacity 0.3s ease;
-    border-radius: 2px;
-  }
-
-  /* 當前滑到的作品線條變亮白色 */
-  .progress-line.active {
-    background: rgba(255, 255, 255, 1) !important;
-    box-shadow: 0 0 4px rgba(255, 255, 255, 0.5);
-  }
-
-  /* 改造作品面板：轉化為橫向滑動軌道（核心絲滑關鍵） */
-  .works-menu-panel {
-    display: flex !important;
-    flex-direction: row !important; /* 強制橫向排列 */
-    width: 100vw !important;
-    height: 100vh !important;
-    height: 100dvh !important;
-    margin-left: 0 !important;
-    padding: 0 !important;
-    overflow-x: auto !important; /* 開啟橫向滑動 */
-    overflow-y: hidden !important; /* 鎖死垂直滑動 */
-    scroll-linecap: round;
-    
-    /* 🔥 CSS 原生硬體加速滑動吸附 */
-    scroll-snap-type: x mandatory !important; 
-    -webkit-overflow-scrolling: touch !important; /* iOS 絲滑滾動 */
-    border-left: none !important;
-    z-index: 5 !important;
-  }
-  
-  /* 隱藏手機版橫向滾動條 */
-  .works-menu-panel::-webkit-scrollbar {
-    display: none !important;
-  }
-
-  /* 隱藏電腦版的標題，把舞台完整留給全螢幕作品 */
-  .works-panel-title { display: none !important; }
-
-  /* ⚡ 每個作品強制定義為滿版全螢幕卡片 */
-  .work-entry {
-    flex: 0 0 100vw !important; /* 每個專案剛好佔滿一整個螢幕寬度 */
-    width: 100vw !important;
-    height: 100vh !important;
-    height: 100dvh !important;
-    position: relative !important;
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: flex-end !important; /* 文字留在最下方 */
-    padding: 3.5rem 2rem !important; /* 留白，防止被手機底部的系統條擋到 */
-    box-sizing: border-box !important;
-    
-    /* 強制每次滑動完都精準鎖定在螢幕正中央 */
-    scroll-snap-align: center !important;
-    scroll-snap-stop: always !important;
-  }
-
-  /* ⚡ 獨立作品渲染圖全螢幕背景（取代原本的 img 標籤） */
-  .work-entry-bg {
-    position: absolute !important;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background-size: cover !important;
-    background-position: center !important;
-    background-repeat: no-repeat !important;
-    z-index: 1 !important;
-  }
-
-  /* 為每張滿版渲染圖加上奢華暗色遮罩，確保白色字體絕對清晰 */
-  .work-entry-bg::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.4) 100%) !important;
-    z-index: 2;
-  }
-
-  /* ⚡ 作品文字排版（包含作品名、編號與標籤） */
-  .work-mobile-meta {
-    position: relative !important;
-    z-index: 3 !important; /* 浮在遮罩之上 */
-    width: 100% !important;
-    transform: translateY(0);
-    animation: fadeUpMeta 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
-  }
-.work-entry .we-left-info {
-  position: relative !important;
-  z-index: 10 !important;
-}
-.work-entry .we-arrow {
-  display: none !important;
-}
-  .work-entry .we-num {
-    font-family: var(--font-mono, monospace);
-    font-size: 0.9rem !important;
-    color: rgba(255, 255, 255, 0.6) !important;
-    display: block !important;
-    margin-bottom: 0.5rem;
-  }
-
-  .work-entry .we-title {
-    font-size: 1rem !important; /* 大氣的專案名稱 */
-    color: #fff !important;
-    margin: 0 0 0.5rem 0 !important;
-    text-transform: uppercase;
-    letter-spacing: 0px;
-  }
-
-  .work-entry .we-tag {
-    font-size: 0.85rem !important;
-    color: rgba(255, 255, 255, 0.5) !important;
-    margin: 0 !important;
-  }
-
-  /* 隱藏不需要的手機版元素 */
-  .mobile-entry-img, .we-arrow { display: none !important; }
-  .work-entry:hover { padding-left: 2rem !important; } /* 解除電腦版 Hover 位移 */
-}
-
-/* 作品進場微動效 */
-@keyframes fadeUpMeta {
-  from { opacity: 0; transform: translateY(15px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-  /* ⚡ 6. SECTION 4 — ABOUT 手機版 */
-  #about { padding: 6rem 1.5rem 4rem 1.5rem !important; justify-content: center !important; gap: 2rem !important; }
-  .about-section-label { margin-bottom: 1.5rem !important; }
-  .about-name-large { font-size: 3.2rem !important; text-align: left; width: 100%; }
-  .about-right { margin-top: 1rem !important; justify-content: flex-start !important; }
-  .about-tagline { max-width: 100% !important; font-size: 0.82rem !important; }
-
-  /* ⚡ 7. SECTION 5 — CONTACT 手機版 */
-  #contact { padding: 6rem 1.5rem 4rem 1.5rem !important; justify-content: center !important; gap: 2rem !important; }
-  .contact-section-label { margin-bottom: 1.5rem !important; }
-  .contact-headline { font-size: 3.2rem !important; }
-  .contact-right { margin-top: 1rem !important; margin-bottom: 2rem !important; justify-content: flex-start !important; }
-  .contact-links-row { justify-content: flex-start !important; gap: 1rem !important; }
-  .contact-footer { position: relative !important; left: auto !important; right: auto !important; bottom: auto !important; flex-direction: column !important; gap: 0.8rem !important; text-align: left !important; margin-top: 2rem !important; }
-}
-
-/* ═════════════════════════════════════════════════════════
-   📱 手機版獨立外殼吸附補丁（保證絕對不外洩、不干擾電腦版）
+   📱 PREMIUM MOBILE RESPONSIVE (手機窄螢幕終極完美覆蓋 - 終極修復版)
 ═════════════════════════════════════════════════════════ */
 @media screen and (max-width: 900px) {
+  
+  /* ⚡ 1. 核心外殼吸附：全面對齊 Holloway 絲滑配方 */
   html, body {
     overflow: hidden !important; 
     height: 100% !important;
@@ -788,8 +548,150 @@ body.light-bg .hero-title-wrap.scrolled { color: var(--black); }
     scroll-snap-align: start !important; 
     scroll-snap-stop: always !important;
     overflow: hidden !important;
+    background: var(--black);
   }
-} /* <--- 這裡有確實閉合，絕對不會影響到任何電腦版排版！ */
+
+  /* ⚡ 2. 導覽列 */
+  nav { padding: 1.5rem; mix-blend-mode: difference; }
+  .nav-links { display: none !important; }
+  .mobile-menu-toggle { display: flex !important; }
+
+  /* ⚡ 3. HERO 頁面排版優化 */
+  .hero-title-wrap { 
+    position: absolute !important; 
+    right: 1.5rem !important; 
+    bottom: 5rem !important; 
+    padding: 0; 
+    text-align: right; 
+  }
+  .hero-title-wrap.scrolled { transform: none !important; }
+  .hero-corner.tl { top: 6rem; left: 1.5rem; }
+  .hero-corner.tr { top: 6rem; right: 1.5rem; }
+  .hero-corner.bl { bottom: 5rem; left: 1.5rem; }
+  .hero-sub { display: none !important; }
+
+  /* ⚡ 4. SECTION 2 — DISCIPLINES 手機版 */
+  #disciplines { padding: 0 !important; }
+  .disc-title-video {
+    top: 5.5rem !important; left: auto !important; right: 1.5rem !important;
+    width: 130px !important; z-index: 10 !important;
+  }
+  .disc-list { 
+    position: absolute !important;
+    top: 50% !important; left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    grid-template-columns: 1fr !important; 
+    width: 88% !important; max-width: 100% !important;
+    max-height: 70vh !important; overflow-y: auto !important;
+    margin-top: 0 !important;
+  }
+  .disc-item { padding: 1.5rem 1rem !important; border-right: none !important; border-bottom: 1px solid rgba(10,10,10,0.12) !important; }
+  .disc-item:last-child { border-bottom: none !important; }
+  .disc-desc { max-width: 100% !important; font-size: 0.68rem !important; }
+  .disc-isolated-video { right: 0.5rem !important; bottom: 0.5rem !important; width: 140px !important; height: 140px !important; opacity: 0.3 !important; }
+
+  /* ⚡ 5. SECTION 3 — WORKS 手機版高級藝廊畫布流 */
+  #works {
+    position: relative !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    height: 100dvh !important; 
+    overflow: hidden !important;
+    background: #000000 !important; 
+  }
+  
+  /* 隱藏電腦版的左側畫布，改由手機版獨立背景接管 */
+  .works-canvas { display: none !important; }
+
+  /* 頂部 IG 質感細線進度條 */
+  .works-progress-bar {
+    display: flex !important;
+    position: absolute; top: 15px; left: 15px; right: 15px; gap: 6px; 
+    z-index: 100 !important; pointer-events: none; 
+  }
+  .progress-line {
+    flex: 1; height: 2px; background: rgba(255, 255, 255, 0.25); 
+    transition: background 0.3s ease, opacity 0.3s ease; border-radius: 2px;
+  }
+  .progress-line.active {
+    background: rgba(255, 255, 255, 1) !important;
+    box-shadow: 0 0 4px rgba(255, 255, 255, 0.5);
+  }
+
+  /* 解鎖橫向滑動軌道（Holloway 同款硬體加速） */
+  .works-menu-panel {
+    display: flex !important;
+    flex-direction: row !important; 
+    width: 100vw !important; height: 100vh !important; height: 100dvh !important;
+    margin-left: 0 !important; padding: 0 !important;
+    overflow-x: auto !important; overflow-y: hidden !important; 
+    scroll-snap-type: x mandatory !important; 
+    -webkit-overflow-scrolling: touch !important; 
+    border-left: none !important; z-index: 5 !important;
+  }
+  .works-menu-panel::-webkit-scrollbar { display: none !important; }
+  .works-panel-title { display: none !important; }
+  .works-list-group { display: flex !important; flex-direction: row !important; gap: 0 !important; padding-bottom: 0 !important; width: max-content; height: 100%; }
+
+  /* 滿版全螢幕卡片 */
+  .work-entry {
+    flex: 0 0 100vw !important; width: 100vw !important;
+    height: 100vh !important; height: 100dvh !important;
+    position: relative !important; display: flex !important;
+    flex-direction: column !important; justify-content: flex-end !important; 
+    padding: 4.5rem 2rem !important; box-sizing: border-box !important;
+    scroll-snap-align: center !important; scroll-snap-stop: always !important;
+    background: transparent !important; border-bottom: none !important;
+  }
+
+  /* 💡 核心修復：強制讓原本沒作用的 work-entry-bg 撐開，並吃滿圖片 */
+  .work-entry-bg {
+    display: block !important;
+    position: absolute !important; inset: 0 !important;
+    width: 100% !important; height: 100% !important;
+    background-size: cover !important; background-position: center !important;
+    background-repeat: no-repeat !important; z-index: 1 !important;
+  }
+  .work-entry-bg::before {
+    content: '' !important; position: absolute !important; inset: 0 !important;
+    background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.4) 100%) !important;
+    z-index: 2 !important;
+  }
+
+  /* 作品文字排版 */
+  .work-mobile-meta {
+    position: relative !important; z-index: 10 !important; 
+    width: 100% !important; transform: translateY(0);
+    animation: fadeUpMeta 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .work-entry .we-left-info { position: relative !important; z-index: 10 !important; }
+  .work-entry .we-num { font-family: var(--font-mono, monospace); font-size: 0.9rem !important; color: rgba(255, 255, 255, 0.6) !important; display: block !important; margin-bottom: 0.5rem; }
+  .work-entry .we-title { font-size: 1.1rem !important; color: #ffffff !important; margin: 0 0 0.5rem 0 !important; text-transform: uppercase; letter-spacing: 0.05em; }
+  .work-entry .we-tag { font-size: 0.8rem !important; color: rgba(255, 255, 255, 0.5) !important; margin: 0 !important; }
+
+  .mobile-entry-img, .work-entry .we-arrow { display: none !important; }
+  .work-entry:hover { padding-left: 2rem !important; } 
+
+  /* ⚡ 6. SECTION 4 — ABOUT 手機版 */
+  #about { padding: 6rem 1.5rem 4rem 1.5rem !important; justify-content: center !important; gap: 2rem !important; }
+  .about-section-label { margin-bottom: 1.5rem !important; }
+  .about-name-large { font-size: 3.2rem !important; text-align: left; width: 100%; }
+  .about-right { margin-top: 1rem !important; justify-content: flex-start !important; }
+  .about-tagline { max-width: 100% !important; font-size: 0.82rem !important; }
+
+  /* ⚡ 7. SECTION 5 — CONTACT 手機版 */
+  #contact { padding: 6rem 1.5rem 4rem 1.5rem !important; justify-content: center !important; gap: 2rem !important; }
+  .contact-section-label { margin-bottom: 1.5rem !important; }
+  .contact-headline { font-size: 3.2rem !important; }
+  .contact-right { margin-top: 1rem !important; margin-bottom: 2rem !important; justify-content: flex-start !important; }
+  .contact-links-row { justify-content: flex-start !important; gap: 1rem !important; }
+  .contact-footer { position: relative !important; left: auto !important; right: auto !important; bottom: auto !important; flex-direction: column !important; gap: 0.8rem !important; text-align: left !important; margin-top: 2rem !important; }
+}
+
+@keyframes fadeUpMeta {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 </style>
 </head>
 <body>
