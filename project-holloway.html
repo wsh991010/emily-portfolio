@@ -514,7 +514,7 @@ nav {
     grid-template-columns: 1fr;
   }
   .process-left {
-    padding: 6rem 3rem;
+    padding: 3rem 1.5rem 2rem;
     border-right: none;
     border-bottom: 1px solid rgba(10,10,10,0.06);
     gap: 3rem;
@@ -812,10 +812,51 @@ nav {
 
 /* 📱 RWD 手機版保持安全疊放 */
 @media (max-width: 900px) {
-  .s6-layer-stack { flex-direction: column; justify-content: flex-start; }
-  .stack-stage { width: 100vw; height: 50vh; padding-top: 4rem; }
-  .stack-card { width: 80%; }
-  .stack-info { width: 100vw; height: auto; padding: 2rem; }
+  /* S6 整體：直排，文字置中 */
+  #proj-reflection-combined { overflow-y: auto; }
+  
+  .s6-layer-lead { justify-content: center; }
+  .lead-content-left { 
+    padding-left: 1.5rem; 
+    padding-right: 1.5rem;
+    align-items: center; 
+    text-align: center; 
+  }
+  
+  /* Stack 手機版強制顯示，不依賴 JS 的兩幕切換 */
+  .s6-layer-stack { 
+    position: relative !important;
+    transform: translateY(0) !important;
+    opacity: 1 !important;
+    flex-direction: column;
+    justify-content: flex-start;
+    height: auto;
+    padding: 2rem 0;
+  }
+  .s6-layer-lead {
+    position: relative;
+    height: auto;
+    padding: 4rem 0 2rem;
+  }
+  /* 讓兩幕直排疊放 */
+  #proj-reflection-combined {
+    display: flex;
+    flex-direction: column;
+    height: auto !important;
+    min-height: 100vh;
+  }
+  .s6-fixed-bg { position: fixed; }
+  
+  .stack-stage { width: 100vw; height: 45vw; padding-top: 2rem; }
+  .stack-card { width: 75%; }
+  .stack-info { 
+    width: 100vw; 
+    height: auto; 
+    padding: 1.5rem 2rem; 
+    align-items: center;
+    text-align: center;
+  }
+  .stack-dots { justify-content: center; }
   .s6-global-hint { display: none; }
 }
 
@@ -961,6 +1002,11 @@ nav {
 /* 手機版適應 */
 @media (max-width: 900px) {
   .s7-nav-btn { display: none; } /* 手機版隱藏箭頭，靠點底部的線切換 */
+  /* 手機版加大線條點擊區域 */
+.s7-line-btn { 
+  padding: 12px 0;
+  cursor: pointer;
+}
   .s7-timeline { left: 1.5rem; right: 1.5rem; bottom: 2rem; }
   .s7-caption { left: 1.5rem; bottom: 3.5rem; }
 }
@@ -1283,7 +1329,8 @@ nav {
 
   #proj-process { grid-template-columns: 1fr; }
   .process-left { padding: 5rem 1.5rem 2rem; border-right: none; border-bottom: 1px solid rgba(10,10,10,0.08); }
-  #proj-process .process-right { height: 50vh; position: relative; }
+  #proj-process .process-right { height: 40vh; position: relative; }
+.process-left { overflow-y: auto; max-height: 60vh; }
 
   #proj-gallery { grid-template-columns: 1fr; }
   .gallery-cell { height: 50vh; }
@@ -1987,7 +2034,29 @@ document.querySelectorAll('.s7-nav-btn, .s7-line-btn').forEach(el => {
   el.addEventListener('mouseenter', () => document.body.classList.add('cursor-grow'));
   el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-grow'));
 });
-
+/* ── S7 手機版左右滑動手勢 ── */
+const s7Gallery = document.getElementById('proj-gallery-s7');
+if (s7Gallery) {
+  let touchStartX = 0;
+  let touchEndX = 0;
+  
+  s7Gallery.addEventListener('touchstart', (e) => {
+    touchStartX = e.changedTouches[0].screenX;
+  }, { passive: true });
+  
+  s7Gallery.addEventListener('touchend', (e) => {
+    touchEndX = e.changedTouches[0].screenX;
+    const diff = touchStartX - touchEndX;
+    
+    if (Math.abs(diff) > 50) { // 最少滑 50px 才觸發
+      if (diff > 0) {
+        s7GoToSlide(s7CurrentIndex + 1); // 往左滑 → 下一張
+      } else {
+        s7GoToSlide(s7CurrentIndex - 1); // 往右滑 → 上一張
+      }
+    }
+  }, { passive: true });
+}
 /* ── S6 COMBINED — pure JS two-phase transition ── */
 const s6Sec      = document.getElementById('proj-reflection-combined');
 const layerLead  = s6Sec?.querySelector('.s6-layer-lead');
@@ -2083,6 +2152,15 @@ if (isMobile()) {
     container.style.overflowY = 'visible';
     container.style.height = 'auto';
   }
+}
+// 手機版 S6：跳過兩幕切換，直接顯示兩幕
+if (isMobile() && layerLead && layerStack) {
+  layerLead.style.position = 'relative';
+  layerLead.style.opacity = '1';
+  layerLead.style.transform = 'none';
+  layerStack.style.position = 'relative';
+  layerStack.style.opacity = '1';
+  layerStack.style.transform = 'none';
 }
 
 
