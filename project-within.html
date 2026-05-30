@@ -638,6 +638,8 @@ nav {
     padding-right: 2rem;
   }
 }
+
+
 /* ═══════════════════════════════════════
    S6 — 空間策略與畫廊 / 網格拼貼 ＋ 大圖滑動版
 ═══════════════════════════════════════ */
@@ -791,15 +793,73 @@ nav {
 }
 
 
-/* 📱 手機與平板版安全降級：行動裝置沒有 Hover，必須讓文字直接顯示，不然面試官用平板會看不到字 */
-@media (max-width: 1200px) {
-  .collage-img-wrapper {
-    transform: none !important;
+/* ═══════════════════════════════════════
+   📱 S6 — Mobile 平板與手機完美自適應配置
+═══════════════════════════════════════ */
+@media (max-width: 1100px) {
+  
+  /* ⚡ 核心修正 1：手機版徹底解鎖 100vh 限制，允許頁面依內容正常長高、向下捲動 */
+  #proj-gallery-s7,
+  .s7-inner-scene {
+    height: auto !important;
+    position: relative !important; /* 拔除絕對定位，讓網頁能正常推擠滾動 */
+    overflow: visible !important;
   }
+
+  .s7-scene-1 {
+    padding: 6rem 2rem; /* 為手機版兩側騰出舒適的呼吸空間 */
+    height: auto;
+  }
+
+  .s7-scene-1-collage {
+    width: 100%;
+  }
+
+  /* 頂部引言微調 */
+  .collage-header {
+    margin-bottom: 4rem;
+  }
+  .collage-main-title {
+    font-size: 1.8rem; /* 手機端大標收斂，防止斷行過碎 */
+  }
+
+  /* ⚡ 核心修正 2：四宮格重塑。
+     平板（1100px以下）改為 2 欄排版；手機（768px以下）自動降為單欄滿版，幾何感極強！ */
+  .collage-grid-container {
+    grid-template-columns: repeat(2, 1fr); /* 平板先降為 2 欄 */
+    gap: 3.5rem 2rem; /* 加大上下間距，縮減左右間距 */
+  }
+
+  /* ⚡ 核心修正 3：手機端沒有滑鼠 Hover，文字說明必須「直接常駐現身」 */
   .collage-text-meta {
     opacity: 1 !important;
-    transform: none !important;
+    transform: translateY(0) !important;
     margin-top: 1rem;
+  }
+
+  .collage-img-wrapper {
+    margin-bottom: 1rem;
+    aspect-ratio: 1 / 1; /* 依舊維持完美的正方形幾何比例 */
+  }
+}
+
+/* 📱 針對純手機端（直式螢幕）的終極剛性物理優化 */
+@media (max-width: 768px) {
+  .collage-grid-container {
+    grid-template-columns: 1fr; /* ⚡ 徹底改為「單欄直列」，像實體獨立雜誌一樣大氣 */
+    gap: 4.5rem; /* 讓每個作品單元之間有足夠的空白呼吸 */
+  }
+
+  /* 讓圖片在單欄時稍微收縮，不要太大顯得太粗糙 */
+  .collage-img-wrapper {
+    width: 100%;
+    max-width: 400px; /* 限制手機版圖片最大寬度 */
+    margin: 0 auto 1.2rem auto; /* 圖片居中對齊 */
+  }
+
+  .collage-text-meta {
+    max-width: 400px;
+    margin: 0 auto; /* 文字寬度與圖片同步對齊 */
   }
 }
 
@@ -1319,7 +1379,7 @@ At intermediate levels, shared communal spaces are introduced to encourage inter
       
     </div>
 
-    <p class="full-img-caption">Six-Person Cell — Reconstruction from historical archives // Before/After Comp.</p>
+    <p class="full-img-caption">Within the Block // Before/After Comp.</p>
     
   </section>
 <!-- ══════════════════════════
@@ -1412,7 +1472,7 @@ At intermediate levels, shared communal spaces are introduced to encourage inter
   </section>
 
 <!-- ══════════════════════════
-       S6 — FULL IMAGE
+       S6 — diagram
   ══════════════════════════ -->
 <section id="proj-gallery-s7">
   
