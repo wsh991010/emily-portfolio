@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Warm Living — Emily Wang</title>
+<title>Within the Block — Emily Wang</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100;0,9..40,200;0,9..40,300;0,9..40,400;1,9..40,200&display=swap" rel="stylesheet">
 <style>
@@ -134,10 +134,10 @@ nav {
   position: absolute; 
   inset: -40px; /* ⚡ 關鍵：故意讓四周往外擴大 40px，這樣圖片晃動時才不會邊緣穿幫漏出黑底 */
   z-index: 0;
-  background-image: url('img/project4-warm.jpg'); /* 放你渲染得最漂亮的那張主圖 */
+  background-image: url('img/project3-within.jpg'); /* 放你渲染得最漂亮的那張主圖 */
   background-size: cover;
   background-position: center;
-  filter: brightness(0.75) saturate(0.85);
+  filter: brightness(0.55) saturate(0.85);
   transform-origin: center;
   will-change: transform;
   /* 讓滑鼠離開時，圖片能絲滑地彈回原位 */
@@ -380,196 +380,506 @@ nav {
 }
 
 
+/* ═══════════════════════════════════════
+   S4 — 建築圖雙幕風格 / 核心視覺與圖層修復版
+═══════════════════════════════════════ */
+#proj-process {
+  background: var(--white);
+  position: relative;
+  width: 100%;
+  height: 100vh; /* 鎖定一頁高度 */
+  overflow: hidden;
+}
+
+/* 🌆 背景修復：乖乖躺在 z-index: 1，絕對不浮上來擋人 */
+.s4-full-bg {
+  position: absolute; 
+  inset: 0;
+  background-image: url('within_img/site-03.jpg'); 
+  background-size: contain;      
+  background-repeat: no-repeat;
+  background-position: 50% center; 
+  transform: scale(1);           
+  z-index: 1; /* 最底層 */
+  pointer-events: none; 
+}
+
+/* 🎭 兩幕場景基礎架構：全部絕對定位，在同一個畫面上原地重疊 */
+.s4-inner-scene {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100vh;
+  z-index: 2; /* 內容高於背景層 */
+  box-sizing: border-box;
+  background: transparent;
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* 絲滑過渡控制 Class */
+.s4-fade-out {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transform: translateY(20px); /* 稍微下沉 */
+}
+
+/* ── 【第一幕佈局】 ── */
+.s4-scene-1 {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+}
+.s4-scene-1 .process-left-wing {
+  padding: 5rem 4rem 5rem 13rem;
+}
+.s4-scene-1 .process-right-wing {
+  padding: 5rem 13rem 5rem 4rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: calc(100vh - 10rem);
+}
+.s4-scene-1 .wing-sticky-content {
+  display: flex;
+  flex-direction: column;
+}
+
+/* 冷冽字體風格 */
+.step-num {
+  font-size: 0.52rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--gray);
+  font-weight: 300;
+  margin-bottom: 0.6rem;
+}
+.step-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.2rem, 2.3vw, 1.9rem); 
+  font-weight: 200; 
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  margin-bottom: 0.8rem;
+  color: var(--black);
+}
+.step-desc {
+  font-size: 0.8rem;
+  line-height: 1.85; 
+  color: var(--mid);
+  font-weight: 300;
+  max-width: 420px;
+  letter-spacing: 0.01em;
+}
+.step-desc.narrow-box {
+  max-width: 310px !important;
+}
+
+/* 平面圖四宮格 */
+.plan-imgs-grid.full-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  width: 100%;
+  margin-top: 2rem;
+}
+.grid-cell {
+  width: 100%;
+  height: 25vh !important; 
+  overflow: hidden;
+  border: 1px solid rgba(10, 10, 10, 0.06);
+  background: var(--white);
+}
+.plan-imgs-grid.full-grid img {
+  width: 100%; height: 100%;
+  display: block;
+  object-fit: cover;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.grid-cell:hover img { transform: scale(1.04); }
+
+
+/* ── 🎬 【第二幕佈局】（圖面優雅上提完美版） ── */
+.s4-scene-2 {
+  padding: 6rem 13rem 6rem 13rem; 
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* ⚡ 關鍵：改成從頂部開始排，解鎖圖面向上移動 */
+}
+.s4-scene2-top-meta {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.step-desc.wide-box {
+  max-width: 520px;
+}
+.scene2-horizontal-stage {
+  display: flex;
+  gap: 2.5rem;
+  width: 100%;
+  margin-top: 3.5rem; /* ⚡ 核心操控：用這個值來決定圖面離文字多近！ */
+                      /* 如果妳希望再往上移，可以改小（例如 2.5rem） */
+}
+.landscape-img-box {
+  flex: 1;
+  aspect-ratio: 16 / 9; 
+  background: var(--white);
+  border: 1px solid rgba(10, 10, 10, 0.06); 
+  overflow: hidden;
+}
+.landscape-img-box img {
+  width: 100%; height: 100%;
+  display: block;
+  object-fit: cover;
+  filter: brightness(0.98);
+  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.landscape-img-box:hover img { transform: scale(1.03); }
+/* 📱 Mobile 手機版安全降級 */
+@media (max-width: 1024px) {
+  #proj-process { height: auto !important; overflow: visible !important; }
+  .s4-full-bg { display: none !important; } 
+  .s4-inner-scene { position: relative !important; opacity: 1 !important; transform: none !important; height: auto !important; pointer-events: auto !important; }
+  .s4-scene-1 { grid-template-columns: 1fr !important; }
+  .s4-scene-1 .process-left-wing, 
+  .s4-scene-1 .process-right-wing,
+  .s4-scene-2 { padding: 4rem 1.5rem !important; height: auto !important; }
+  .s4-scene-1 .process-right-wing { padding-top: 0 !important; }
+  .s4-scene-2 { padding-top: 0 !important; }
+  .step-desc.narrow-box { max-width: 100% !important; }
+  .grid-cell { height: auto !important; aspect-ratio: 1 / 1 !important; }
+  .scene2-horizontal-stage { flex-direction: column !important; gap: 1.5rem !important; }
+  .landscape-img-box { aspect-ratio: 16 / 10 !important; }
+}
 
 /* ═══════════════════════════════════════
-   S4 — VISUAL STRATEGY (左側純白、右側直式滿版切邊大圖版)
+   S5 — PURE RENDER & TEXT SECTION (純淨全螢幕高奢版)
 ═══════════════════════════════════════ */
-#proj-visual-strategy-s4 {
+#proj-reflection-combined {
   position: relative;
   height: 100vh; /* 鎖定精準的一頁高度 */
   width: 100%;
   overflow: hidden;
-  background-color: var(--white);
+  background: var(--black);
 }
 
-/* ⚡ 佈局大改寫：改用 100% 寬高的大排版容器，讓右側能真正吃滿邊緣 */
-.s4-three-column-container {
-  width: 100%;
-  height: 100%;
+/* 🌆 滿版大渲染圖（移除模糊，還原最震撼的純淨畫面） */
+.s6-fixed-bg {
+  position: absolute;
+  inset: 0;
+  background-image: url('within_img/render2.jpg'); 
+  background-size: cover;
+  background-position: center;
+  transform: scale(1); /* 恢復常規比例 */
+  z-index: 1;
+}
+
+/* 暗度遮罩：確保大圖上的白字清晰好讀，維持冷冽高級感 */
+.s6-fixed-bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: #000000;
+  opacity: 0.35; 
+}
+
+/* 🎭 純粹文字圖層 */
+.s6-layer-lead {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  box-sizing: border-box;
-  padding: 0; /* 拔除全域外邊距，讓右邊大圖可以撞擊邊緣 */
+  justify-content: flex-start;
 }
 
-/* ── 🎭 1. 左欄：文字排版（優雅向右靠攏版） ── */
-.s4-col-left-meta {
-  flex: 1;
-  max-width: 480px;
+/* 完美保留妳原本的第一幕左側排版與間距 */
+.lead-content-left {
+  padding-left: 5rem;
+  max-width: 600px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  
-  /* ⚡ 核心微調：從 5rem 大幅增加到 12vw，將整塊文字優雅地往右推，留出左側的大氣空白 */
-  padding-left: 12vw; 
-  
-  /* 加上絲滑的轉場，確保在拉動視窗時適應得很優雅 */
-  transition: padding 0.4s ease; 
 }
-.s4-col-left-meta .combined-section-label {
+
+.combined-section-label {
   font-size: 0.52rem;
   letter-spacing: 0.3em;
   text-transform: uppercase;
-  color: rgba(10, 10, 10, 0.4);
+  color: rgba(248, 248, 246, 0.4);
   margin-bottom: 1.5rem;
 }
 
-.s4-col-left-meta .combined-headline {
+.combined-headline {
   font-size: clamp(2rem, 4vw, 3.5rem);
   font-weight: 200;
   letter-spacing: -0.01em;
   line-height: 0.9;
   text-transform: uppercase;
-  color: var(--black);
+  color: #ffffff;
   margin-bottom: 2.5rem;
 }
 
-.s4-col-left-meta .combined-text-block {
-  max-width: 360px;
+.combined-text-block {
+  max-width: 340px;
 }
 
-.s4-col-left-meta .combined-paragraph {
+.combined-paragraph {
   font-size: 0.82rem;
   line-height: 1.9;
+  color: rgba(248, 248, 246, 0.7);
+  font-weight: 300;
+}
+
+/* 📱 RWD 手機版安全邊距 */
+@media (max-width: 900px) {
+  .lead-content-left {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+/* ═══════════════════════════════════════
+   S6 — 空間策略與畫廊 / 網格拼貼 ＋ 大圖滑動版
+═══════════════════════════════════════ */
+#proj-gallery-s7 {
+  position: relative;
+  width: 100%;
+  height: 100vh; /* 鎖定單頁高度 */
+  overflow: hidden;
+  background-color: var(--white); /* 第一幕預設白底 */
+  transition: background-color 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* 當切換到第二幕渲染大圖時，外層瞬間變黑（防止滿版圖邊緣露白） */
+#proj-gallery-s7.bg-dark-mode {
+  background-color: #000000 !important;
+}
+
+/* 🎭 兩幕通用定位層 */
+.s7-inner-scene {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100vh;
+  z-index: 2;
+  box-sizing: border-box;
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ── 🎨 【第一幕：網格拼貼視覺】 ── */
+.s7-scene-1 {
+  /* ⚡ 建築系高奢網格背景（模擬妳截圖中的精細格線紙效果） */
+  background-image: 
+    linear-gradient(to right, rgba(10, 10, 10, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(10, 10, 10, 0.04) 1px, transparent 1px);
+  background-size: 20px 20px; /* 每格 20px 細格 */
+  padding: 5rem 6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.s7-scene-1-collage {
+  width: 100%;
+  max-width: 1400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* 頂部引言 */
+.collage-header {
+  text-align: center;
+  margin-bottom: 4rem;
+  max-width: 600px;
+}
+.collage-main-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 3vw, 2.5rem);
+  font-weight: 200;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  color: var(--black);
+  margin-bottom: 1rem;
+}
+.collage-sub-desc {
+  font-size: 0.8rem;
+  line-height: 1.7;
+  color: var(--mid);
+  font-weight: 300;
+}
+
+/* 四宮格拼貼橫向佈局 */
+.collage-grid-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2.5rem;
+  width: 100%;
+}
+
+/* ── 🎨 【第一幕：網格拼貼 Hover 動態升級版】 ── */
+
+/* 確保每個拼貼單元有固定呼吸感，並做為動畫定位基準 */
+.collage-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  position: relative;
+}
+
+/* 1. 🔍 圖片外框：這是動畫的主角 */
+.collage-img-wrapper {
+  width: 100%;
+  aspect-ratio: 1 / 1; 
+  overflow: hidden;
+  background: transparent;
+  margin-bottom: 1.5rem;
+  
+  /* ⚡ 絲滑關鍵：使用高奢品牌最愛用的貝茲曲線，讓上移與回彈像絲綢一樣順 */
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+}
+
+.collage-img-wrapper img {
+  width: 100%; height: 100%;
+  object-fit: contain; 
+  display: block;
+}
+
+/* 2. 📝 文字說明：預設完全隱形，且往下一點點準備浮起 */
+.collage-text-meta {
+  width: 100%;
+  opacity: 0;
+  transform: translateY(15px); /* 預設沉在下面 */
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, opacity;
+}
+
+.collage-item-title {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 300;
+  text-transform: uppercase;
+  color: var(--black);
+  margin-bottom: 0.6rem;
+}
+
+.collage-item-desc {
+  font-size: 0.74rem;
+  line-height: 1.8;
   color: var(--mid);
   font-weight: 300;
   text-align: justify;
 }
 
 
-/* ── 🎨 2. 中欄：直列精緻色票（隨大圖尺寸自動完美依附） ── */
-.s4-col-middle-palette {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 1.8rem;
-  margin-left: auto;
-  padding-right: 2.5rem; /* ⚡ 完美的關鍵：鎖定這段妳覺得最讚的距離，圖變大它就會自動往左靠 */
-  z-index: 5; /* 確保在交界處絕對不會被圖片壓住 */
-}
-
-.palette-swatch-item {
-  display: flex;
-  flex-direction: row-reverse; 
-  align-items: center;
-  gap: 1rem;
-  cursor: default;
-}
-
-.swatch-circle {
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  border: 1px solid rgba(10, 10, 10, 0.08);
-  box-shadow: 0 4px 10px rgba(10, 10, 10, 0.03);
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  will-change: transform;
-}
-
-.swatch-label {
-  font-size: 0.52rem;
-  letter-spacing: 0.15em;
-  font-family: var(--font-display);
-  color: rgba(10, 10, 10, 0.35);
-  font-weight: 300;
-  opacity: 0; 
-  transform: translateX(8px);
-  transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.palette-swatch-item:hover .swatch-circle { transform: scale(1.25); }
-.palette-swatch-item:hover .swatch-label { opacity: 1; transform: translateX(0); }
-
-
-/* ── 🖼️ 3. 右欄：直式 2:3 全滿版無邊框渲染層（頂天立地版） ── */
-.s4-col-right-render {
-  height: 100%;       /* 高度直接吃滿整個 Section 的 100vh */
-  aspect-ratio: 2 / 3; /* ⚡ 1. 死死鎖定妳要的直式 2:3 黃金比例 */
-  flex-shrink: 0;      /* 防止在大螢幕上被文字擠壓變形 */
-}
-
-.vertical-render-box {
-  width: 100%;
-  height: 100%;
-  position: relative;
-  overflow: hidden;
-  /* ⚡ 2. 徹底拔除原有的相框白邊、外框線與下沉陰影，乾淨切邊 */
-  background: none;
-  border: none;
-  box-shadow: none;
-}
-
-.vertical-render-box img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover; /* ⚡ 超完美填滿：不論視窗怎麼拉，永遠保持 2:3 且不扭曲 */
-  display: block;
-  filter: brightness(0.98);
-  transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1); /* 讓滿版大圖的細微放大更有電影感 */
-}
-
-/* 滿版大圖的微奢滑動回饋 */
-.vertical-render-box:hover img {
-  transform: scale(1.03); /* 滑鼠移入時，圖片在滿版框內微微放大 */
-}
-
-/* ⚡ 美術館標籤：因為大圖已經滿版撞牆，標籤改為「優雅地懸浮在圖片左下角」 */
-.vertical-render-caption {
-  position: absolute;
-  bottom: 4rem; /* 垂直對齊左邊的 Scroll 提示線高度，產生幾何秩序 */
-  left: 2rem;
-  z-index: 10;
-  font-size: 0.52rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.6); /* 在大圖上改為微透明反白字，高奢感拉滿 */
-  font-weight: 300;
-  white-space: nowrap;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); /* 防止大圖太亮時字看不見 */
-}
-
-
-/* ── ➖ 底部 Scroll 提示線 ── */
-.s6-global-hint {
-  position: absolute;
-  bottom: 4rem; left: 5rem;
-  font-size: 0.52rem; letter-spacing: 0.25em; text-transform: uppercase;
-  color: rgba(10, 10, 10, 0.3); font-weight: 300;
-  display: flex; align-items: center; gap: 0.6rem; z-index: 10;
-}
-.s6-hint-line { width: 30px; height: 1px; background: rgba(10, 10, 10, 0.3); }
-
-
 /* ═══════════════════════════════════════
-   ⚡ 全域黑鼠標反轉機制（維持原樣運作）
+   🚀 TRIGGER TIME：當滑鼠 Hover 到整個單元時
 ═══════════════════════════════════════ */
-body.light-bg #cursor-dot { background-color: var(--black) !important; }
-body.light-bg #cursor-ring { border-color: rgba(10, 10, 10, 0.25) !important; }
-body.light-bg.cursor-grow #cursor-ring { background-color: rgba(10, 10, 10, 0.05) !important; border-color: var(--black) !important; }
 
-
-/* 📱 Mobile 平板與手機安全配置 */
-@media (max-width: 1100px) {
-  .s4-three-column-container { flex-direction: column; justify-content: flex-start; align-items: flex-start; padding: 6rem 2rem; height: auto; }
-  .s4-col-left-meta { max-width: 100%; padding-left: 0; margin-bottom: 3rem; }
-  .s4-col-middle-palette { flex-direction: row; flex-wrap: wrap; justify-content: flex-start; padding: 0; margin-left: 0; margin-bottom: 3rem; }
-  .palette-swatch-item { flex-direction: row; }
-  .swatch-label { opacity: 1; transform: none; }
-  .s4-col-right-render { width: 100%; height: 65vh; aspect-ratio: auto; } /* 手機版不強求 100vh 滿版 */
-  .vertical-render-caption { left: 1.5rem; bottom: 1.5rem; }
-  .s6-global-hint { display: none; }
+/* 👉 圖片順暢往上推 20px，騰出空間給文字 */
+.collage-item:hover .collage-img-wrapper {
+  transform: translateY(-20px);
 }
+
+/* 👉 文字在同一時間淡入，並優雅地往上對齊歸位 */
+.collage-item:hover .text-meta, /* 預防妳 HTML 縮寫 */
+.collage-item:hover .collage-text-meta {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+
+/* 📱 手機與平板版安全降級：行動裝置沒有 Hover，必須讓文字直接顯示，不然面試官用平板會看不到字 */
+@media (max-width: 1200px) {
+  .collage-img-wrapper {
+    transform: none !important;
+  }
+  .collage-text-meta {
+    opacity: 1 !important;
+    transform: none !important;
+    margin-top: 1rem;
+  }
+}
+
+/* ── 🎬 【第二幕：獨立高奢畫廊照片框（網格白底＋精緻縮小版）】 ── */
+.s7-gallery-stage {
+  position: absolute;
+  inset: 0;
+  width: 100% !important;
+  height: 100vh !important;
+  z-index: 3;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden;
+  
+  /* 🎭 讓照片框在網格舞台中央完美居中 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  /* ⚡ 物理過渡：從下方 100vh 絲滑升起 */
+  transform: translateY(0);
+  opacity: 1;
+  transition: transform 0.9s cubic-bezier(0.16, 1, 0.3, 1), 
+              opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* 初始藏在下方不見 */
+.s7-stage-hidden {
+  transform: translateY(100vh) !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* 🖼️ 精修：縮小版照片框本體 */
+.s7-slide {
+  position: relative; 
+  width: 55vw;        /* ⚡ 降噪關鍵：從 78vw 縮小到 55vw，留白更多，空氣感直接拉滿 */
+  aspect-ratio: 16 / 9; /* 死死鎖定 16:9 照片黃金比例 */
+  
+  background: var(--white);
+  /* 💎 實體相框質感：8px 的實心純白內襯卡紙邊框，加上柔和的製圖感細陰影 */
+  border: 1px solid rgba(10, 10, 10, 0.08); /* 改用細緻的深色微邊框，在白底上才顯眼 */
+  box-shadow: 
+    0 0 0 8px #ffffff, /* 實體相框內襯白邊 */
+    0 20px 50px rgba(10, 10, 10, 0.08), /* 柔和淡雅的影子，襯托白底層次 */
+    0 5px 15px rgba(10, 10, 10, 0.04);
+  
+  overflow: hidden;
+  opacity: 1 !important;        
+  visibility: visible !important;
+  transform: scale(1) !important;
+}
+
+/* 照片框內部的渲染圖 */
+.s7-slide img {
+  width: 100%; height: 100%;
+  object-fit: cover; 
+  filter: brightness(0.98); /* 在白底背景下，還原大圖最純淨的亮度 */
+  display: block;
+}
+
+/* 🏷️ 美術館標籤風格標題（吸附在白色相框左下方，改為高級深灰字） */
+.s7-caption {
+  position: absolute;
+  bottom: -2.4rem; /* 掛在白色相框邊緣下方 */
+  left: -8px;      /* 對齊最外圈的白襯底邊緣 */
+  z-index: 10;
+  font-size: 0.54rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: rgba(10, 10, 10, 0.4); /* 適應白底的優雅碳灰字 */
+  font-weight: 300;
+  pointer-events: none;
+}
+
+/* ✂️ 徹底拔除不需要的箭頭與進度線條樣式 */
+.s7-nav-btn, .s7-timeline {
+  display: none !important;
+}
+
 /* ═══════════════════════════════════════
    SECTION 8 — NEXT PROJECT (HERO 下沉版)
 ═══════════════════════════════════════ */
@@ -591,7 +901,7 @@ body.light-bg.cursor-grow #cursor-ring { background-color: rgba(10, 10, 10, 0.05
   position: absolute; 
   inset: 0; 
   z-index: 0;
-  background-image: url('img/project5-forest.jpg');
+  background-image: url('img/project4-warm.jpg');
   background-size: cover;
   background-position: center;
   filter: brightness(0.3) saturate(0.5);
@@ -931,20 +1241,20 @@ body.light-bg.cursor-grow #cursor-ring { background-color: rgba(10, 10, 10, 0.05
     <div class="proj-hero-vignette"></div>
 
     <div class="proj-hero-content">
-      <p class="proj-index">004 · 2026 · Interior Design</p>
-      <h1 class="proj-title">The Warm<br>Living</h1>
+      <p class="proj-index">003 · 2023 · Architectural Design</p>
+      <h1 class="proj-title">Within the<br>Block</h1>
       <div class="proj-meta-row">
         <div class="proj-meta-item">
           <span class="proj-meta-label">Discipline</span>
-          <span class="proj-meta-value">Interior</span>
+          <span class="proj-meta-value">Architecture</span>
         </div>
         <div class="proj-meta-item">
           <span class="proj-meta-label">Tools</span>
-          <span class="proj-meta-value">AutoCAD · SketchUP</span>
+          <span class="proj-meta-value">AutoCAD · Rhino</span>
         </div>
         <div class="proj-meta-item">
           <span class="proj-meta-label">Year</span>
-          <span class="proj-meta-value">2026</span>
+          <span class="proj-meta-value">2023</span>
         </div>
       </div>
     </div>
@@ -962,16 +1272,18 @@ body.light-bg.cursor-grow #cursor-ring { background-color: rgba(10, 10, 10, 0.05
   <section id="proj-overview">
     <div class="overview-left sr">
       <p class="overview-eyebrow">Project Overview</p>
-      <h2 class="overview-heading">The Warm<br>Living</h2>
+      <h2 class="overview-heading">Collective<br>Living</h2>
       <p class="overview-body">
-      Natural light enters from the side, casting soft shadows that highlight the curvature of furniture and the texture of fabrics and leather. A restrained colour palette is used to balance warm tones with neutral surfaces, creating depth without overwhelming the space.
+      This project explores how spatial enclosure can create a sense of privacy within a dense urban environment. By organising the building mass around a central courtyard, the design establishes a protected interior landscape that contrasts with the surrounding city.
+
+At intermediate levels, shared communal spaces are introduced to encourage interaction among residents, balancing individual privacy with collective living. 
       </p>
     </div>
     <div class="overview-right sr sr-d2">
       <ul class="overview-specs">
         <li class="spec-row">
           <span class="spec-key">Type</span>
-          <span class="spec-val">Interior</span>
+          <span class="spec-val">Architecture</span>
         </li>
         <li class="spec-row">
           <span class="spec-key">Design Tool</span>
@@ -979,7 +1291,7 @@ body.light-bg.cursor-grow #cursor-ring { background-color: rgba(10, 10, 10, 0.05
         </li>
         <li class="spec-row">
           <span class="spec-key">Modelling</span>
-          <span class="spec-val">SketchUP, Blender</span>
+          <span class="spec-val">Rhino</span>
         
       </ul>
     </div>
@@ -994,11 +1306,11 @@ body.light-bg.cursor-grow #cursor-ring { background-color: rgba(10, 10, 10, 0.05
     <div class="render-stage">
       
       <div class="render-layer AO-layer">
-        <img src="warm_img/vp1.jpeg" alt="Ambient Occlusion Render">
+        <img src="within_img/vp1.jpg" alt="Ambient Occlusion Render">
       </div>
 
       <div class="render-layer Final-layer">
-        <img src="warm_img/render2.jpg" alt="When Space Remembers — Main Render">
+        <img src="img/project3-within.jpg" alt="When Space Remembers — Main Render">
       </div>
 
       <div class="render-handle-wrapper" id="compLine">
@@ -1007,65 +1319,166 @@ body.light-bg.cursor-grow #cursor-ring { background-color: rgba(10, 10, 10, 0.05
       
     </div>
 
-    <p class="full-img-caption">The Warm Living // Before/After Comp.</p>
+    <p class="full-img-caption">Six-Person Cell — Reconstruction from historical archives // Before/After Comp.</p>
     
   </section>
+<!-- ══════════════════════════
+       S4 — BA
+  ══════════════════════════ -->
+  <section id="proj-process">
+  
+  <div class="s4-full-bg"></div>
 
+  <div class="s4-inner-scene s4-scene-1">
+    <div class="process-left-wing">
+      <div class="wing-sticky-content">
+        <div class="process-step sr">
+          <p class="step-num">Phase 01</p>
+          <h3 class="step-title">Site Analysis</h3>
+          <p class="step-desc narrow-box">
+            Located in the dense urban fabric of Shilin, Taipei, this residential project explores how spatial enclosure can create privacy and environmental comfort within the city. The building mass is organised around a central courtyard to improve natural light, ventilation, and climatic responsiveness, while creating a protected interior landscape separated from the surrounding urban context.<br><br>
+            Shared communal platforms are introduced at intermediate levels to encourage social interaction and strengthen the relationship between private and collective living within the vertical structure.
+          </p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="process-right-wing">
+      <div class="wing-sticky-content">
+        <div class="process-step sr">
+          <h3 class="step-title">Plan</h3>
+          <p class="step-desc">
+            The ground floor is designed as a semi-public interface between the city and the residential community. Circulation routes, entrances, and landscaped areas guide movement into the central courtyard.
+          </p>
+        </div>
+        <div class="plan-imgs-grid full-grid sr sr-d2">
+          <div class="grid-cell"><img src="within_img/1fplan-04.jpg" alt="1F Plan"></div>
+          <div class="grid-cell"><img src="within_img/3fplan-04.jpg" alt="3F Plan"></div>
+          <div class="grid-cell"><img src="within_img/5fplan-04.jpg" alt="5F Plan"></div>
+          <div class="grid-cell"><img src="within_img/8fplan-04.jpg" alt="8F Plan"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="s4-inner-scene s4-scene-2 s4-fade-out">
+    <div class="s4-scene2-top-meta">
+      <p class="step-num">Phase 02</p>
+      <h3 class="step-title">Section</h3>
+      <p class="step-desc wide-box">
+      The section illustrates how the enclosed building form frames a central courtyard, allowing light and views to penetrate deep into the block while supporting both privacy and shared living.
+  
+      </p>
+    </div>
+
+    <div class="scene2-horizontal-stage">
+      <div class="landscape-img-box">
+        <img src="within_img/section1.jpg" alt="Section Drawing">
+      </div>
+      <div class="landscape-img-box">
+        <img src="within_img/section2.jpg" alt="Material Palette">
+      </div>
+    </div>
+  </div>
+
+</section>
   
 <!-- ══════════════════════════
-       S4 — Full img
+       S5 — Full img
   ══════════════════════════ -->
-<section id="proj-visual-strategy-s4">
-  <div class="s4-three-column-container">
+<section id="proj-reflection-combined">
     
-    <div class="s4-col-left-meta">
-      <p class="combined-section-label sr">Visual Strategy</p>
-      <h2 class="combined-headline sr">VISUAL<br>STRATEGY</h2>
-      <div class="combined-text-block sr sr-d1">
-        <p class="combined-paragraph">
-          This study focuses on the interaction between materials and lighting in shaping interior atmosphere. 
-          Warm-toned materials, soft textiles, and reflective surfaces are combined to create visual richness and tactile depth. 
-          Directional lighting is used to cast defined shadows, emphasising form and surface texture, while softer ambient light maintains overall balance.
+    <div class="s6-fixed-bg"></div>
+
+    <div class="s6-layer-lead">
+      <div class="lead-content-left">
+        <p class="combined-section-label">Design Process</p>
+        <h2 class="combined-headline">VERTICAL<br>COMMUNITY</h2>
+        <div class="combined-text-block">
+          <p class="combined-paragraph">
+        The project organises residential spaces around a central courtyard to create a quieter and more protected living environment within Taipei’s dense urban context. Layered communal platforms introduce natural light, ventilation, and opportunities for social interaction throughout the vertical structure.
+        </p>
+        </div>
+      </div>
+    </div>
+
+  
+
+    <div class="s6-global-hint">
+      <div class="s6-hint-line"></div>
+      <span id="s6HintText">Scroll</span>
+    </div>
+
+  </section>
+
+<!-- ══════════════════════════
+       S6 — FULL IMAGE
+  ══════════════════════════ -->
+<section id="proj-gallery-s7">
+  
+  <div class="s7-inner-scene s7-scene-1">
+    <div class="s7-scene-1-collage">
+      
+      <div class="collage-header sr">
+        <h2 class="collage-main-title">Spatial Strategies</h2>
+        <p class="collage-sub-desc">
+          The exterior responds to the dense urban surroundings, while the interior courtyard offers a contrasting atmosphere of calm and openness. This duality defines the spatial experience of the project.
         </p>
       </div>
-    </div>
 
-    <div class="s4-col-middle-palette sr sr-d2">
-      <div class="palette-swatch-item">
-        <span class="swatch-circle" style="background: #4A3A2F;"></span>
-        <span class="swatch-label">#4A3A2F</span>
-      </div>
-      <div class="palette-swatch-item">
-        <span class="swatch-circle" style="background: #A85C3A;"></span>
-        <span class="swatch-label">#A85C3A</span>
-      </div>
-      <div class="palette-swatch-item">
-        <span class="swatch-circle" style="background: #D8CFC4;"></span>
-        <span class="swatch-label">#D8CFC4</span>
-      </div>
-      <div class="palette-swatch-item">
-        <span class="swatch-circle" style="background: #F2EFEA;"></span>
-        <span class="swatch-label">#F2EFEA</span>
-      </div>
-      <div class="palette-swatch-item">
-        <span class="swatch-circle" style="background: #6F7D5C;"></span>
-        <span class="swatch-label">#6F7D5C</span>
-      </div>
-    </div>
+      <div class="collage-grid-container sr sr-d1">
+        
+        <div class="collage-item">
+          <div class="collage-img-wrapper">
+            <img src="within_img/c1-05.png" alt="Interaction Collage"> </div>
+          <div class="collage-text-meta">
+            <h4 class="collage-item-title">Interaction</h4>
+            <p class="collage-item-desc">Shared spaces are distributed throughout the building to encourage informal encounters. Rather than prescribing interaction, the design allows varying degrees of visibility and proximity supporting both connection and privacy.</p>
+          </div>
+        </div>
 
-    <div class="s4-col-right-render sr sr-d3">
-      <div class="vertical-render-box">
-        <img src="warm_img/render3.jpg" alt="Visual Strategy Study">
-        <p class="vertical-render-caption">// Material & Light Atmosphere Study</p>
-      </div>
+        <div class="collage-item">
+          <div class="collage-img-wrapper">
+            <img src="within_img/c2-05.png" alt="Material Collage">
+          </div>
+          <div class="collage-text-meta">
+            <h4 class="collage-item-title">Material</h4>
+            <p class="collage-item-desc">A curated palette of concrete, stone, and timber defines the tactile quality of the project. Material contrasts are used to articulate spatial hierarchy while reinforcing a calm and cohesive architectural language.</p>
+          </div>
+        </div>
+
+        <div class="collage-item">
+          <div class="collage-img-wrapper">
+            <img src="within_img/c3-05.png" alt="Enclosure Collage">
+          </div>
+          <div class="collage-text-meta">
+            <h4 class="collage-item-title">Enclosure</h4>
+            <p class="collage-item-desc">The project is organised around an inward-facing courtyard, creating a sense of protection and intimacy. Solid volumes and framed openings define a spatial rhythm between enclosure and openness.</p>
+          </div>
+        </div>
+
+        <div class="collage-item">
+          <div class="collage-img-wrapper">
+            <img src="within_img/c4-05.png" alt="Landscape Collage">
+          </div>
+          <div class="collage-text-meta">
+            <h4 class="collage-item-title">Landscape</h4>
+            <p class="collage-item-desc">The landscape is conceived as an extension of the architecture, introducing softness within a dense urban setting. Vegetation and terrain shape a central courtyard that mediates between built form and natural environment.</p>
+          </div>
+        </div>
+
+      </div> </div>
+  </div>
+
+  <div class="s7-gallery-stage s7-stage-hidden">
+    
+    <div class="s7-slide">
+      <img src="within_img/render3.jpg" alt="Final Master Render">
+      <p class="s7-caption">Final Render // Spatial Masterpiece Overview</p>
     </div>
 
   </div>
 
-  <div class="s6-global-hint">
-    <div class="s6-hint-line"></div>
-    <span id="s6HintText">Scroll</span>
-  </div>
 </section>
 
 
@@ -1101,11 +1514,11 @@ body.light-bg.cursor-grow #cursor-ring { background-color: rgba(10, 10, 10, 0.05
 
     <div class="next-hero-wrapper">
       <div class="next-content">
-        <a href="project-sculpture.html" class="next-title">Sculpture<br>in the Woods</a>
+        <a href="project-warm.html" class="next-title">The Warm<br>Living</a>
       </div>
       
       <div class="next-bottom">
-        <span class="next-meta">005 · Game Environment · Blender</span>
+        <span class="next-meta">004 · Interior design · Blender · Photoshop</span>
         
         <a href="#" class="next-back-to-top" id="backToTopBtn" aria-label="Back to top">
           <span class="btn-arrow">↑</span>
@@ -1190,7 +1603,7 @@ document.querySelectorAll('a, .gallery-cell, .video-ui-btn, .capsule-btn, .s7-na
 
 
 /* ── 2. LIGHT BG DETECTION (黑白背景色塊動態切換) ── */
-const lightSections = document.querySelectorAll('#proj-overview, #proj-process, #proj-reflection, #proj-visual-strategy-s4');
+const lightSections = document.querySelectorAll('#proj-overview, #proj-process, #proj-reflection');
 
 if (container) {
   lightSections.forEach(sec => {

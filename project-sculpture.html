@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Warm Living — Emily Wang</title>
+<title>Sculpture in the woods — Emily Wang</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100;0,9..40,200;0,9..40,300;0,9..40,400;1,9..40,200&display=swap" rel="stylesheet">
 <style>
@@ -134,7 +134,7 @@ nav {
   position: absolute; 
   inset: -40px; /* ⚡ 關鍵：故意讓四周往外擴大 40px，這樣圖片晃動時才不會邊緣穿幫漏出黑底 */
   z-index: 0;
-  background-image: url('img/project4-warm.jpg'); /* 放你渲染得最漂亮的那張主圖 */
+  background-image: url('img/project5-forest.jpg'); /* 放你渲染得最漂亮的那張主圖 */
   background-size: cover;
   background-position: center;
   filter: brightness(0.75) saturate(0.85);
@@ -292,9 +292,272 @@ nav {
   text-align: right;
 }
 
+/* ═══════════════════════════════════════
+   S2.5 — VISUAL STRATEGY (全螢幕影片雙幕＋節點滑入核心樣式)
+═══════════════════════════════════════ */
+#proj-visual-strategy-s4 {
+  position: relative;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+  background-color: #000000;
+}
+
+/* 🌆 滿版影片層 */
+.s4-video-cinema-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%; height: 100%;
+  z-index: 1;
+}
+.s4-video-cinema-bg video {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* 🎭 電影暗度遮罩 */
+.s4-cinema-overlay {
+  position: absolute;
+  inset: 0;
+  background: #000000;
+  opacity: 0.15;
+  z-index: 2;
+  transition: opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+#proj-visual-strategy-s4.s4-phase2-active .s4-cinema-overlay {
+  opacity: 0.65; /* 有節點圖加入，遮罩稍微再加深一點點，襯托去背 PNG 的線條 */
+}
+
+/* 📦 內容大彈性容器 */
+.s4-cinema-content-container {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* 左右拉開 */
+  box-sizing: border-box;
+}
+
+/* ── 🎭 左欄文字控制（保持 12vw 大留白，由下往上滑入） ── */
+.s4-cinema-meta-content {
+  flex: 1;
+  max-width: 500px;
+  padding-left: 12vw;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+/* 初始狀態：隱形並沉在下方 */
+.s4-cinema-meta-content.s4-element-hidden-down {
+  transform: translateY(60px);
+  opacity: 0;
+}
+
+.s4-cinema-meta-content .combined-section-label { font-size: 0.52rem; letter-spacing: 0.3em; text-transform: uppercase; color: rgba(255, 255, 255, 0.45); margin-bottom: 1.5rem; }
+.s4-cinema-meta-content .combined-headline { font-size: clamp(2rem, 4vw, 3.5rem); font-weight: 200; letter-spacing: -0.01em; line-height: 0.9; text-transform: uppercase; color: #ffffff; margin-bottom: 2.5rem; }
+.s4-cinema-meta-content .combined-text-block { max-width: 360px; }
+.s4-cinema-meta-content .combined-paragraph { font-size: 0.82rem; line-height: 1.9; color: rgba(255, 255, 255, 0.75); font-weight: 300; text-align: justify; }
+
+
+/* ── 🔌 右欄：去背材質節點展示層（⚡ 核心：由右往左滑入） ── */
+.s4-node-screenshot-layer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 8vw; /* 讓節點圖與右螢幕邊緣保持優雅的呼吸感 */
+  z-index: 5;
+  transition: transform 1.4s cubic-bezier(0.16, 1, 0.3, 1), /* 刻意比文字慢 0.2 秒，形成時間差的高級層次 */
+              opacity 1.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+/* ⚡ 初始狀態：隱形並藏在螢幕最右側偏後 80px 處 */
+.s4-node-screenshot-layer.s4-element-hidden-right {
+  transform: translateX(80px);
+  opacity: 0;
+}
+
+/* 節點圖容器控制 */
+.node-image-wrapper {
+  position: relative;
+  width: 35vw; /* 讓它在大螢幕上佔據精緻、不壓迫的黃金寬度 */
+}
+.node-image-wrapper img {
+  width: 100%;
+  height: auto;
+  display: block;
+  filter: drop-shadow(0 15px 35px rgba(0, 0, 0, 0.4)); /* 幫去背 PNG 加上細緻大氣的立體懸浮陰影 */
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+/* 鼠標摸到時的微立體回饋 */
+.node-image-wrapper:hover img {
+  transform: scale(1.02) rotate(0.5deg); /* 微微放大並帶有一絲絲設計師的靈動旋轉 */
+}
+
+/* 節點圖下方的小字標籤 */
+.node-graph-caption {
+  position: absolute;
+  bottom: -2.2rem;
+  right: 0;
+  font-size: 0.52rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.4);
+  font-weight: 300;
+  white-space: nowrap;
+}
+
+/* 提示線同步轉白對齊 */
+#proj-visual-strategy-s4 .s6-global-hint { color: rgba(255, 255, 255, 0.4); left: 12vw; }
+#proj-visual-strategy-s4 .s6-hint-line { background: rgba(255, 255, 255, 0.3); }
+
+/* 📱 RWD 手機平板安全自適應 */
+@media (max-width: 1100px) {
+  .s4-cinema-content-container { flex-direction: column; justify-content: flex-start; align-items: flex-start; padding: 6rem 2rem; height: auto; overflow: visible; }
+  .s4-cinema-meta-content { max-width: 100%; padding-left: 0; margin-bottom: 4rem; }
+  .s4-node-screenshot-layer { width: 100%; padding-right: 0; justify-content: center; padding-bottom: 4rem; }
+  .node-image-wrapper { width: 80vw; }
+  .node-graph-caption { left: 0; right: auto; }
+}
+
+/* ── ⚡ 第二幕激活時：強行讓隱形的文字與材質圖歸位 ── */
+#proj-visual-strategy-s4.s4-phase2-active .s4-cinema-meta-content {
+  transform: translateY(0) !important;
+  opacity: 1 !important;
+}
+
+#proj-visual-strategy-s4.s4-phase2-active .s4-node-screenshot-layer {
+  transform: translateX(0) !important;
+  opacity: 1 !important;
+}
+
 
 /* ═══════════════════════════════════════
-   SECTION 3 — BA
+   S3 — VISUAL STRATEGY (純粹主義：絕對留白防撞版)
+═══════════════════════════════════════ */
+#proj-visual-strategy-s4 {
+  position: relative;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+  background-color: var(--white);
+}
+
+.s4-gallery-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  box-sizing: border-box;
+  
+  /* ⚡ 核心改動：利用 flex 大佈局，讓左邊大圖與右邊文字各據一方 */
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0 8vw; /* 讓整頁內容的左右邊緣對齊，呈現極致的包裝感 */
+}
+
+
+/* ── 🖼️ 1. 左側大圖舞台（剛性寬度鎖定，絕對防撞） ── */
+.s4-gallery-left-art {
+  display: flex;
+  align-items: center;
+  z-index: 1;
+}
+
+.gallery-art-box {
+  /* ⚡ 核心物理防禦：鎖定大圖寬度最多只佔螢幕的 46% (46vw)，
+     這樣右邊會強行留下 54% 的純白空間，文字跟圖片這輩子絕對撞不到！ */
+  width: 46vw; 
+  aspect-ratio: 16 / 10;
+  position: relative;
+  overflow: hidden;
+  background: var(--white);
+  border: 1px solid rgba(10, 10, 10, 0.04);
+  box-shadow: 
+    0 30px 70px rgba(10, 10, 10, 0.03),
+    0 10px 20px rgba(10, 10, 10, 0.01);
+  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.gallery-art-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.gallery-art-box:hover { transform: translateY(-6px); }
+.gallery-art-box:hover img { transform: scale(1.02); }
+
+
+/* ── ✍️ 2. 右下角微縮展品敘述（極簡純粹主義排版） ── */
+.s4-gallery-bottom-caption {
+  position: absolute;
+  bottom: 5rem; /* 垂直高度與左下提示線死死對齊 */
+  right: 8vw;   /* 靠緊右側邊緣邊界 */
+  max-width: 300px; /* 收窄文字，讓斷行呈現詩意 */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.2rem;
+  z-index: 2;
+}
+
+.s4-gallery-bottom-caption .gallery-paragraph {
+  font-size: 0.82rem;
+  line-height: 1.9;
+  color: var(--black); /* 使用妳標準的黑字，在純白底上對比度最高、最乾淨 */
+  font-weight: 300;
+  text-align: justify;
+  margin: 0;
+  
+  /* ⚡ 彻底拔除僵硬的 box 背景，回歸純文字的優雅與呼吸 */
+  background: none;
+  padding: 0;
+}
+
+.s4-gallery-bottom-caption .gallery-index {
+  font-size: 0.52rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(10, 10, 10, 0.35); /* 微弱的註腳感 */
+  font-weight: 300;
+  font-family: var(--font-display);
+}
+
+
+/* ── ➖ 3. 左下角 Scroll 提示線（與左側對齊線一致） ── */
+.s6-global-hint {
+  position: absolute;
+  bottom: 5rem;
+  left: 8vw; /* ⚡ 完美契合左側 padding 的起點，左邊線、右邊線各司其職 */
+  font-size: 0.52rem; 
+  letter-spacing: 0.25em; 
+  text-transform: uppercase;
+  color: rgba(10, 10, 10, 0.3); 
+  font-weight: 300;
+  display: flex; 
+  align-items: center; 
+  gap: 0.6rem; 
+  z-index: 10;
+}
+.s6-hint-line { width: 30px; height: 1px; background: rgba(10, 10, 10, 0.2); }
+
+
+/* 📱 RWD 平板手機自適應降級 */
+@media (max-width: 1100px) {
+  .s4-gallery-container { flex-direction: column; justify-content: flex-start; align-items: flex-start; padding: 6rem 2rem; }
+  #proj-visual-strategy-s4 { height: auto; overflow: visible; }
+  .gallery-art-box { width: 100%; aspect-ratio: 16 / 10; margin-bottom: 3rem; }
+  .s4-gallery-bottom-caption { position: relative; bottom: auto; right: auto; max-width: 100%; padding-bottom: 4rem; }
+  .s6-global-hint { display: none; }
+}
+/* ═══════════════════════════════════════
+   SECTION 4 — BA
 ═══════════════════════════════════════ */
 #proj-render-comp-s5 {
   background: #000000;
@@ -381,174 +644,6 @@ nav {
 
 
 
-/* ═══════════════════════════════════════
-   S4 — VISUAL STRATEGY (左側純白、右側直式滿版切邊大圖版)
-═══════════════════════════════════════ */
-#proj-visual-strategy-s4 {
-  position: relative;
-  height: 100vh; /* 鎖定精準的一頁高度 */
-  width: 100%;
-  overflow: hidden;
-  background-color: var(--white);
-}
-
-/* ⚡ 佈局大改寫：改用 100% 寬高的大排版容器，讓右側能真正吃滿邊緣 */
-.s4-three-column-container {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  box-sizing: border-box;
-  padding: 0; /* 拔除全域外邊距，讓右邊大圖可以撞擊邊緣 */
-}
-
-/* ── 🎭 1. 左欄：文字排版（優雅向右靠攏版） ── */
-.s4-col-left-meta {
-  flex: 1;
-  max-width: 480px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  
-  /* ⚡ 核心微調：從 5rem 大幅增加到 12vw，將整塊文字優雅地往右推，留出左側的大氣空白 */
-  padding-left: 12vw; 
-  
-  /* 加上絲滑的轉場，確保在拉動視窗時適應得很優雅 */
-  transition: padding 0.4s ease; 
-}
-.s4-col-left-meta .combined-section-label {
-  font-size: 0.52rem;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-  color: rgba(10, 10, 10, 0.4);
-  margin-bottom: 1.5rem;
-}
-
-.s4-col-left-meta .combined-headline {
-  font-size: clamp(2rem, 4vw, 3.5rem);
-  font-weight: 200;
-  letter-spacing: -0.01em;
-  line-height: 0.9;
-  text-transform: uppercase;
-  color: var(--black);
-  margin-bottom: 2.5rem;
-}
-
-.s4-col-left-meta .combined-text-block {
-  max-width: 360px;
-}
-
-.s4-col-left-meta .combined-paragraph {
-  font-size: 0.82rem;
-  line-height: 1.9;
-  color: var(--mid);
-  font-weight: 300;
-  text-align: justify;
-}
-
-
-/* ── 🎨 2. 中欄：直列精緻色票（隨大圖尺寸自動完美依附） ── */
-.s4-col-middle-palette {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 1.8rem;
-  margin-left: auto;
-  padding-right: 2.5rem; /* ⚡ 完美的關鍵：鎖定這段妳覺得最讚的距離，圖變大它就會自動往左靠 */
-  z-index: 5; /* 確保在交界處絕對不會被圖片壓住 */
-}
-
-.palette-swatch-item {
-  display: flex;
-  flex-direction: row-reverse; 
-  align-items: center;
-  gap: 1rem;
-  cursor: default;
-}
-
-.swatch-circle {
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  border: 1px solid rgba(10, 10, 10, 0.08);
-  box-shadow: 0 4px 10px rgba(10, 10, 10, 0.03);
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  will-change: transform;
-}
-
-.swatch-label {
-  font-size: 0.52rem;
-  letter-spacing: 0.15em;
-  font-family: var(--font-display);
-  color: rgba(10, 10, 10, 0.35);
-  font-weight: 300;
-  opacity: 0; 
-  transform: translateX(8px);
-  transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.palette-swatch-item:hover .swatch-circle { transform: scale(1.25); }
-.palette-swatch-item:hover .swatch-label { opacity: 1; transform: translateX(0); }
-
-
-/* ── 🖼️ 3. 右欄：直式 2:3 全滿版無邊框渲染層（頂天立地版） ── */
-.s4-col-right-render {
-  height: 100%;       /* 高度直接吃滿整個 Section 的 100vh */
-  aspect-ratio: 2 / 3; /* ⚡ 1. 死死鎖定妳要的直式 2:3 黃金比例 */
-  flex-shrink: 0;      /* 防止在大螢幕上被文字擠壓變形 */
-}
-
-.vertical-render-box {
-  width: 100%;
-  height: 100%;
-  position: relative;
-  overflow: hidden;
-  /* ⚡ 2. 徹底拔除原有的相框白邊、外框線與下沉陰影，乾淨切邊 */
-  background: none;
-  border: none;
-  box-shadow: none;
-}
-
-.vertical-render-box img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover; /* ⚡ 超完美填滿：不論視窗怎麼拉，永遠保持 2:3 且不扭曲 */
-  display: block;
-  filter: brightness(0.98);
-  transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1); /* 讓滿版大圖的細微放大更有電影感 */
-}
-
-/* 滿版大圖的微奢滑動回饋 */
-.vertical-render-box:hover img {
-  transform: scale(1.03); /* 滑鼠移入時，圖片在滿版框內微微放大 */
-}
-
-/* ⚡ 美術館標籤：因為大圖已經滿版撞牆，標籤改為「優雅地懸浮在圖片左下角」 */
-.vertical-render-caption {
-  position: absolute;
-  bottom: 4rem; /* 垂直對齊左邊的 Scroll 提示線高度，產生幾何秩序 */
-  left: 2rem;
-  z-index: 10;
-  font-size: 0.52rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.6); /* 在大圖上改為微透明反白字，高奢感拉滿 */
-  font-weight: 300;
-  white-space: nowrap;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); /* 防止大圖太亮時字看不見 */
-}
-
-
-/* ── ➖ 底部 Scroll 提示線 ── */
-.s6-global-hint {
-  position: absolute;
-  bottom: 4rem; left: 5rem;
-  font-size: 0.52rem; letter-spacing: 0.25em; text-transform: uppercase;
-  color: rgba(10, 10, 10, 0.3); font-weight: 300;
-  display: flex; align-items: center; gap: 0.6rem; z-index: 10;
-}
-.s6-hint-line { width: 30px; height: 1px; background: rgba(10, 10, 10, 0.3); }
 
 
 /* ═══════════════════════════════════════
@@ -591,7 +686,7 @@ body.light-bg.cursor-grow #cursor-ring { background-color: rgba(10, 10, 10, 0.05
   position: absolute; 
   inset: 0; 
   z-index: 0;
-  background-image: url('img/project5-forest.jpg');
+  background-image: url('img/project6-urban.jpg');
   background-size: cover;
   background-position: center;
   filter: brightness(0.3) saturate(0.5);
@@ -931,16 +1026,16 @@ body.light-bg.cursor-grow #cursor-ring { background-color: rgba(10, 10, 10, 0.05
     <div class="proj-hero-vignette"></div>
 
     <div class="proj-hero-content">
-      <p class="proj-index">004 · 2026 · Interior Design</p>
-      <h1 class="proj-title">The Warm<br>Living</h1>
+      <p class="proj-index">005 · 2026 · Game Environment</p>
+      <h1 class="proj-title">Sculpture<br>in the Woods</h1>
       <div class="proj-meta-row">
         <div class="proj-meta-item">
           <span class="proj-meta-label">Discipline</span>
-          <span class="proj-meta-value">Interior</span>
+          <span class="proj-meta-value">3D environment</span>
         </div>
         <div class="proj-meta-item">
           <span class="proj-meta-label">Tools</span>
-          <span class="proj-meta-value">AutoCAD · SketchUP</span>
+          <span class="proj-meta-value">Blender · AfterEffect</span>
         </div>
         <div class="proj-meta-item">
           <span class="proj-meta-label">Year</span>
@@ -962,43 +1057,116 @@ body.light-bg.cursor-grow #cursor-ring { background-color: rgba(10, 10, 10, 0.05
   <section id="proj-overview">
     <div class="overview-left sr">
       <p class="overview-eyebrow">Project Overview</p>
-      <h2 class="overview-heading">The Warm<br>Living</h2>
+      <h2 class="overview-heading">Environmental<br>Visualisation</h2>
       <p class="overview-body">
-      Natural light enters from the side, casting soft shadows that highlight the curvature of furniture and the texture of fabrics and leather. A restrained colour palette is used to balance warm tones with neutral surfaces, creating depth without overwhelming the space.
+      Sculpture in the Woods explores the relationship between sculpture and landscape through a carefully composed forest environment. Layered vegetation, varied natural elements, and atmospheric lighting are used to create a sense of depth, immersion, and quiet isolation. The composition guides the viewer’s attention towards the sculpture while maintaining the richness and realism of the surrounding woodland, resulting in a contemplative and cinematic scene.
       </p>
     </div>
     <div class="overview-right sr sr-d2">
       <ul class="overview-specs">
         <li class="spec-row">
           <span class="spec-key">Type</span>
-          <span class="spec-val">Interior</span>
-        </li>
-        <li class="spec-row">
-          <span class="spec-key">Design Tool</span>
-          <span class="spec-val">AutoCAD</span>
+          <span class="spec-val">3D Environment</span>
         </li>
         <li class="spec-row">
           <span class="spec-key">Modelling</span>
-          <span class="spec-val">SketchUP, Blender</span>
+          <span class="spec-val">Blender</span>
+        </li>
+        <li class="spec-row">
+          <span class="spec-key">composition</span>
+          <span class="spec-val">AfterEffects</span>
         
       </ul>
     </div>
   </section>
+<!-- ══════════════════════════
+       S2.5 — Full img
+  ══════════════════════════ -->
+<section id="proj-visual-strategy-s4">
+  
+  <div class="s4-video-cinema-bg">
+    <video autoplay loop muted playsinline webkit-playsinline id="s4CinemaVideo">
+      <source src="sculpture_img/video.mov" type="video/mp4">
+    </video>
+  </div>
+
+  <div class="s4-cinema-overlay"></div>
+
+  <div class="s4-cinema-content-container">
+    
+    <div class="s4-cinema-meta-content s4-element-hidden-down">
+      <p class="combined-section-label">Process </p>
+      <h2 class="combined-headline">Design<br>Process </h2>
+      <div class="combined-text-block">
+        <p class="combined-paragraph">
+        The environment is constructed through layered vegetation and natural elements to achieve depth and realism.
+Multiple variations of grass, flowers, rocks, and branches are scattered across the terrain to avoid repetition and create a more organic composition.
+Different types of trees are used to introduce variation in scale, density, and silhouette, enhancing the spatial richness of the scene.
+
+The composition is carefully balanced to guide the viewer’s eye towards the cabin, while maintaining a natural and immersive environment.  
+        </p>
+      </div>
+    </div>
+
+    <div class="s4-node-screenshot-layer s4-element-hidden-right">
+      <div class="node-image-wrapper">
+        <img src="sculpture_img/m.png" alt="Material Node Graph Setup">
+        <p class="node-graph-caption">// Procedural Material Node Graph Setup</p>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="s6-global-hint">
+    <div class="s6-hint-line"></div>
+    <span id="s6HintText">Scroll</span>
+  </div>
+</section>
+
+<!-- ══════════════════════════
+       S3 — Full img
+  ══════════════════════════ -->
+<section id="proj-visual-strategy-s4">
+  <div class="s4-gallery-container">
+    
+    <div class="s4-gallery-center-art">
+      <div class="gallery-art-box">
+        <img src="sculpture_img/render3.jpg" alt="Visual Strategy Study">
+      </div>
+    </div>
+
+    <div class="s4-gallery-bottom-caption">
+      <p class="gallery-paragraph">
+        The scene is enveloped in a soft layer of mist, creating a sense of distance and ambiguity.
+Light is diffused through the atmosphere, flattening contrast and enhancing the feeling of stillness.
+The isolated cabin sits quietly within the landscape, evoking a sense of solitude and introspection, as if removed from the rhythm of everyday life.
+
+      </p>
+      <span class="gallery-index">// Atmospheric Study</span>
+    </div>
+
+  </div>
+
+  <div class="s6-global-hint">
+    <div class="s6-hint-line"></div>
+    <span id="s6HintText">Scroll</span>
+  </div>
+</section>
 
 
   <!-- ══════════════════════════
-       S3 — BA
+       S4 — BA
   ══════════════════════════ -->
 <section id="proj-render-comp-s5">
     
     <div class="render-stage">
       
       <div class="render-layer AO-layer">
-        <img src="warm_img/vp1.jpeg" alt="Ambient Occlusion Render">
+        <img src="sculpture_img/vp1.jpg" alt="Ambient Occlusion Render">
       </div>
 
       <div class="render-layer Final-layer">
-        <img src="warm_img/render2.jpg" alt="When Space Remembers — Main Render">
+        <img src="sculpture_img/render2.jpg" alt="When Space Remembers — Main Render">
       </div>
 
       <div class="render-handle-wrapper" id="compLine">
@@ -1012,61 +1180,6 @@ body.light-bg.cursor-grow #cursor-ring { background-color: rgba(10, 10, 10, 0.05
   </section>
 
   
-<!-- ══════════════════════════
-       S4 — Full img
-  ══════════════════════════ -->
-<section id="proj-visual-strategy-s4">
-  <div class="s4-three-column-container">
-    
-    <div class="s4-col-left-meta">
-      <p class="combined-section-label sr">Visual Strategy</p>
-      <h2 class="combined-headline sr">VISUAL<br>STRATEGY</h2>
-      <div class="combined-text-block sr sr-d1">
-        <p class="combined-paragraph">
-          This study focuses on the interaction between materials and lighting in shaping interior atmosphere. 
-          Warm-toned materials, soft textiles, and reflective surfaces are combined to create visual richness and tactile depth. 
-          Directional lighting is used to cast defined shadows, emphasising form and surface texture, while softer ambient light maintains overall balance.
-        </p>
-      </div>
-    </div>
-
-    <div class="s4-col-middle-palette sr sr-d2">
-      <div class="palette-swatch-item">
-        <span class="swatch-circle" style="background: #4A3A2F;"></span>
-        <span class="swatch-label">#4A3A2F</span>
-      </div>
-      <div class="palette-swatch-item">
-        <span class="swatch-circle" style="background: #A85C3A;"></span>
-        <span class="swatch-label">#A85C3A</span>
-      </div>
-      <div class="palette-swatch-item">
-        <span class="swatch-circle" style="background: #D8CFC4;"></span>
-        <span class="swatch-label">#D8CFC4</span>
-      </div>
-      <div class="palette-swatch-item">
-        <span class="swatch-circle" style="background: #F2EFEA;"></span>
-        <span class="swatch-label">#F2EFEA</span>
-      </div>
-      <div class="palette-swatch-item">
-        <span class="swatch-circle" style="background: #6F7D5C;"></span>
-        <span class="swatch-label">#6F7D5C</span>
-      </div>
-    </div>
-
-    <div class="s4-col-right-render sr sr-d3">
-      <div class="vertical-render-box">
-        <img src="warm_img/render3.jpg" alt="Visual Strategy Study">
-        <p class="vertical-render-caption">// Material & Light Atmosphere Study</p>
-      </div>
-    </div>
-
-  </div>
-
-  <div class="s6-global-hint">
-    <div class="s6-hint-line"></div>
-    <span id="s6HintText">Scroll</span>
-  </div>
-</section>
 
 
 
@@ -1101,11 +1214,11 @@ body.light-bg.cursor-grow #cursor-ring { background-color: rgba(10, 10, 10, 0.05
 
     <div class="next-hero-wrapper">
       <div class="next-content">
-        <a href="project-sculpture.html" class="next-title">Sculpture<br>in the Woods</a>
+        <a href="project-urban.html" class="next-title">Urban<br>Hideaway</a>
       </div>
       
       <div class="next-bottom">
-        <span class="next-meta">005 · Game Environment · Blender</span>
+        <span class="next-meta">005 · Architecture · Rhino</span>
         
         <a href="#" class="next-back-to-top" id="backToTopBtn" aria-label="Back to top">
           <span class="btn-arrow">↑</span>
@@ -1266,53 +1379,61 @@ if (container) {
 }
 
 
-/* ── 6. 🎬 建築圖 SECTION 4 — 雙幕定格滾動切換核心 ── */
+/* ── 🎬 VISUAL STRATEGY — 全螢幕影片與節點雙軸滑入控制核心（獨立不卡死版） ── */
 document.addEventListener("DOMContentLoaded", () => {
-  const s4Section = document.getElementById('proj-process');
-  const scene1 = document.querySelector('.s4-scene-1');
-  const scene2 = document.querySelector('.s4-scene-2');
+  const cinemaSection = document.getElementById('proj-visual-strategy-s4');
+  const cinemaText = document.querySelector('.s4-cinema-meta-content');
+  const cinemaNodeImg = document.querySelector('.s4-node-screenshot-layer');
 
-  let s4CurrentPhase = 1; // 1 = 第一幕 (Analysis), 2 = 第二幕 (Section)
-  let s4IsTransitioning = false;
+  let cinemaCurrentPhase = 1; 
+  let cinemaIsTransitioning = false;
 
-  if (container && s4Section && scene1 && scene2) {
-    container.addEventListener('wheel', (e) => {
-      const rect = s4Section.getBoundingClientRect();
+  // ⚡ 核心修正：確保元件都存在於畫面上，才啟動監聽，完全不依賴外部變數
+  if (cinemaSection && cinemaText && cinemaNodeImg) {
+    
+    // 直接監聽全域視窗的滾輪事件（最安全、絕對能抓到）
+    window.addEventListener('wheel', (e) => {
+      const rect = cinemaSection.getBoundingClientRect();
       
+      // 💡 只有當這個 Section 頂部精準對齊視窗頂端（吸附住）時，才攔截滾輪
       if (Math.abs(rect.top) > 10) return;
 
       if (e.deltaY > 0) {
-        if (s4CurrentPhase === 1) {
+        // 🛑 【向下滾動】第一幕 -> 第二幕
+        if (cinemaCurrentPhase === 1) {
           e.preventDefault();
           e.stopPropagation();
           
-          if (!s4IsTransitioning) {
-            s4IsTransitioning = true;
-            scene1.classList.add('s4-fade-out');
-            scene2.classList.remove('s4-fade-out');
+          if (!cinemaIsTransitioning) {
+            cinemaIsTransitioning = true;
+            cinemaSection.classList.add('s4-phase2-active'); // 背景變暗
+            cinemaText.classList.remove('s4-element-hidden-down'); // 文字升起
+            cinemaNodeImg.classList.remove('s4-element-hidden-right'); // 節點圖滑入
             
             setTimeout(() => {
-              s4CurrentPhase = 2;
-              s4IsTransitioning = false;
-            }, 800);
+              cinemaCurrentPhase = 2;
+              cinemaIsTransitioning = false;
+            }, 1400); // 1.4秒絲滑過渡
           }
           return;
         }
       } 
       else if (e.deltaY < 0) {
-        if (s4CurrentPhase === 2) {
+        // 🛑 【向上滾動】第二幕 -> 退回第一幕
+        if (cinemaCurrentPhase === 2) {
           e.preventDefault();
           e.stopPropagation();
           
-          if (!s4IsTransitioning) {
-            s4IsTransitioning = true;
-            scene2.classList.add('s4-fade-out');
-            scene1.classList.remove('s4-fade-out');
+          if (!cinemaIsTransitioning) {
+            cinemaIsTransitioning = true;
+            cinemaText.classList.add('s4-element-hidden-down'); // 文字退場
+            cinemaNodeImg.classList.add('s4-element-hidden-right'); // 節點圖退場
+            cinemaSection.classList.remove('s4-phase2-active'); // 背景恢復
             
             setTimeout(() => {
-              s4CurrentPhase = 1;
-              s4IsTransitioning = false;
-            }, 800);
+              cinemaCurrentPhase = 1;
+              cinemaIsTransitioning = false;
+            }, 1400);
           }
           return;
         }
