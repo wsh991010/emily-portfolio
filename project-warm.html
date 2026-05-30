@@ -559,16 +559,89 @@ body.light-bg #cursor-ring { border-color: rgba(10, 10, 10, 0.25) !important; }
 body.light-bg.cursor-grow #cursor-ring { background-color: rgba(10, 10, 10, 0.05) !important; border-color: var(--black) !important; }
 
 
-/* 📱 Mobile 平板與手機安全配置 */
+/* ═══════════════════════════════════════
+   📱 S4 — VISUAL STRATEGY Mobile 平板與手機完美自適應
+═══════════════════════════════════════ */
 @media (max-width: 1100px) {
-  .s4-three-column-container { flex-direction: column; justify-content: flex-start; align-items: flex-start; padding: 6rem 2rem; height: auto; }
-  .s4-col-left-meta { max-width: 100%; padding-left: 0; margin-bottom: 3rem; }
-  .s4-col-middle-palette { flex-direction: row; flex-wrap: wrap; justify-content: flex-start; padding: 0; margin-left: 0; margin-bottom: 3rem; }
-  .palette-swatch-item { flex-direction: row; }
-  .swatch-label { opacity: 1; transform: none; }
-  .s4-col-right-render { width: 100%; height: 65vh; aspect-ratio: auto; } /* 手機版不強求 100vh 滿版 */
-  .vertical-render-caption { left: 1.5rem; bottom: 1.5rem; }
-  .s6-global-hint { display: none; }
+  
+  /* ⚡ 核心修正 1：徹底解鎖一頁高度限制，允許頁面隨內容正常長高、順暢向下滑動 */
+  #proj-visual-strategy-s4 {
+    height: auto !important;
+    overflow: visible !important;
+    position: relative !important;
+  }
+
+  /* 垂直佈局優化 */
+  .s4-three-column-container {
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    padding: 6rem 2rem 4rem 2rem; /* 給予精緻的四周內邊距 */
+    height: auto !important;
+  }
+
+  /* ── 🎭 左欄文字：手機端寬度釋放 ── */
+  .s4-col-left-meta {
+    max-width: 100%;
+    padding-left: 0 !important; /* 拔除桌機版的 12vw 大推移 */
+    margin-bottom: 3.5rem;
+  }
+  .s4-col-left-meta .combined-headline {
+    font-size: 2.2rem; /* 稍微縮小字級，防止手機上斷行過碎 */
+    margin-bottom: 1.5rem;
+  }
+
+  /* ── 🎨 中欄色票：橫向優雅排開 ── */
+  .s4-col-middle-palette {
+    flex-direction: row !important;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 1.5rem 2rem; /* 橫排的上下左右間距 */
+    padding: 0;
+    margin-left: 0 !important;
+    margin-bottom: 4rem; /* 與下方大圖保持大氣的呼吸空間 */
+    width: 100%;
+  }
+  .palette-swatch-item {
+    flex-direction: row !important; /* 文字在左，圈圈在右 */
+    gap: 0.6rem;
+  }
+  .swatch-label {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  /* ── 🖼️ 右欄渲染圖：⚡ 完美保留不被切掉的核心設定 ── */
+  .s4-col-right-render {
+    width: 100% !important;   /* 寬度吃滿手機螢幕（扣除外邊距） */
+    height: auto !important;  /* ⚡ 關鍵：高度改為自動，絕對不硬塞 100% */
+    aspect-ratio: 2 / 3 !important; /* ⚡ 靈魂：繼續在手機上剛性維持妳最愛的 2:3 直式黃金比例！ */
+    flex-shrink: 0;
+  }
+
+  .vertical-render-box {
+    width: 100%;
+    height: 100%;
+  }
+  
+  .vertical-render-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* 完美填滿 2:3 框線，絕不扭曲變形 */
+  }
+
+  /* 圖片左下角的美術館懸浮標籤 */
+  .vertical-render-caption {
+    left: 1.5rem;
+    bottom: 1.5rem;
+    font-size: 0.52rem;
+    white-space: nowrap;
+  }
+
+  /* 隱藏手機端的提示線 */
+  .s6-global-hint {
+    display: none !important;
+  }
 }
 /* ═══════════════════════════════════════
    SECTION 8 — NEXT PROJECT (HERO 下沉版)
