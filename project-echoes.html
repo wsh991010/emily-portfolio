@@ -1,0 +1,1662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sculpture in the woods — Emily Wang</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100;0,9..40,200;0,9..40,300;0,9..40,400;1,9..40,200&display=swap" rel="stylesheet">
+<style>
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+:root {
+  --black: #0A0A0A;
+  --white: #F8F8F6;
+  --gray:  #888;
+  --mid:   #555;
+  --font-display: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+}
+
+html, body { height: 100%; scroll-behavior: smooth; }
+
+body {
+  background: var(--black);
+  color: var(--white);
+  font-family: var(--font-body);
+  font-weight: 300;
+  cursor: none;
+  overflow: hidden;
+}
+
+/* ─────────────────────────────────────────
+   SCROLL SNAP CONTAINER
+───────────────────────────────────────── */
+.scroll-container {
+  height: 100vh;
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+}
+.scroll-container::-webkit-scrollbar { display: none; }
+
+section {
+  height: 100vh;
+  width: 100%;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ─────────────────────────────────────────
+   CURSOR
+───────────────────────────────────────── */
+#cursor-dot {
+  width: 6px; height: 6px;
+  background: var(--white);
+  border-radius: 50%;
+  position: fixed; z-index: 9999;
+  pointer-events: none;
+  transform: translate(-50%,-50%);
+  transition: opacity .3s;
+}
+#cursor-ring {
+  width: 32px; height: 32px;
+  border: 1px solid rgba(248,248,246,0.5);
+  border-radius: 50%;
+  position: fixed; z-index: 9998;
+  pointer-events: none;
+  transform: translate(-50%,-50%);
+  transition: border-color .3s,
+              width .4s cubic-bezier(.16,1,.3,1),
+              height .4s cubic-bezier(.16,1,.3,1);
+}
+body.light-bg #cursor-dot  { background: var(--black); }
+body.light-bg #cursor-ring { border-color: rgba(10,10,10,0.35); }
+body.cursor-grow #cursor-ring { width: 52px; height: 52px; }
+
+
+/* ─────────────────────────────────────────
+   NAV  (exact match with main portfolio)
+───────────────────────────────────────── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0;
+  z-index: 500;
+  padding: 2rem 3rem;
+  display: flex; align-items: center; justify-content: space-between;
+  mix-blend-mode: difference;
+}
+.nav-logo {
+  font-size: 0.72rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--white);
+  text-decoration: none;
+  font-weight: 400;
+}
+.nav-back {
+  display: flex; align-items: center; gap: 0.6rem;
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--white);
+  text-decoration: none;
+  font-weight: 300;
+  opacity: .55;
+  transition: opacity .3s, gap .3s;
+}
+.nav-back:hover { opacity: 1; gap: 0.9rem; }
+.nav-back-arrow { font-size: 0.8rem; }
+
+/* mobile */
+@media (max-width: 900px) {
+  nav { padding: 1.5rem; }
+}
+
+
+/* ═══════════════════════════════════════
+   SECTION 1 — HERO / TITLE CARD
+   Full-screen project cover image
+═══════════════════════════════════════ */
+#proj-hero {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  background: var(--black);
+  /* ⚡ 核心：開啟全域的 3D 空間深度感 */
+  perspective: 1000px; 
+}
+
+.proj-hero-bg {
+  position: absolute; 
+  inset: -40px; /* ⚡ 關鍵：故意讓四周往外擴大 40px，這樣圖片晃動時才不會邊緣穿幫漏出黑底 */
+  z-index: 0;
+  background-image: url('img/project5-forest.jpg'); /* 放你渲染得最漂亮的那張主圖 */
+  background-size: cover;
+  background-position: center;
+  filter: brightness(0.75) saturate(0.85);
+  transform-origin: center;
+  will-change: transform;
+  /* 讓滑鼠離開時，圖片能絲滑地彈回原位 */
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), filter 0.5s ease;
+}
+
+/* 讓滑鼠 hover 到 Hero 區塊時，圖片微微變亮，細節釋放 */
+#proj-hero:hover .proj-hero-bg {
+  filter: brightness(0.65) saturate(0.95);
+}
+
+.proj-hero-vignette {
+  position: absolute; inset: 0; z-index: 1;
+  pointer-events: none; /* 讓滑鼠可以穿透遮罩，順利偵測到背景圖 */
+  background:
+    linear-gradient(to bottom,
+      rgba(10,10,10,0.25) 0%,
+      transparent 30%,
+      transparent 55%,
+      rgba(10,10,10,0.85) 100%);
+}
+
+
+.proj-hero-content {
+  position: relative; z-index: 2;
+  padding: 0 3rem 4.5rem;
+}
+
+.proj-index {
+  font-size: 0.58rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: rgba(248,248,246,0.35);
+  font-weight: 300;
+  margin-bottom: 1.2rem;
+  opacity: 0;
+  animation: fadeUp .8s ease forwards .3s;
+}
+.proj-title {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 7vw, 6.5rem);
+  font-weight: 200;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  line-height: 0.92;
+  margin-bottom: 2rem;
+  opacity: 0;
+  animation: fadeUp .9s cubic-bezier(.16,1,.3,1) forwards .45s;
+}
+.proj-meta-row {
+  display: flex;
+  gap: 3rem;
+  flex-wrap: wrap;
+  opacity: 0;
+  animation: fadeUp .9s ease forwards .6s;
+}
+.proj-meta-item { display: flex; flex-direction: column; gap: 0.3rem; }
+.proj-meta-label {
+  font-size: 0.5rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: rgba(248,248,246,0.3);
+  font-weight: 300;
+}
+.proj-meta-value {
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(248,248,246,0.75);
+  font-weight: 300;
+}
+
+/* scroll hint */
+.proj-scroll-hint {
+  position: absolute; bottom: 2rem; right: 3rem; z-index: 2;
+  display: flex; align-items: center; gap: .6rem;
+  font-size: 0.5rem; letter-spacing: 0.25em; text-transform: uppercase;
+  color: rgba(248,248,246,0.2);
+  opacity: 0; animation: fadeIn 1.5s ease forwards 1.2s;
+}
+.proj-scroll-line {
+  width: 40px; height: 1px;
+  background: linear-gradient(to right, transparent, rgba(248,248,246,0.3));
+  animation: scanRight 2s ease-in-out infinite;
+}
+@keyframes scanRight {
+  0%   { transform: scaleX(0); transform-origin: left; }
+  50%  { transform: scaleX(1); transform-origin: left; }
+  51%  { transform: scaleX(1); transform-origin: right; }
+  100% { transform: scaleX(0); transform-origin: right; }
+}
+
+
+/* ═══════════════════════════════════════
+   SECTION 2 — OVERVIEW (white)
+═══════════════════════════════════════ */
+#proj-overview {
+  background: var(--white);
+  color: var(--black);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  padding: 8rem 3rem;
+  gap: 5rem;
+}
+
+.overview-left {}
+.overview-eyebrow {
+  font-size: 0.55rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--gray);
+  margin-bottom: 2rem;
+  font-weight: 300;
+}
+.overview-heading {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  font-weight: 200;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  line-height: 1.05;
+  margin-bottom: 2.5rem;
+}
+.overview-body {
+  font-size: 0.88rem;
+  line-height: 2;
+  color: var(--mid);
+  font-weight: 300;
+  max-width: 420px;
+}
+
+.overview-right {}
+.overview-specs { list-style: none; border-top: 1px solid rgba(10,10,10,0.1); }
+.spec-row {
+  display: flex; justify-content: space-between; align-items: baseline;
+  padding: 1rem 0;
+  border-bottom: 1px solid rgba(10,10,10,0.07);
+}
+.spec-key {
+  font-size: 0.58rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gray);
+  font-weight: 300;
+}
+.spec-val {
+  font-size: 0.72rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  font-weight: 300;
+  text-align: right;
+}
+
+/* ═══════════════════════════════════════
+   S2.5 — VISUAL STRATEGY (全螢幕影片雙幕＋節點滑入核心樣式)
+═══════════════════════════════════════ */
+#proj-visual-strategy-s4 {
+  position: relative;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+  background-color: #000000;
+}
+
+/* 🌆 滿版影片層 */
+.s4-video-cinema-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%; height: 100%;
+  z-index: 1;
+}
+.s4-video-cinema-bg video {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* 🎭 電影暗度遮罩 */
+.s4-cinema-overlay {
+  position: absolute;
+  inset: 0;
+  background: #000000;
+  opacity: 0.15;
+  z-index: 2;
+  transition: opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+#proj-visual-strategy-s4.s4-phase2-active .s4-cinema-overlay {
+  opacity: 0.65; /* 有節點圖加入，遮罩稍微再加深一點點，襯托去背 PNG 的線條 */
+}
+
+/* 📦 內容大彈性容器 */
+.s4-cinema-content-container {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* 左右拉開 */
+  box-sizing: border-box;
+}
+
+/* ── 🎭 左欄文字控制（保持 12vw 大留白，由下往上滑入） ── */
+.s4-cinema-meta-content {
+  flex: 1;
+  max-width: 500px;
+  padding-left: 12vw;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+/* 初始狀態：隱形並沉在下方 */
+.s4-cinema-meta-content.s4-element-hidden-down {
+  transform: translateY(60px);
+  opacity: 0;
+}
+
+.s4-cinema-meta-content .combined-section-label { font-size: 0.52rem; letter-spacing: 0.3em; text-transform: uppercase; color: rgba(255, 255, 255, 0.45); margin-bottom: 1.5rem; }
+.s4-cinema-meta-content .combined-headline { font-size: clamp(2rem, 4vw, 3.5rem); font-weight: 200; letter-spacing: -0.01em; line-height: 0.9; text-transform: uppercase; color: #ffffff; margin-bottom: 2.5rem; }
+.s4-cinema-meta-content .combined-text-block { max-width: 360px; }
+.s4-cinema-meta-content .combined-paragraph { font-size: 0.82rem; line-height: 1.9; color: rgba(255, 255, 255, 0.75); font-weight: 300; text-align: justify; }
+
+
+/* ── 🔌 右欄：去背材質節點展示層（⚡ 核心：由右往左滑入） ── */
+.s4-node-screenshot-layer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 8vw; /* 讓節點圖與右螢幕邊緣保持優雅的呼吸感 */
+  z-index: 5;
+  transition: transform 1.4s cubic-bezier(0.16, 1, 0.3, 1), /* 刻意比文字慢 0.2 秒，形成時間差的高級層次 */
+              opacity 1.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+/* ⚡ 初始狀態：隱形並藏在螢幕最右側偏後 80px 處 */
+.s4-node-screenshot-layer.s4-element-hidden-right {
+  transform: translateX(80px);
+  opacity: 0;
+}
+
+/* 節點圖容器控制 */
+.node-image-wrapper {
+  position: relative;
+  width: 35vw; /* 讓它在大螢幕上佔據精緻、不壓迫的黃金寬度 */
+}
+.node-image-wrapper img {
+  width: 100%;
+  height: auto;
+  display: block;
+  filter: drop-shadow(0 15px 35px rgba(0, 0, 0, 0.4)); /* 幫去背 PNG 加上細緻大氣的立體懸浮陰影 */
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+/* 鼠標摸到時的微立體回饋 */
+.node-image-wrapper:hover img {
+  transform: scale(1.02) rotate(0.5deg); /* 微微放大並帶有一絲絲設計師的靈動旋轉 */
+}
+
+/* 節點圖下方的小字標籤 */
+.node-graph-caption {
+  position: absolute;
+  bottom: -2.2rem;
+  right: 0;
+  font-size: 0.52rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.4);
+  font-weight: 300;
+  white-space: nowrap;
+}
+
+/* 提示線同步轉白對齊 */
+#proj-visual-strategy-s4 .s6-global-hint { color: rgba(255, 255, 255, 0.4); left: 12vw; }
+#proj-visual-strategy-s4 .s6-hint-line { background: rgba(255, 255, 255, 0.3); }
+
+/* 📱 RWD 手機平板安全自適應 */
+@media (max-width: 1100px) {
+  .s4-cinema-content-container { flex-direction: column; justify-content: flex-start; align-items: flex-start; padding: 6rem 2rem; height: auto; overflow: visible; }
+  .s4-cinema-meta-content { max-width: 100%; padding-left: 0; margin-bottom: 4rem; }
+  .s4-node-screenshot-layer { width: 100%; padding-right: 0; justify-content: center; padding-bottom: 4rem; }
+  .node-image-wrapper { width: 80vw; }
+  .node-graph-caption { left: 0; right: auto; }
+}
+
+/* ── ⚡ 第二幕激活時：強行讓隱形的文字與材質圖歸位 ── */
+#proj-visual-strategy-s4.s4-phase2-active .s4-cinema-meta-content {
+  transform: translateY(0) !important;
+  opacity: 1 !important;
+}
+
+#proj-visual-strategy-s4.s4-phase2-active .s4-node-screenshot-layer {
+  transform: translateX(0) !important;
+  opacity: 1 !important;
+}
+
+
+/* ═══════════════════════════════════════
+   S3 — VISUAL STRATEGY (純粹主義：絕對留白防撞版)
+═══════════════════════════════════════ */
+#proj-visual-strategy-s4 {
+  position: relative;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+  background-color: var(--white);
+}
+
+.s4-gallery-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  box-sizing: border-box;
+  
+  /* ⚡ 核心改動：利用 flex 大佈局，讓左邊大圖與右邊文字各據一方 */
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0 8vw; /* 讓整頁內容的左右邊緣對齊，呈現極致的包裝感 */
+}
+
+
+/* ── 🖼️ 1. 左側大圖舞台（剛性寬度鎖定，絕對防撞） ── */
+.s4-gallery-left-art {
+  display: flex;
+  align-items: center;
+  z-index: 1;
+}
+
+.gallery-art-box {
+  /* ⚡ 核心物理防禦：鎖定大圖寬度最多只佔螢幕的 46% (46vw)，
+     這樣右邊會強行留下 54% 的純白空間，文字跟圖片這輩子絕對撞不到！ */
+  width: 46vw; 
+  aspect-ratio: 16 / 10;
+  position: relative;
+  overflow: hidden;
+  background: var(--white);
+  border: 1px solid rgba(10, 10, 10, 0.04);
+  box-shadow: 
+    0 30px 70px rgba(10, 10, 10, 0.03),
+    0 10px 20px rgba(10, 10, 10, 0.01);
+  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.gallery-art-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.gallery-art-box:hover { transform: translateY(-6px); }
+.gallery-art-box:hover img { transform: scale(1.02); }
+
+
+/* ── ✍️ 2. 右下角微縮展品敘述（極簡純粹主義排版） ── */
+.s4-gallery-bottom-caption {
+  position: absolute;
+  bottom: 5rem; /* 垂直高度與左下提示線死死對齊 */
+  right: 8vw;   /* 靠緊右側邊緣邊界 */
+  max-width: 300px; /* 收窄文字，讓斷行呈現詩意 */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.2rem;
+  z-index: 2;
+}
+
+.s4-gallery-bottom-caption .gallery-paragraph {
+  font-size: 0.82rem;
+  line-height: 1.9;
+  color: var(--black); /* 使用妳標準的黑字，在純白底上對比度最高、最乾淨 */
+  font-weight: 300;
+  text-align: justify;
+  margin: 0;
+  
+  /* ⚡ 彻底拔除僵硬的 box 背景，回歸純文字的優雅與呼吸 */
+  background: none;
+  padding: 0;
+}
+
+.s4-gallery-bottom-caption .gallery-index {
+  font-size: 0.52rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(10, 10, 10, 0.35); /* 微弱的註腳感 */
+  font-weight: 300;
+  font-family: var(--font-display);
+}
+
+
+/* ── ➖ 3. 左下角 Scroll 提示線（與左側對齊線一致） ── */
+.s6-global-hint {
+  position: absolute;
+  bottom: 5rem;
+  left: 8vw; /* ⚡ 完美契合左側 padding 的起點，左邊線、右邊線各司其職 */
+  font-size: 0.52rem; 
+  letter-spacing: 0.25em; 
+  text-transform: uppercase;
+  color: rgba(10, 10, 10, 0.3); 
+  font-weight: 300;
+  display: flex; 
+  align-items: center; 
+  gap: 0.6rem; 
+  z-index: 10;
+}
+.s6-hint-line { width: 30px; height: 1px; background: rgba(10, 10, 10, 0.2); }
+
+
+/* 📱 RWD 平板手機自適應降級 */
+@media (max-width: 1100px) {
+  .s4-gallery-container { flex-direction: column; justify-content: flex-start; align-items: flex-start; padding: 6rem 2rem; }
+  #proj-visual-strategy-s4 { height: auto; overflow: visible; }
+  .gallery-art-box { width: 100%; aspect-ratio: 16 / 10; margin-bottom: 3rem; }
+  .s4-gallery-bottom-caption { position: relative; bottom: auto; right: auto; max-width: 100%; padding-bottom: 4rem; }
+  .s6-global-hint { display: none; }
+}
+/* ═══════════════════════════════════════
+   SECTION 4 — BA
+═══════════════════════════════════════ */
+#proj-render-comp-s5 {
+  background: #000000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  position: relative;
+  height: 100vh; 
+  width: 100%;
+  overflow: hidden;
+  cursor: ew-resize; /* ⚡ 讓滑鼠變成左右雙箭頭，暗示面試官「這裡可以左右滑動對比」 */
+}
+
+.render-stage {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100vw !important;  
+  height: 100vh !important; 
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.render-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.render-layer img {
+  width: 100%; 
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.9);
+  display: block;
+}
+
+/* 1. 底層渲染圖層：改成讓 Final 渲染圖在最下面打底 */
+.Final-layer { z-index: 1; }
+
+/* 2. 上層素模圖層：⚡ 核心修正！預設躲在左邊外面 */
+.AO-layer {
+  z-index: 2;
+  /* ⚡ 頂級幾何校準：利用 calc 配合斜度，讓裁切面產生跟 skewX(-10deg) 完全平行的斜邊 */
+  clip-path: polygon(0 0, calc(0% + 8.7vh) 0, 0% 100%, 0 100%);
+  will-change: clip-path;
+}
+
+/* 3. 斜向分割細線 */
+.render-handle-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0%; /* ⚡ 預設停在最左邊外面 */
+  height: 100%;
+  width: 1px;
+  z-index: 10;
+  transform: translateX(-50%) skewX(-10deg); /* 傾斜 10 度 */
+  background: transparent;
+  pointer-events: none;
+  will-change: left;
+}
+
+.render-handle-line {
+  width: 1px;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.6); /* 稍微加亮細線 */
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+}
+
+.full-img-caption {
+  position: absolute; 
+  bottom: 2.5rem; 
+  left: 3rem; 
+  z-index: 20;
+  font-size: 0.54rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: rgba(248,248,246,0.3);
+  font-weight: 300;
+  pointer-events: none;
+}
+
+
+
+
+
+/* ═══════════════════════════════════════
+   ⚡ 全域黑鼠標反轉機制（維持原樣運作）
+═══════════════════════════════════════ */
+body.light-bg #cursor-dot { background-color: var(--black) !important; }
+body.light-bg #cursor-ring { border-color: rgba(10, 10, 10, 0.25) !important; }
+body.light-bg.cursor-grow #cursor-ring { background-color: rgba(10, 10, 10, 0.05) !important; border-color: var(--black) !important; }
+
+
+/* 📱 Mobile 平板與手機安全配置 */
+@media (max-width: 1100px) {
+  .s4-three-column-container { flex-direction: column; justify-content: flex-start; align-items: flex-start; padding: 6rem 2rem; height: auto; }
+  .s4-col-left-meta { max-width: 100%; padding-left: 0; margin-bottom: 3rem; }
+  .s4-col-middle-palette { flex-direction: row; flex-wrap: wrap; justify-content: flex-start; padding: 0; margin-left: 0; margin-bottom: 3rem; }
+  .palette-swatch-item { flex-direction: row; }
+  .swatch-label { opacity: 1; transform: none; }
+  .s4-col-right-render { width: 100%; height: 65vh; aspect-ratio: auto; } /* 手機版不強求 100vh 滿版 */
+  .vertical-render-caption { left: 1.5rem; bottom: 1.5rem; }
+  .s6-global-hint { display: none; }
+}
+/* ═══════════════════════════════════════
+   SECTION 8 — NEXT PROJECT (HERO 下沉版)
+═══════════════════════════════════════ */
+#proj-next {
+  background: var(--black);
+  display: flex;
+  flex-direction: column;
+  /* ⚡ padding 改為只有上方跟下方留白，釋放中間空間讓標題往下沉 */
+  padding: 6rem 0 4.5rem; 
+  position: relative;
+  height: 100vh; /* 強制吃滿一整頁螢幕 */
+  width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* 背景圖片 (維持原樣) */
+.next-bg {
+  position: absolute; 
+  inset: 0; 
+  z-index: 0;
+  background-image: url('img/project6-urban.jpg');
+  background-size: cover;
+  background-position: center;
+  filter: brightness(0.3) saturate(0.5);
+  transition: filter 1s ease;
+}
+#proj-next:hover .next-bg { 
+  filter: brightness(0.45) saturate(0.6); 
+}
+
+/* ⚡ 跑馬燈細線軌道 */
+.next-marquee-track {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  padding: 0.8rem 0;
+  border-top: 1px solid rgba(248, 248, 246, 0.12);
+  border-bottom: 1px solid rgba(248, 248, 246, 0.12);
+  display: flex;
+  overflow: hidden;
+}
+
+.next-marquee-content {
+  display: flex;
+  white-space: nowrap;
+  animation: marqueeLinear 14s linear infinite; /* 稍微放慢一點，展現括號的穩定感 */
+}
+
+.next-marquee-text {
+  font-size: 0.55rem;
+  letter-spacing: 0.28em; /* 對齊你 hero 的 index 間距 */
+  text-transform: uppercase;
+  color: rgba(248, 248, 246, 0.35); /* 還原你喜歡的灰白透明度 */
+  font-weight: 300;
+  padding-right: 4rem; /* 確保括號與括號之間有呼吸空間 */
+}
+
+#proj-next:hover .next-marquee-text {
+  color: rgba(248, 248, 246, 0.7);
+  transition: color 0.4s ease;
+}
+
+@keyframes marqueeLinear {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
+}
+
+/* ⚡ 全新：壓底群組包覆器（關鍵：用 auto margin 強行壓到螢幕最底下） */
+.next-hero-wrapper {
+  position: relative;
+  z-index: 2;
+  margin-top: auto; /* 核心魔法：這行會把整包東西推到最底部 */
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 大標題區（套用你 Hero 規格的 padding） */
+.next-content { 
+  padding: 0 3rem;
+  box-sizing: border-box;
+}
+
+.next-title {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 7vw, 6.5rem); /* 完全對齊你 proj-title 的尺寸 */
+  font-weight: 200;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  line-height: 0.92;
+  color: var(--white);
+  text-decoration: none;
+  display: block;
+  margin-bottom: 2rem; /* 與底部資訊列保持完美的 2rem 喘息空間 */
+  transition: letter-spacing .5s cubic-bezier(.16,1,.3,1);
+}
+.next-title:hover { 
+  letter-spacing: 0.01em; 
+}
+
+/* 底部資訊列（與標題維持同等的 3rem 左右對齊線） */
+.next-bottom {
+  display: flex; 
+  justify-content: space-between; 
+  align-items: flex-end;
+  padding: 0 3rem; 
+  box-sizing: border-box;
+}
+
+.next-meta {
+  font-size: 0.6rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(248,248,246,0.3);
+  font-weight: 300;
+}
+
+.next-arrow {
+  font-size: 2rem;
+  color: rgba(248,248,246,0.2);
+  transition: color .4s, transform .4s;
+}
+
+#proj-next:hover .next-arrow {
+  color: rgba(248, 248, 246, 0.7);
+  transform: translate(6px, -6px);
+}
+
+/* RWD 響應式安全間距 */
+@media (max-width: 900px) {
+  .next-content, .next-bottom { padding: 0 1.5rem; }
+  #proj-next { padding: 4rem 0 3rem; }
+}
+/* ═══════════════════════════════════════
+   ⚡ 全新：中下方優雅圓形回頂端按鈕 ⚡
+═══════════════════════════════════════ */
+.next-back-to-top {
+  position: absolute;
+  left: 50%;
+  bottom: 0.1rem; /* ⚡ 剛好與底部的 padding 呼應，維持在螢幕中下方 */
+  transform: translateX(-50%);
+  width: 52px;
+  height: 52px;
+  border: 1px solid rgba(248, 248, 246, 0.15); /* 極細線 */
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  z-index: 10;
+  background: transparent;
+  transition: background 0.4s, border-color 0.4s, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* 按鈕內部的向上箭頭 */
+.next-back-to-top .btn-arrow {
+  font-size: 1.1rem;
+  color: rgba(248, 248, 246, 0.4); /* 預設內斂的灰白 */
+  font-weight: 200;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), color 0.4s ease;
+}
+
+/* ✨ 滑鼠 hover 圓圈時的高奢動態 */
+.next-back-to-top:hover {
+  border-color: rgba(248, 248, 246, 0.6);
+  background: rgba(248, 248, 246, 0.04); /* 微微的亮膜感 */
+  transform: translateX(-50%) scale(1.08); /* 圓圈優雅輕微放大 */
+}
+
+/* ✨ 滑鼠 hover 時，箭頭往上跳動 */
+.next-back-to-top:hover .btn-arrow {
+  color: #ffffff;
+  transform: translateY(-3px); /* 箭頭往上抽動，暗示點擊會往上滑 */
+}
+
+/* 📱 RWD 響應式微調 */
+@media (max-width: 900px) {
+  .next-back-to-top {
+    bottom: 2.5rem; /* 手機版往下壓一點，留空間給文字 */
+    width: 44px;
+    height: 44px;
+  }
+  .next-back-to-top .btn-arrow {
+    font-size: 0.95rem;
+  }
+}
+
+/* ═══════════════════════════════════════
+   SECTION 9 — CONTACT (从主页 direct copy)
+═══════════════════════════════════════ */
+#contact {
+  background: #000000;
+  color: #ffffff;
+  padding: 6rem 5rem;
+  position: relative; overflow: hidden;
+  display: flex; flex-direction: column; justify-content: space-between;
+  font-family: var(--font-body);
+}
+.contact-left { display: flex; flex-direction: column; align-items: flex-start; z-index: 2; }
+.contact-section-label {
+  font-size: 0.65rem; letter-spacing: 0.4em; text-transform: uppercase;
+  color: #666; margin-bottom: 4rem; font-weight: 700;
+}
+.contact-headline {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 8vw, 6.5rem); font-weight: 700;
+  letter-spacing: -0.05em; text-transform: uppercase; line-height: 0.9;
+  margin: 0; color: #ffffff;
+}
+.contact-right {
+  display: flex; justify-content: flex-end;
+  margin-top: 2rem; margin-bottom: 6rem; z-index: 2;
+}
+.contact-info-block { max-width: 600px; width: 100%; }
+.contact-links-row {
+  display: flex; flex-direction: row;
+  justify-content: flex-end; gap: 1.2rem; flex-wrap: wrap;
+}
+
+/* capsule buttons — exact match */
+.capsule-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  text-decoration: none;
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 100px; cursor: pointer;
+  width: 44px; height: 44px; box-sizing: border-box; padding: 0;
+  transition:
+    width .5s cubic-bezier(.4,0,.2,1),
+    background-color .5s cubic-bezier(.4,0,.2,1),
+    border-color .5s cubic-bezier(.4,0,.2,1),
+    padding .5s cubic-bezier(.4,0,.2,1);
+}
+.capsule-icon {
+  width: 16px; height: 16px; object-fit: contain; flex-shrink: 0;
+  transition: filter .5s cubic-bezier(.4,0,.2,1);
+}
+.capsule-text-wrapper {
+  display: grid; grid-template-columns: 0fr; opacity: 0;
+  transition:
+    grid-template-columns .5s cubic-bezier(.4,0,.2,1),
+    opacity .4s cubic-bezier(.4,0,.2,1) .05s;
+}
+.capsule-text {
+  overflow: hidden; white-space: nowrap;
+  font-size: 0.85rem; font-weight: 400; color: #fff;
+  padding-left: 0;
+  transition: padding .5s cubic-bezier(.4,0,.2,1), color .5s ease;
+}
+.capsule-btn:hover {
+  background-color: #fff; border-color: #fff;
+  width: max-content; padding-left: 1.1rem; padding-right: 1.2rem;
+  justify-content: flex-start;
+}
+.capsule-btn:hover .capsule-icon { filter: invert(1); }
+.capsule-btn:hover .capsule-text-wrapper { grid-template-columns: 1fr; opacity: 1; }
+.capsule-btn:hover .capsule-text { color: #000; padding-left: 0.6rem; }
+
+.contact-footer {
+  position: absolute; bottom: 3rem; left: 5rem; right: 5rem;
+  display: flex; justify-content: space-between;
+  font-size: 0.75rem; color: #444; font-weight: 300; z-index: 2;
+}
+
+
+/* ─────────────────────────────────────────
+   SCROLL REVEAL
+───────────────────────────────────────── */
+.sr {
+  opacity: 0; transform: translateY(24px);
+  transition: opacity .85s ease, transform .85s cubic-bezier(.16,1,.3,1);
+}
+.sr.in { opacity:1; transform:translateY(0); }
+.sr-d1 { transition-delay: .1s; }
+.sr-d2 { transition-delay: .2s; }
+.sr-d3 { transition-delay: .3s; }
+
+
+/* ─────────────────────────────────────────
+   KEYFRAMES
+───────────────────────────────────────── */
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(20px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+@keyframes fadeIn {
+  to { opacity:1; }
+}
+
+
+/* ─────────────────────────────────────────
+   RESPONSIVE
+───────────────────────────────────────── */
+@media (max-width: 900px) {
+  body { overflow: hidden; }
+  html, body {
+    overflow-y: scroll !important;
+    scroll-snap-type: y mandatory !important;
+  }
+  .scroll-container {
+    scroll-snap-type: none !important;
+    height: auto !important;
+    overflow-y: visible !important;
+  }
+  section {
+    height: 100vh !important;
+    scroll-snap-align: start !important;
+  }
+
+  .proj-hero-content { padding: 0 1.5rem 4rem; }
+  .proj-meta-row { gap: 1.5rem; }
+
+  #proj-overview { grid-template-columns: 1fr; padding: 6rem 1.5rem; gap: 3rem; }
+  .overview-body { max-width: 100%; }
+
+  #proj-process { grid-template-columns: 1fr; }
+  .process-left { padding: 5rem 1.5rem 2rem; border-right: none; border-bottom: 1px solid rgba(10,10,10,0.08); }
+  #proj-process .process-right { height: 50vh; position: relative; }
+
+  #proj-gallery { grid-template-columns: 1fr; }
+  .gallery-cell { height: 50vh; }
+
+  #proj-reflection { padding: 6rem 1.5rem; }
+  .reflection-top { flex-direction: column; gap: 1rem; }
+
+  #proj-next { padding: 6rem 1.5rem 3rem; }
+
+  #contact { padding: 6rem 1.5rem 4rem; }
+  .contact-headline { font-size: 3rem; }
+  .contact-right { justify-content: flex-start; }
+  .contact-links-row { justify-content: flex-start; }
+  .contact-footer { position: relative; left:auto; right:auto; bottom:auto; flex-direction:column; gap:.5rem; margin-top:2rem; }
+}
+</style>
+</head>
+<body>
+
+<div id="cursor-dot"></div>
+<div id="cursor-ring"></div>
+<div class="reflection-shared-bg" id="sharedBg"></div>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="index.html">Emily Wang</a>
+  <a class="nav-back" href="index.html">
+    <span class="nav-back-arrow">←</span>
+    <span>All Projects</span>
+  </a>
+</nav>
+
+
+<div class="scroll-container">
+
+  <!-- ══════════════════════════
+       S1 — HERO COVER
+  ══════════════════════════ -->
+  <section id="proj-hero">
+    <div class="proj-hero-bg" id="projHeroBg"></div>
+    <div class="proj-hero-vignette"></div>
+
+    <div class="proj-hero-content">
+      <p class="proj-index">005 · 2026 · Game Environment</p>
+      <h1 class="proj-title">Sculpture<br>in the Woods</h1>
+      <div class="proj-meta-row">
+        <div class="proj-meta-item">
+          <span class="proj-meta-label">Discipline</span>
+          <span class="proj-meta-value">3D environment</span>
+        </div>
+        <div class="proj-meta-item">
+          <span class="proj-meta-label">Tools</span>
+          <span class="proj-meta-value">Blender · AfterEffect</span>
+        </div>
+        <div class="proj-meta-item">
+          <span class="proj-meta-label">Year</span>
+          <span class="proj-meta-value">2026</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="proj-scroll-hint">
+      <div class="proj-scroll-line"></div>
+      <span>Continue</span>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════
+       S2 — OVERVIEW
+  ══════════════════════════ -->
+  <section id="proj-overview">
+    <div class="overview-left sr">
+      <p class="overview-eyebrow">Project Overview</p>
+      <h2 class="overview-heading">Environmental<br>Visualisation</h2>
+      <p class="overview-body">
+      Sculpture in the Woods explores the relationship between sculpture and landscape through a carefully composed forest environment. Layered vegetation, varied natural elements, and atmospheric lighting are used to create a sense of depth, immersion, and quiet isolation. The composition guides the viewer’s attention towards the sculpture while maintaining the richness and realism of the surrounding woodland, resulting in a contemplative and cinematic scene.
+      </p>
+    </div>
+    <div class="overview-right sr sr-d2">
+      <ul class="overview-specs">
+        <li class="spec-row">
+          <span class="spec-key">Type</span>
+          <span class="spec-val">3D Environment</span>
+        </li>
+        <li class="spec-row">
+          <span class="spec-key">Modelling</span>
+          <span class="spec-val">Blender</span>
+        </li>
+        <li class="spec-row">
+          <span class="spec-key">composition</span>
+          <span class="spec-val">AfterEffects</span>
+        
+      </ul>
+    </div>
+  </section>
+<!-- ══════════════════════════
+       S2.5 — Full img
+  ══════════════════════════ -->
+<section id="proj-visual-strategy-s4">
+  
+  <div class="s4-video-cinema-bg">
+    <video autoplay loop muted playsinline webkit-playsinline id="s4CinemaVideo">
+      <source src="sculpture_img/video.mov" type="video/mp4">
+    </video>
+  </div>
+
+  <div class="s4-cinema-overlay"></div>
+
+  <div class="s4-cinema-content-container">
+    
+    <div class="s4-cinema-meta-content s4-element-hidden-down">
+      <p class="combined-section-label">Process </p>
+      <h2 class="combined-headline">Design<br>Process </h2>
+      <div class="combined-text-block">
+        <p class="combined-paragraph">
+        The environment is constructed through layered vegetation and natural elements to achieve depth and realism.
+Multiple variations of grass, flowers, rocks, and branches are scattered across the terrain to avoid repetition and create a more organic composition.
+Different types of trees are used to introduce variation in scale, density, and silhouette, enhancing the spatial richness of the scene.
+
+The composition is carefully balanced to guide the viewer’s eye towards the cabin, while maintaining a natural and immersive environment.  
+        </p>
+      </div>
+    </div>
+
+    <div class="s4-node-screenshot-layer s4-element-hidden-right">
+      <div class="node-image-wrapper">
+        <img src="sculpture_img/m.png" alt="Material Node Graph Setup">
+        <p class="node-graph-caption">// Procedural Material Node Graph Setup</p>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="s6-global-hint">
+    <div class="s6-hint-line"></div>
+    <span id="s6HintText">Scroll</span>
+  </div>
+</section>
+
+<!-- ══════════════════════════
+       S3 — Full img
+  ══════════════════════════ -->
+<section id="proj-visual-strategy-s4">
+  <div class="s4-gallery-container">
+    
+    <div class="s4-gallery-center-art">
+      <div class="gallery-art-box">
+        <img src="sculpture_img/render3.jpg" alt="Visual Strategy Study">
+      </div>
+    </div>
+
+    <div class="s4-gallery-bottom-caption">
+      <p class="gallery-paragraph">
+        The scene is enveloped in a soft layer of mist, creating a sense of distance and ambiguity.
+Light is diffused through the atmosphere, flattening contrast and enhancing the feeling of stillness.
+The isolated cabin sits quietly within the landscape, evoking a sense of solitude and introspection, as if removed from the rhythm of everyday life.
+
+      </p>
+      <span class="gallery-index">// Atmospheric Study</span>
+    </div>
+
+  </div>
+
+  <div class="s6-global-hint">
+    <div class="s6-hint-line"></div>
+    <span id="s6HintText">Scroll</span>
+  </div>
+</section>
+
+
+  <!-- ══════════════════════════
+       S4 — BA
+  ══════════════════════════ -->
+<section id="proj-render-comp-s5">
+    
+    <div class="render-stage">
+      
+      <div class="render-layer AO-layer">
+        <img src="sculpture_img/vp1.jpg" alt="Ambient Occlusion Render">
+      </div>
+
+      <div class="render-layer Final-layer">
+        <img src="sculpture_img/render2.jpg" alt="When Space Remembers — Main Render">
+      </div>
+
+      <div class="render-handle-wrapper" id="compLine">
+        <div class="render-handle-line"></div>
+      </div>
+      
+    </div>
+
+    <p class="full-img-caption">The Warm Living // Before/After Comp.</p>
+    
+  </section>
+
+  
+
+
+
+  <!-- ══════════════════════════
+       S8 — NEXT PROJECT
+  ══════════════════════════ -->
+<section id="proj-next">
+    <div class="next-bg"></div>
+    
+    <div class="next-marquee-track">
+      <div class="next-marquee-content">
+        <span class="next-marquee-text">(NEXT PROJECT)</span>
+        <span class="next-marquee-text">(NEXT PROJECT)</span>
+        <span class="next-marquee-text">(NEXT PROJECT)</span>
+        <span class="next-marquee-text">(NEXT PROJECT)</span>
+        <span class="next-marquee-text">(NEXT PROJECT)</span>
+        <span class="next-marquee-text">(NEXT PROJECT)</span>
+        <span class="next-marquee-text">(NEXT PROJECT)</span>
+        <span class="next-marquee-text">(NEXT PROJECT)</span>
+      </div>
+      <div class="next-marquee-content" aria-hidden="true">
+        <span class="next-marquee-text">(NEXT PROJECT)</span>
+        <span class="next-marquee-text">(NEXT PROJECT)</span>
+        <span class="next-marquee-text">(NEXT PROJECT)</span>
+        <span class="next-marquee-text">(NEXT PROJECT)</span>
+        <span class="next-marquee-text">(NEXT PROJECT)</span>
+        <span class="next-marquee-text">(NEXT PROJECT)</span>
+        <span class="next-marquee-text">(NEXT PROJECT)</span>
+        <span class="next-marquee-text">(NEXT PROJECT)</span>
+      </div>
+    </div>
+
+    <div class="next-hero-wrapper">
+      <div class="next-content">
+        <a href="project-urban.html" class="next-title">Urban<br>Hideaway</a>
+      </div>
+      
+      <div class="next-bottom">
+        <span class="next-meta">005 · Architecture · Rhino</span>
+        
+        <a href="#" class="next-back-to-top" id="backToTopBtn" aria-label="Back to top">
+          <span class="btn-arrow">↑</span>
+        </a>
+
+        <span class="next-arrow">↗</span>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════
+       S9 — CONTACT
+  ══════════════════════════ -->
+  <<section id="contact">
+    
+    <div class="contact-left sr">
+      <p class="contact-section-label decode-text">Contact</p>
+      
+      <h2 class="contact-headline">
+        <span class="decode-text">GET IN</span><br>
+        <span class="decode-text">TOUCH</span>
+      </h2>
+    </div>
+    
+    <div class="contact-right sr">
+      <div class="contact-info-block">
+        <div class="contact-links-row">
+          <a href="mailto:wangxinhui1010@gmail.com" class="capsule-btn">
+            <img src="img/contact-letter.png" alt="Email" class="capsule-icon">
+            <div class="capsule-text-wrapper"><span class="capsule-text">Email</span></div>
+          </a>
+          <a href="https://www.instagram.com/hsinnh__/" target="_blank" rel="noopener" class="capsule-btn">
+            <img src="img/contact-photo.png" alt="Instagram" class="capsule-icon">
+            <div class="capsule-text-wrapper"><span class="capsule-text">@hsinnh__</span></div>
+          </a>
+          <a href="https://www.linkedin.com/in/emily-wang-4558962b3" target="_blank" rel="noopener" class="capsule-btn">
+            <img src="img/contact-business.png" alt="LinkedIn" class="capsule-icon">
+            <div class="capsule-text-wrapper"><span class="capsule-text">LinkedIn</span></div>
+          </a>
+        </div>
+      </div>
+    </div>
+    
+    <div class="contact-footer">
+      <span>© 2026 Emily Wang</span>
+      <span>London · Taipei</span>
+    </div>
+  </section>
+</div><!-- /scroll-container -->
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+<script>
+/* ── 核心容器定義 ── */
+const container = document.querySelector('.scroll-container');
+
+/* ── 1. CURSOR (滑鼠大圓圈與點點追蹤) ── */
+const dot  = document.getElementById('cursor-dot');
+const ring = document.getElementById('cursor-ring');
+let mx = 0, my = 0, rx = 0, ry = 0;
+
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; 
+  my = e.clientY;
+  if(dot) { dot.style.left = mx + 'px'; dot.style.top = my + 'px'; }
+});
+
+(function raf(){
+  rx += (mx - rx) * 0.1; 
+  ry += (my - ry) * 0.1;
+  if(ring) { ring.style.left = rx + 'px'; ring.style.top = ry + 'px'; }
+  requestAnimationFrame(raf);
+})();
+
+// 讓自訂按鈕與聯絡膠囊也能觸發大圓圈放大效果
+document.querySelectorAll('a, .gallery-cell, .video-ui-btn, .capsule-btn, .s7-nav-btn, .s7-line-btn').forEach(el => {
+  el.addEventListener('mouseenter', () => document.body.classList.add('cursor-grow'));
+  el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-grow'));
+});
+
+
+/* ── 2. LIGHT BG DETECTION (黑白背景色塊動態切換) ── */
+const lightSections = document.querySelectorAll('#proj-overview, #proj-process, #proj-reflection, #proj-visual-strategy-s4');
+
+if (container) {
+  lightSections.forEach(sec => {
+    new IntersectionObserver(entries => {
+      if(entries[0].isIntersecting) document.body.classList.add('light-bg');
+      else document.body.classList.remove('light-bg');
+    }, { root: container, threshold: 0.4 }).observe(sec);
+  });
+}
+
+
+/* ── 3. SCROLL REVEAL (網頁元素滾動漸顯效果) ── */
+if (container) {
+  document.querySelectorAll('.sr').forEach(el => {
+    new IntersectionObserver(entries => {
+      if(entries[0].isIntersecting) entries[0].target.classList.add('in');
+    }, { root: container, threshold: 0.12 }).observe(el);
+  });
+}
+
+
+/* ── 4. MOUES HOVER 3D 微立體視差 + SCROLL 滾動位移 (第一幕 Hero) ── */
+const heroSection = document.getElementById('proj-hero');
+const heroBg = document.getElementById('projHeroBg');
+let tiltX = 0, tiltY = 0, moveX = 0, moveY = 0;
+let scrollTranslateY = 0;
+
+if (heroSection && heroBg) {
+  heroSection.addEventListener('mousemove', (e) => {
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    const mouseX = (e.clientX / width) - 0.5;
+    const mouseY = (e.clientY / height) - 0.5;
+    
+    tiltX = mouseY * 8;       
+    tiltY = -mouseX * 8;      
+    moveX = mouseX * -20;     
+    moveY = mouseY * -20;     
+    updateHeroTransform();
+  });
+
+  heroSection.addEventListener('mouseleave', () => {
+    tiltX = 0; tiltY = 0; moveX = 0; moveY = 0;
+    updateHeroTransform();
+  });
+}
+
+function updateHeroTransform() {
+  if (!heroBg) return;
+  heroBg.style.transform = `
+    rotateX(${tiltX}deg) 
+    rotateY(${tiltY}deg) 
+    translateX(${moveX}px) 
+    translateY(${moveY + scrollTranslateY}px) 
+    scale(1.05)
+  `;
+}
+
+
+/* ── 5. HERO 滾動視差位移監聽 ── */
+if (container) {
+  container.addEventListener('scroll', () => {
+    const sy = container.scrollTop;
+    const vh = window.innerHeight;
+    
+    if (sy < vh) {
+      scrollTranslateY = sy * 0.15;
+    } else {
+      scrollTranslateY = vh * 0.15;
+    }
+    updateHeroTransform();
+  }, { passive: true });
+}
+
+
+/* ── 🎬 VISUAL STRATEGY — 全螢幕影片與節點雙軸滑入控制核心（獨立不卡死版） ── */
+document.addEventListener("DOMContentLoaded", () => {
+  const cinemaSection = document.getElementById('proj-visual-strategy-s4');
+  const cinemaText = document.querySelector('.s4-cinema-meta-content');
+  const cinemaNodeImg = document.querySelector('.s4-node-screenshot-layer');
+
+  let cinemaCurrentPhase = 1; 
+  let cinemaIsTransitioning = false;
+
+  // ⚡ 核心修正：確保元件都存在於畫面上，才啟動監聽，完全不依賴外部變數
+  if (cinemaSection && cinemaText && cinemaNodeImg) {
+    
+    // 直接監聽全域視窗的滾輪事件（最安全、絕對能抓到）
+    window.addEventListener('wheel', (e) => {
+      const rect = cinemaSection.getBoundingClientRect();
+      
+      // 💡 只有當這個 Section 頂部精準對齊視窗頂端（吸附住）時，才攔截滾輪
+      if (Math.abs(rect.top) > 10) return;
+
+      if (e.deltaY > 0) {
+        // 🛑 【向下滾動】第一幕 -> 第二幕
+        if (cinemaCurrentPhase === 1) {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          if (!cinemaIsTransitioning) {
+            cinemaIsTransitioning = true;
+            cinemaSection.classList.add('s4-phase2-active'); // 背景變暗
+            cinemaText.classList.remove('s4-element-hidden-down'); // 文字升起
+            cinemaNodeImg.classList.remove('s4-element-hidden-right'); // 節點圖滑入
+            
+            setTimeout(() => {
+              cinemaCurrentPhase = 2;
+              cinemaIsTransitioning = false;
+            }, 1400); // 1.4秒絲滑過渡
+          }
+          return;
+        }
+      } 
+      else if (e.deltaY < 0) {
+        // 🛑 【向上滾動】第二幕 -> 退回第一幕
+        if (cinemaCurrentPhase === 2) {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          if (!cinemaIsTransitioning) {
+            cinemaIsTransitioning = true;
+            cinemaText.classList.add('s4-element-hidden-down'); // 文字退場
+            cinemaNodeImg.classList.add('s4-element-hidden-right'); // 節點圖退場
+            cinemaSection.classList.remove('s4-phase2-active'); // 背景恢復
+            
+            setTimeout(() => {
+              cinemaCurrentPhase = 1;
+              cinemaIsTransitioning = false;
+            }, 1400);
+          }
+          return;
+        }
+      }
+    }, { passive: false });
+  }
+});
+
+
+/* ── 7. 🎬 S5 RENDER COMPARISON ── */
+const s5CompSection = document.getElementById('proj-render-comp-s5');
+const s5AoLayer = document.querySelector('#proj-render-comp-s5 .AO-layer');
+const s5HandleWrapper = document.querySelector('#proj-render-comp-s5 .render-handle-wrapper');
+
+if (s5CompSection && s5AoLayer && s5HandleWrapper) {
+
+  s5CompSection.addEventListener('mousemove', (e) => {
+    const rect = s5CompSection.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const sectionW = rect.width;
+    const sectionH = rect.height;
+
+    let pct = (mouseX / sectionW) * 100;
+    pct = Math.max(0, Math.min(pct, 50));
+
+    const skewOffsetPct = (sectionH * 0.1763 / sectionW) * 100;
+
+    s5AoLayer.style.clipPath =
+      `polygon(0 0, calc(${pct}% + ${skewOffsetPct.toFixed(2)}%) 0, ${pct}% 100%, 0 100%)`;
+
+    s5HandleWrapper.style.left =
+      `calc(${pct}% + ${(skewOffsetPct * 0.5).toFixed(2)}%)`;
+  });
+
+  s5CompSection.addEventListener('mouseleave', () => {
+    s5AoLayer.style.transition = 'clip-path 0.4s cubic-bezier(.16,1,.3,1)';
+    s5HandleWrapper.style.transition = 'left 0.4s cubic-bezier(.16,1,.3,1)';
+
+    const rect = s5CompSection.getBoundingClientRect();
+    const skewOffsetPct = (rect.height * 0.1763 / rect.width) * 100;
+
+    s5AoLayer.style.clipPath =
+      `polygon(0 0, calc(0% + ${skewOffsetPct.toFixed(2)}%) 0, 0% 100%, 0 100%)`;
+    s5HandleWrapper.style.left =
+      `calc(0% + ${(skewOffsetPct * 0.5).toFixed(2)}%)`;
+
+    setTimeout(() => {
+      s5AoLayer.style.transition = '';
+      s5HandleWrapper.style.transition = '';
+    }, 400);
+  });
+}
+
+
+/* ── 8. 🎬 SECTION 6 (S7) — 網格拼貼與大畫廊雙幕滑移核心（🔥 完美重構修復版） ── */
+document.addEventListener("DOMContentLoaded", () => {
+  const s7Section = document.getElementById('proj-gallery-s7');
+  const s7Scene1 = document.querySelector('.s7-scene-1');
+  const s7Stage = document.querySelector('.s7-gallery-stage');
+
+  let s7CurrentPhase = 1; // 1 = 第一幕 (Collage), 2 = 第二幕 (Big Gallery)
+  let s7IsPhaseTransitioning = false;
+
+  if (container && s7Section && s7Scene1 && s7Stage) {
+    container.addEventListener('wheel', (e) => {
+      const rect = s7Section.getBoundingClientRect();
+      
+      // 💡 當這個區塊頂部精準卡死在視窗最上方時，攔截滾輪進行內部跨幕轉場
+      if (Math.abs(rect.top) > 10) return;
+
+      if (e.deltaY > 0) {
+        // 🛑 【往下滾動】從第一幕網格切換到第二幕大渲染圖
+        if (s7CurrentPhase === 1) {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          if (!s7IsPhaseTransitioning) {
+            s7IsPhaseTransitioning = true;
+            s7Scene1.classList.add('s7-scene1-fadeout'); 
+            s7Stage.classList.remove('s7-stage-hidden'); 
+            
+            setTimeout(() => {
+              s7CurrentPhase = 2;
+              s7IsPhaseTransitioning = false;
+            }, 900);
+          }
+          return;
+        }
+      } 
+      else if (e.deltaY < 0) {
+        // 🛑 【往上滾動】從第二幕大圖退回第一幕網格
+        if (s7CurrentPhase === 2) {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          if (!s7IsPhaseTransitioning) {
+            s7IsPhaseTransitioning = true;
+            s7Stage.classList.add('s7-stage-hidden'); 
+            s7Scene1.classList.remove('s7-scene1-fadeout'); 
+            s7Section.classList.remove('bg-dark-mode'); 
+            
+            setTimeout(() => {
+              s7CurrentPhase = 1;
+              s7IsPhaseTransitioning = false;
+            }, 900);
+          }
+          return;
+        }
+      }
+    }, { passive: false });
+  }
+
+  // ── 🎬 大圖內部的左右切換與底部線條控制 ──
+  const s7Slides = document.querySelectorAll('.s7-slide');
+  const s7LineBtns = document.querySelectorAll('.s7-line-btn');
+  const s7PrevBtn = document.getElementById('s7PrevBtn');
+  const s7NextBtn = document.getElementById('s7NextBtn');
+
+  let s7CurrentIndex = 0;
+
+  function s7GoToSlide(index) {
+    if (s7Slides.length === 0) return;
+    if (index >= s7Slides.length) s7CurrentIndex = 0;
+    else if (index < 0) s7CurrentIndex = s7Slides.length - 1;
+    else s7CurrentIndex = index;
+
+    s7Slides.forEach((slide, i) => {
+      slide.classList.toggle('active', i === s7CurrentIndex);
+    });
+    s7LineBtns.forEach((btn, i) => {
+      btn.classList.toggle('active', i === s7CurrentIndex);
+    });
+  }
+
+  if (s7NextBtn) s7NextBtn.addEventListener('click', () => s7GoToSlide(s7CurrentIndex + 1));
+  if (s7PrevBtn) s7PrevBtn.addEventListener('click', () => s7GoToSlide(s7CurrentIndex - 1));
+
+  s7LineBtns.forEach((btn, i) => {
+    btn.addEventListener('click', () => {
+      const targetIdx = parseInt(btn.getAttribute('data-to'));
+      s7GoToSlide(targetIdx);
+    });
+  });
+});
+
+
+/* ── 9. MOBILE OPTIMIZATION (手機版安全降級機制) ── */
+const isMobile = () => window.innerWidth <= 900;
+if (isMobile()) {
+  document.body.style.overflowY = 'scroll';
+  if(container) {
+    container.style.overflowY = 'visible';
+    container.style.height = 'auto';
+  }
+}
+
+
+/* ── 10. ⚡ CLASSIC DECODE-TEXT OBSERVER DRIVER (原汁原味黑客亂碼核心) ── */
+const decodeLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789%#$&@*_+?=";
+
+function startDecodeAnimation(element) {
+  if (!element.getAttribute("data-value")) {
+    element.setAttribute("data-value", element.innerText);
+  }
+  
+  const finalOutput = element.getAttribute("data-value");
+  let currentIteration = 0;
+  
+  if (element.decodeInterval) clearInterval(element.decodeInterval);
+
+  element.decodeInterval = setInterval(() => {
+    element.innerText = finalOutput
+      .split("")
+      .map((letter, index) => {
+        if (index < currentIteration) return finalOutput[index]; 
+        return decodeLetters[Math.floor(Math.random() * decodeLetters.length)]; 
+      })
+      .join("");
+
+    if (currentIteration >= finalOutput.length) {
+      clearInterval(element.decodeInterval);
+    }
+    currentIteration += 1 / 3;
+  }, 30);
+}
+
+const decodeObserver = new IntersectionObserver(
+  (entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        const currentTargets = entry.target.querySelectorAll(".decode-text");
+        currentTargets.forEach((target) => startDecodeAnimation(target));
+      }
+    });
+  },
+  { root: container, threshold: 0.1 }
+);
+
+document.addEventListener("DOMContentLoaded", () => {
+  const contactSection = document.getElementById("contact");
+  if (contactSection) {
+    decodeObserver.observe(contactSection);
+  }
+  
+  document.querySelectorAll(".decode-text").forEach(el => {
+    el.addEventListener("mouseenter", () => startDecodeAnimation(el));
+  });
+});
+
+
+// ⚡ 點擊圓形按鈕，絲滑滑回網頁最頂端
+const backToTopBtn = document.getElementById('backToTopBtn');
+
+if (backToTopBtn) {
+  backToTopBtn.addEventListener('click', function(e) {
+    e.preventDefault();
+    if (container) {
+      container.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  });
+}
+</script>
+</body>
+</html>

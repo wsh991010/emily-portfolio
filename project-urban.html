@@ -3,9 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Within the Block — Emily Wang</title>
+<title>Urban Hideaway — Emily Wang</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100;0,9..40,200;0,9..40,300;0,9..40,400;1,9..40,200&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
 <style>
 
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
@@ -74,9 +75,28 @@ section {
               width .4s cubic-bezier(.16,1,.3,1),
               height .4s cubic-bezier(.16,1,.3,1);
 }
-body.light-bg #cursor-dot  { background: var(--black); }
-body.light-bg #cursor-ring { border-color: rgba(10,10,10,0.35); }
-body.cursor-grow #cursor-ring { width: 52px; height: 52px; }
+/* ==========================================================================
+   ⚡ LIGHT BG CURSOR AUTO-INVERT (亮色背景鼠標自動反色)
+   ========================================================================== */
+
+/* 當 body 帶有 .light-bg 類名時，大圓圈與中心點點自動黑化 */
+body.light-bg #cursor-dot {
+  background-color: #1A1A1A !important; /* 剛性內斂黑 */
+}
+
+body.light-bg #cursor-ring {
+  border-color: #1A1A1A !important;     /* 圓圈線條變黑 */
+}
+
+/* 💡 加碼高奢細節：如果點擊平面圖打開了白色燈箱，也強制讓鼠標變黑 */
+.s52-lightbox.active ~ #cursor-dot,
+body:has(.s52-lightbox.active) #cursor-dot {
+  background-color: #1A1A1A !important;
+}
+
+body:has(.s52-lightbox.active) #cursor-ring {
+  border-color: #1A1A1A !important;
+}
 
 
 /* ─────────────────────────────────────────
@@ -134,7 +154,7 @@ nav {
   position: absolute; 
   inset: -40px; /* ⚡ 關鍵：故意讓四周往外擴大 40px，這樣圖片晃動時才不會邊緣穿幫漏出黑底 */
   z-index: 0;
-  background-image: url('img/project3-within.jpg'); /* 放你渲染得最漂亮的那張主圖 */
+  background-image: url('img/project6-urban.jpg'); /* 放你渲染得最漂亮的那張主圖 */
   background-size: cover;
   background-position: center;
   filter: brightness(0.55) saturate(0.85);
@@ -293,8 +313,545 @@ nav {
 }
 
 
+
 /* ═══════════════════════════════════════
-   SECTION 3 — BA
+   S3 — PURE RENDER (黑白轉彩色聚光燈特效)
+═══════════════════════════════════════ */
+#proj-reflection-combined {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  background-color: #000000; /* 使用純黑底色作為安全邊界 */
+  cursor: none; /* ⚡ 高級細節：如果妳網頁有自訂精緻黑鼠標，這裡可以隱藏原生鼠標 */
+}
+
+/* 雙層圖片通用基礎 */
+.s6-fixed-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('urban_img/img1.jpg'); /* 兩層共用同一張高解析渲染圖 */
+  background-size: cover;
+  background-position: center;
+  z-index: 1;
+}
+
+/* 🔘 底層：剛性黑白濾鏡 */
+.s6-fixed-bg.bg-grayscale {
+  filter: grayscale(100%) brightness(0.85); /* 轉為純黑白，並稍微調暗一點點，等一下彩色的地方會更亮眼 */
+  z-index: 1;
+}
+
+/* 🎨 上層：極致彩色層（改用 mask-image 做出高級羽化柔邊） */
+.s6-fixed-bg.bg-color {
+  filter: brightness(1);
+  z-index: 2; /* 疊在黑白層的正上方 */
+  
+  /* ⚡ 核心改動：利用徑向漸層做遮罩。
+     從圓心 0px 到 40px 是 100% 清晰彩色，到 180px 漸變到完全透明。
+     這個 40px ~ 180px 的區間就是極其絲滑的「手動暈染羽化邊緣」！ */
+  -webkit-mask-image: radial-gradient(circle 180px at 0px 0px, rgba(0,0,0,1) 40px, rgba(0,0,0,0) 100%);
+  mask-image: radial-gradient(circle 180px at 0px 0px, rgba(0,0,0,1) 40px, rgba(0,0,0,0) 100%);
+  
+  /* 預設隱藏，等滑鼠進來再透過 JS 改變透明度或直接追蹤 */
+  opacity: 0;
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* 當滑鼠移入這頁時，彩色層才溫柔地浮現，離開時淡淡地隱去 */
+#proj-reflection-combined.active .s6-fixed-bg.bg-color {
+  opacity: 1;
+}
+
+
+/* 📱 Mobile 手機端完美降級 */
+@media (max-width: 1100px) {
+  #proj-reflection-combined { height: 100vh !important; }
+  .s6-fixed-bg.bg-color {
+    opacity: 1 !important;
+    -webkit-mask-image: none !important;
+    mask-image: none !important;
+  }
+  .s6-fixed-bg.bg-grayscale { display: none; }
+}
+
+/* ═══════════════════════════════════════
+   S4 — ARCHITECTURAL NARRATIVE (空間故事繪本風格)
+═══════════════════════════════════════ */
+#proj-process {
+  position: relative;
+  width: 100%;
+  height: 100vh; /* 剛性鎖定一頁高度 */
+  overflow: hidden;
+  background-color: #F4F1EA; /* 紙張基底暖白色 */
+}
+
+/* 📜 全域紙張材質底層 */
+.s4-paper-bg {
+  position: absolute;
+  inset: 0;
+  /* ⚡ 請在這裡換成妳的紙材質圖片檔案路徑 */
+  background-image: url('urban_img/bg.jpg'); 
+  background-size: cover;
+  background-repeat: no-repeat;
+  mix-blend-mode: multiply; /* 讓紙張紋理與底色完美融合 */
+  opacity: 0.7;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* 🎭 故事場景通用定位層 */
+.s4-inner-scene {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100vh;
+  z-index: 2;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  /* 翻頁過渡動態：使用 1.2 秒的高奢緩動曲線 */
+  transition: opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1), 
+              transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, opacity;
+}
+
+/* 📖 翻頁退場機制：像翻到背面一樣，微微往上漂移並淡出 */
+.s4-fade-out {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transform: translateY(-30px) scale(0.98); 
+}
+
+/* 場景內容排版容器 */
+.s4-narrative-container {
+  width: 100%;
+  max-width: 1400px;
+  padding: 0 10vw;
+  display: grid;
+  /* 左右分流佈局：左邊文字、右邊去背 PNG 舞台 */
+  grid-template-columns: 1fr 1.2fr;
+  align-items: center;
+  gap: 6vw;
+}
+
+/* ── ✍️ 左側：文藝襯線字體排版 ── */
+.s4-text-side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.story-index {
+  font-family: var(--font-display), sans-serif;
+  font-size: 0.58rem;
+  letter-spacing: 0.2em;
+  color: rgba(10, 10, 10, 0.4);
+  margin-bottom: 2rem;
+}
+
+.story-title {
+  /* ⚡ 核心優化：換上妳指定的 Cormorant 字體 */
+  font-family: "Cormorant Garamond", "Cormorant", "Georgia", serif; 
+  
+  font-size: clamp(2rem, 3.6vw, 3.2rem); /* 襯線大寫字級可以再稍微放大，氣勢更強 */
+  
+  /* ⚡ 細細的那種：使用 300 Light 磅數，線條會極致細細、優雅 */
+  font-weight: 300; 
+  
+  /* ⚡ 全部大寫 */
+  text-transform: uppercase; 
+  
+  /* ⚡ 緊一點：原本極簡風會拉寬字距，但襯線體「反其道而行」將字距收緊 (-0.03em)，
+     會產生一種紙雕印刷、字體邊緣微微咬合的高級剛性磁場 */
+  letter-spacing: -0.05em; 
+  
+  line-height: 0.9;
+  color: #1A1A1A;
+  margin-bottom: 2rem;
+}
+
+.story-desc {
+  font-family: "Georgia", serif; /* 內文同步採用極度舒適的閱讀型襯線體 */
+  font-size: 0.75rem;
+  line-height: 2;
+  color: #4A4A4A;
+  font-weight: 300;
+  text-align: justify;
+}
+
+/* ── 🖼️ 右側：去背 PNG 插圖舞台 ── */
+.s4-illustration-side {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.png-artwork {
+  width: 100%;
+  max-width: 580px;
+  height: auto;
+  object-fit: contain;
+  display: block;
+  
+  /* ⚡ 核心工藝：為去背 PNG 加上非常輕微的「軟陰影」，模擬實體紙雕手工卡片浮在紙上的厚度感 */
+  filter: drop-shadow(0 20px 40px rgba(10, 10, 10, 0.06))
+          drop-shadow(0 5px 15px rgba(10, 10, 10, 0.03));
+          
+  transition: transform 1.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* 呼吸感微浮動 */
+.s4-inner-scene:not(.s4-fade-out) .png-artwork {
+  animation: paperFloat 6s ease-in-out infinite alternate;
+}
+
+@keyframes paperFloat {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-8px); }
+}
+
+
+/* 📱 Mobile 手機端降級（打破單頁，變回正常向下捲動的故事集） */
+@media (max-width: 1024px) {
+  #proj-process { height: auto !important; overflow: visible !important; background-color: #F4F1EA; }
+  .s4-paper-bg { opacity: 0.4; }
+  
+  .s4-inner-scene {
+    position: relative !important;
+    height: auto !important;
+    opacity: 1 !important;
+    transform: none !important;
+    pointer-events: auto !important;
+    padding: 6rem 2rem;
+    border-bottom: 1px solid rgba(10, 10, 10, 0.05); /* 每幕之間用淡淡的紙線隔開 */
+  }
+  
+  .s4-narrative-container {
+    grid-template-columns: 1fr !important;
+    gap: 3.5rem;
+    padding: 0;
+  }
+  
+  .s4-illustration-side {
+    grid-row: 1; /* 手機版讓圖片跳到文字上方，符合閱讀直覺 */
+  }
+  .png-artwork {
+    max-width: 80%;
+    animation: none !important;
+  }
+  .story-title { margin-bottom: 1.2rem; }
+}
+/* ==========================================================================
+   REVISED SECTION 5 — ABSOLUTE WHITE MINIMALIST (純白極簡版)
+   ========================================================================== */
+#section-five-universe {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  /* ⚡ 徹底去材質，直接鎖定剛性純白 */
+  background-color: #FFFFFF !important; 
+  z-index: 10;
+}
+
+/* 🌆 Section 5 原背景層改為純白隱形，維持結構不噴錯 */
+#section-five-universe .s5-fullscreen-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: #FFFFFF !important;
+  opacity: 1 !important;
+  z-index: 1;
+  pointer-events: none;
+}
+/* 🖼️ 前景相片藝廊佈局（調高層級，防止被紙張遮蓋） */
+.s5-gallery-overlay {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  z-index: 2; /* 確保浮在紙張紋理上方，保持照片 PNG 的乾淨去背 */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 6vh 4vw;
+  box-sizing: border-box;
+}
+
+/* ✍️ 中間上方標題區 */
+.s5-title-area {
+  text-align: center;
+  width: 100%;
+  margin-top: 2vh;
+  margin-bottom: 5vh;
+}
+
+/* 黑色緊湊小字 */
+.s5-section-title {
+  font-family: "Cormorant Garamond", "Cormorant", "Georgia", serif;
+  font-size: 1.4rem;
+  font-weight: 300;
+  text-transform: uppercase;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  color: #1A1A1A;
+  margin: 0;
+}
+
+/* 🎞️ 輪播相片集大舞台 */
+.s5-slider-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 1100px;
+  height: 65vh;
+  position: relative;
+  gap: 3vw;
+}
+
+.s5-photo-stage {
+  position: relative;
+  width: 80%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.s5-photo-item {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.96);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.s5-photo-item.active {
+  opacity: 1;
+  pointer-events: auto;
+  transform: scale(1);
+}
+
+.s5-photo-item img {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 20px 45px rgba(0, 0, 0, 0.12)); /* 稍微減弱陰影，讓去背圖與紙張融合得更優雅 */
+}
+
+.s5-nav-btn {
+  background: none;
+  border: none;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  z-index: 5;
+  transition: transform 0.3s ease, background-color 0.3s ease;
+  border-radius: 50%;
+}
+
+.s5-nav-btn:hover { background-color: rgba(0, 0, 0, 0.04); transform: scale(1.05); }
+.s5-nav-btn:active { transform: scale(0.95); }
+
+
+/* ==========================================================================
+   NEW SECTION 5.2 — PLAN NARRATIVE GALLERY STYLING (全白燈箱平面圖樣式)
+   ========================================================================== */
+#section-five-plan {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  background-color: #FFFFFF !important; /* ⚡ 剛性純白色背景 */
+  overflow: hidden;
+  z-index: 10;
+}
+
+.s52-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 0 5vw;
+  box-sizing: border-box;
+}
+
+/* ✍️ 頂部文字區排版 */
+.s52-header-area {
+  text-align: center;
+  max-width: 680px;
+  margin-bottom: 7vh;
+}
+
+.s52-main-title {
+  font-family: "Cormorant Garamond", "Cormorant", "Georgia", serif;
+  font-size: 2.2rem;
+  font-weight: 300;
+  color: #1A1A1A;
+  letter-spacing: -0.02em;
+  margin: 0 0 2.5vh 0;
+}
+
+.s52-sub-paragraph {
+  font-family: "Helvetica Neue", "Arial", sans-serif;
+  font-size: 0.88rem;
+  line-height: 1.65;
+  color: #555555;
+  margin: 0;
+  font-weight: 300;
+  text-justify: inter-word;
+}
+
+/* 📐 4張平面圖並排網格 */
+.s52-plans-grid {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  width: 100%;
+  max-width: 1300px;
+  gap: 2vw;
+}
+
+.s52-plan-card {
+  flex: 1;
+  cursor: pointer;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.s52-img-wrapper {
+  width: 100%;
+  height: auto;
+  overflow: hidden;
+}
+
+.s52-img-wrapper img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* 懸浮高奢微動：圖片微微放大，卡片輕微浮起 */
+.s52-plan-card:hover {
+  transform: translateY(-8px);
+}
+.s52-plan-card:hover .s52-img-wrapper img {
+  transform: scale(1.03);
+}
+
+/* 🎴 全景高級燈箱彈出層 */
+.s52-lightbox {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(255, 255, 255, 0.96); /* 優雅高雅微透白色底 */
+  backdrop-filter: blur(10px); /* 輕微毛玻璃感 */
+  z-index: 9999; /* 確保絕對覆蓋全網頁 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+  /* 預設隱藏與淡入淡出起動 */
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* 當燈箱被點擊啟動時 */
+.s52-lightbox.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* 📸 中央不滿版相片舞台 */
+.s52-lightbox-stage {
+  width: 75vw;
+  height: 75vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transform: scale(0.97);
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.s52-lightbox.active .s52-lightbox-stage {
+  transform: scale(1);
+}
+
+.s52-lightbox-stage img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 25px 60px rgba(0, 0, 0, 0.08)); /* 給平面圖加上極輕柔照片實體感陰影 */
+}
+
+/* ✕ 右上角關閉按鈕 */
+.s52-close-btn {
+  position: absolute;
+  top: 4vh;
+  right: 4vw;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 10px;
+  z-index: 10001;
+  transition: transform 0.3s ease;
+}
+.s52-close-btn:hover { transform: rotate(90deg); }
+
+/* ⬅️ ➡️ 燈箱內部導覽細線按鈕 */
+.s52-nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  z-index: 10000;
+  border-radius: 50%;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+.s52-lightbox-prev { left: 3vw; }
+.s52-lightbox-next { right: 3vw; }
+
+.s52-nav-btn:hover { background-color: rgba(0, 0, 0, 0.03); transform: translateY(-50%) scale(1.05); }
+
+/* 📱 響應式手機端安全降級 */
+@media (max-width: 900px) {
+  #section-five-plan { height: auto; padding: 10vh 0; }
+  .s52-plans-grid { flex-direction: column; gap: 5vh; padding: 0 4vw; }
+  .s52-lightbox-stage { width: 90vw; height: 60vh; }
+  .s52-nav-btn { width: 45px; height: 45px; }
+}
+
+
+/* ═══════════════════════════════════════
+   SECTION 5.5 — BA
 ═══════════════════════════════════════ */
 #proj-render-comp-s5 {
   background: #000000;
@@ -379,507 +936,231 @@ nav {
   pointer-events: none;
 }
 
-
-/* ═══════════════════════════════════════
-   S4 — 建築圖雙幕風格 / 核心視覺與圖層修復版
-═══════════════════════════════════════ */
-#proj-process {
-  background: var(--white);
+/* ==========================================================================
+   NEW SECTION 5.7 — STATIC ANALYSIS VIEWPORT STYLING (全白分析圖單元樣式)
+   ========================================================================== */
+#section-five-analysis {
   position: relative;
-  width: 100%;
-  height: 100vh; /* 鎖定一頁高度 */
-  overflow: hidden;
-}
-
-/* 🌆 背景修復：乖乖躺在 z-index: 1，絕對不浮上來擋人 */
-.s4-full-bg {
-  position: absolute; 
-  inset: 0;
-  background-image: url('within_img/site-03.jpg'); 
-  background-size: contain;      
-  background-repeat: no-repeat;
-  background-position: 50% center; 
-  transform: scale(1);           
-  z-index: 1; /* 最底層 */
-  pointer-events: none; 
-}
-
-/* 🎭 兩幕場景基礎架構：全部絕對定位，在同一個畫面上原地重疊 */
-.s4-inner-scene {
-  position: absolute;
-  inset: 0;
   width: 100%;
   height: 100vh;
-  z-index: 2; /* 內容高於背景層 */
-  box-sizing: border-box;
-  background: transparent;
-  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-/* 絲滑過渡控制 Class */
-.s4-fade-out {
-  opacity: 0 !important;
-  pointer-events: none !important;
-  transform: translateY(20px); /* 稍微下沉 */
-}
-
-/* ── 【第一幕佈局】 ── */
-.s4-scene-1 {
-  display: grid;
-  grid-template-columns: 1.1fr 0.9fr;
-}
-.s4-scene-1 .process-left-wing {
-  padding: 5rem 4rem 5rem 13rem;
-}
-.s4-scene-1 .process-right-wing {
-  padding: 5rem 13rem 5rem 4rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  height: calc(100vh - 10rem);
-}
-.s4-scene-1 .wing-sticky-content {
-  display: flex;
-  flex-direction: column;
-}
-
-/* 冷冽字體風格 */
-.step-num {
-  font-size: 0.52rem;
-  letter-spacing: 0.25em;
-  text-transform: uppercase;
-  color: var(--gray);
-  font-weight: 300;
-  margin-bottom: 0.6rem;
-}
-.step-title {
-  font-family: var(--font-display);
-  font-size: clamp(1.2rem, 2.3vw, 1.9rem); 
-  font-weight: 200; 
-  letter-spacing: -0.01em;
-  text-transform: uppercase;
-  margin-bottom: 0.8rem;
-  color: var(--black);
-}
-.step-desc {
-  font-size: 0.8rem;
-  line-height: 1.85; 
-  color: var(--mid);
-  font-weight: 300;
-  max-width: 420px;
-  letter-spacing: 0.01em;
-}
-.step-desc.narrow-box {
-  max-width: 310px !important;
-}
-
-/* 平面圖四宮格 */
-.plan-imgs-grid.full-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
-  width: 100%;
-  margin-top: 2rem;
-}
-.grid-cell {
-  width: 100%;
-  height: 25vh !important; 
+  background-color: #FFFFFF !important; /* ⚡ 剛性純白色背景，延續高冷展廳感 */
   overflow: hidden;
-  border: 1px solid rgba(10, 10, 10, 0.06);
-  background: var(--white);
+  z-index: 10;
 }
-.plan-imgs-grid.full-grid img {
-  width: 100%; height: 100%;
-  display: block;
-  object-fit: cover;
-  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.grid-cell:hover img { transform: scale(1.04); }
 
-
-/* ── 🎬 【第二幕佈局】（圖面優雅上提完美版） ── */
-.s4-scene-2 {
-  padding: 6rem 13rem 6rem 13rem; 
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start; /* ⚡ 關鍵：改成從頂部開始排，解鎖圖面向上移動 */
-}
-.s4-scene2-top-meta {
+.s57-image-container {
   width: 100%;
+  height: 100%;
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-.step-desc.wide-box {
-  max-width: 520px;
-}
-.scene2-horizontal-stage {
-  display: flex;
-  gap: 2.5rem;
-  width: 100%;
-  margin-top: 3.5rem; /* ⚡ 核心操控：用這個值來決定圖面離文字多近！ */
-                      /* 如果妳希望再往上移，可以改小（例如 2.5rem） */
-}
-.landscape-img-box {
-  flex: 1;
-  aspect-ratio: 16 / 9; 
-  background: var(--white);
-  border: 1px solid rgba(10, 10, 10, 0.06); 
-  overflow: hidden;
-}
-.landscape-img-box img {
-  width: 100%; height: 100%;
-  display: block;
-  object-fit: cover;
-  filter: brightness(0.98);
-  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.landscape-img-box:hover img { transform: scale(1.03); }
-/* 📱 Mobile 手機版安全降級 */
-@media (max-width: 1024px) {
-  #proj-process { height: auto !important; overflow: visible !important; }
-  .s4-full-bg { display: none !important; } 
-  .s4-inner-scene { position: relative !important; opacity: 1 !important; transform: none !important; height: auto !important; pointer-events: auto !important; }
-  .s4-scene-1 { grid-template-columns: 1fr !important; }
-  .s4-scene-1 .process-left-wing, 
-  .s4-scene-1 .process-right-wing,
-  .s4-scene-2 { padding: 4rem 1.5rem !important; height: auto !important; }
-  .s4-scene-1 .process-right-wing { padding-top: 0 !important; }
-  .s4-scene-2 { padding-top: 0 !important; }
-  .step-desc.narrow-box { max-width: 100% !important; }
-  .grid-cell { height: auto !important; aspect-ratio: 1 / 1 !important; }
-  .scene2-horizontal-stage { flex-direction: column !important; gap: 1.5rem !important; }
-  .landscape-img-box { aspect-ratio: 16 / 10 !important; }
-}
-
-/* ═══════════════════════════════════════
-   S5 — PURE RENDER & TEXT SECTION (純淨全螢幕高奢版)
-═══════════════════════════════════════ */
-#proj-reflection-combined {
-  position: relative;
-  height: 100vh; /* 鎖定精準的一頁高度 */
-  width: 100%;
-  overflow: hidden;
-  background: var(--black);
-}
-
-/* 🌆 滿版大渲染圖（移除模糊，還原最震撼的純淨畫面） */
-.s6-fixed-bg {
-  position: absolute;
-  inset: 0;
-  background-image: url('within_img/render2.jpg'); 
-  background-size: cover;
-  background-position: center;
-  transform: scale(1); /* 恢復常規比例 */
-  z-index: 1;
-}
-
-/* 暗度遮罩：確保大圖上的白字清晰好讀，維持冷冽高級感 */
-.s6-fixed-bg::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: #000000;
-  opacity: 0.35; 
-}
-
-/* 🎭 純粹文字圖層 */
-.s6-layer-lead {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  display: flex;
+  justify-content: center;
   align-items: center;
-  justify-content: flex-start;
+  padding: 0vh 0vw; /* ⚡ 四周保留精緻的畫冊邊框留白，若想完全滿版可改成 0 */
+  box-sizing: border-box;
 }
 
-/* 完美保留妳原本的第一幕左側排版與間距 */
-.lead-content-left {
-  padding-left: 5rem;
-  max-width: 600px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+.s57-main-diagram {
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* ⚡ 核心：確保不論螢幕比例如何，大圖都絕不變形、絕不被裁切 */
+  pointer-events: none; /* 靜態圖關閉滑鼠干擾 */
+  
+  /* 讓圖檔輕微浮現，融入白色背景 */
+  filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.02)); 
 }
 
-.combined-section-label {
-  font-size: 0.52rem;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-  color: rgba(248, 248, 246, 0.4);
-  margin-bottom: 1.5rem;
-}
-
-.combined-headline {
-  font-size: clamp(2rem, 4vw, 3.5rem);
-  font-weight: 200;
-  letter-spacing: -0.01em;
-  line-height: 0.9;
-  text-transform: uppercase;
-  color: #ffffff;
-  margin-bottom: 2.5rem;
-}
-
-.combined-text-block {
-  max-width: 340px;
-}
-
-.combined-paragraph {
-  font-size: 0.82rem;
-  line-height: 1.9;
-  color: rgba(248, 248, 246, 0.7);
-  font-weight: 300;
-}
-
-/* 📱 RWD 手機版安全邊距 */
+/* 📱 手機端安全降級高度 */
 @media (max-width: 900px) {
-  .lead-content-left {
-    padding-left: 2rem;
-    padding-right: 2rem;
+  #section-five-analysis {
+    height: auto;
+    padding: 8vh 0;
+  }
+  .s57-image-container {
+    height: auto;
+    padding: 0 4vw;
+  }
+  .s57-main-diagram {
+    width: 100%;
+    height: auto;
   }
 }
-/* ═══════════════════════════════════════
-   S6 — 空間策略與畫廊 / 網格拼貼 ＋ 大圖滑動版
-═══════════════════════════════════════ */
+
+
+/* ==========================================================================
+   REVISED SECTION 6 (S7) — ART GALLERY STYLING (自適應純白畫廊樣式)
+   ========================================================================== */
 #proj-gallery-s7 {
   position: relative;
   width: 100%;
-  height: 100vh; /* 鎖定單頁高度 */
-  overflow: hidden;
-  background-color: var(--white); /* 第一幕預設白底 */
-  transition: background-color 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-/* 當切換到第二幕渲染大圖時，外層瞬間變黑（防止滿版圖邊緣露白） */
-#proj-gallery-s7.bg-dark-mode {
-  background-color: #000000 !important;
-}
-
-/* 🎭 兩幕通用定位層 */
-.s7-inner-scene {
-  position: absolute;
-  inset: 0;
-  width: 100%;
   height: 100vh;
-  z-index: 2;
-  box-sizing: border-box;
-  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-/* ── 🎨 【第一幕：網格拼貼視覺】 ── */
-.s7-scene-1 {
-  /* ⚡ 建築系高奢網格背景（模擬妳截圖中的精細格線紙效果） */
-  background-image: 
-    linear-gradient(to right, rgba(10, 10, 10, 0.04) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(10, 10, 10, 0.04) 1px, transparent 1px);
-  background-size: 20px 20px; /* 每格 20px 細格 */
-  padding: 5rem 6rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.s7-scene-1-collage {
-  width: 100%;
-  max-width: 1400px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-/* 頂部引言 */
-.collage-header {
-  text-align: center;
-  margin-bottom: 4rem;
-  max-width: 600px;
-}
-.collage-main-title {
-  font-family: var(--font-display);
-  font-size: clamp(1.8rem, 3vw, 2.5rem);
-  font-weight: 200;
-  letter-spacing: -0.01em;
-  text-transform: uppercase;
-  color: var(--black);
-  margin-bottom: 1rem;
-}
-.collage-sub-desc {
-  font-size: 0.8rem;
-  line-height: 1.7;
-  color: var(--mid);
-  font-weight: 300;
-}
-
-/* 四宮格拼貼橫向佈局 */
-.collage-grid-container {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 2.5rem;
-  width: 100%;
-}
-
-/* ── 🎨 【第一幕：網格拼貼 Hover 動態升級版】 ── */
-
-/* 確保每個拼貼單元有固定呼吸感，並做為動畫定位基準 */
-.collage-item {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  position: relative;
-}
-
-/* 1. 🔍 圖片外框：這是動畫的主角 */
-.collage-img-wrapper {
-  width: 100%;
-  aspect-ratio: 1 / 1; 
+  background-color: #FFFFFF !important; /* ⚡ 剛性純白色畫廊背景 */
   overflow: hidden;
-  background: transparent;
-  margin-bottom: 1.5rem;
-  
-  /* ⚡ 絲滑關鍵：使用高奢品牌最愛用的貝茲曲線，讓上移與回彈像絲綢一樣順 */
-  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-  will-change: transform;
+  z-index: 10;
 }
 
-.collage-img-wrapper img {
-  width: 100%; height: 100%;
-  object-fit: contain; 
-  display: block;
-}
-
-/* 2. 📝 文字說明：預設完全隱形，且往下一點點準備浮起 */
-.collage-text-meta {
-  width: 100%;
-  opacity: 0;
-  transform: translateY(15px); /* 預設沉在下面 */
-  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
-              transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-  will-change: transform, opacity;
-}
-
-.collage-item-title {
-  font-family: var(--font-display);
-  font-size: 1rem;
-  font-weight: 300;
-  text-transform: uppercase;
-  color: var(--black);
-  margin-bottom: 0.6rem;
-}
-
-.collage-item-desc {
-  font-size: 0.74rem;
-  line-height: 1.8;
-  color: var(--mid);
-  font-weight: 300;
-  text-align: justify;
-}
-
-
-/* ═══════════════════════════════════════
-   🚀 TRIGGER TIME：當滑鼠 Hover 到整個單元時
-═══════════════════════════════════════ */
-
-/* 👉 圖片順暢往上推 20px，騰出空間給文字 */
-.collage-item:hover .collage-img-wrapper {
-  transform: translateY(-20px);
-}
-
-/* 👉 文字在同一時間淡入，並優雅地往上對齊歸位 */
-.collage-item:hover .text-meta, /* 預防妳 HTML 縮寫 */
-.collage-item:hover .collage-text-meta {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-
-/* 📱 手機與平板版安全降級：行動裝置沒有 Hover，必須讓文字直接顯示，不然面試官用平板會看不到字 */
-@media (max-width: 1200px) {
-  .collage-img-wrapper {
-    transform: none !important;
-  }
-  .collage-text-meta {
-    opacity: 1 !important;
-    transform: none !important;
-    margin-top: 1rem;
-  }
-}
-
-/* ── 🎬 【第二幕：獨立高奢畫廊照片框（網格白底＋精緻縮小版）】 ── */
 .s7-gallery-stage {
   position: absolute;
   inset: 0;
-  width: 100% !important;
-  height: 100vh !important;
-  z-index: 3;
-  margin: 0 !important;
-  padding: 0 !important;
-  overflow: hidden;
-  
-  /* 🎭 讓照片框在網格舞台中央完美居中 */
+  width: 100%;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  
-  /* ⚡ 物理過渡：從下方 100vh 絲滑升起 */
-  transform: translateY(0);
-  opacity: 1;
-  transition: transform 0.9s cubic-bezier(0.16, 1, 0.3, 1), 
-              opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* 初始藏在下方不見 */
-.s7-stage-hidden {
-  transform: translateY(100vh) !important;
-  opacity: 0 !important;
-  pointer-events: none !important;
-}
-
-/* 🖼️ 精修：縮小版照片框本體 */
-.s7-slide {
-  position: relative; 
-  width: 55vw;        /* ⚡ 降噪關鍵：從 78vw 縮小到 55vw，留白更多，空氣感直接拉滿 */
-  aspect-ratio: 16 / 9; /* 死死鎖定 16:9 照片黃金比例 */
+/* 🖼️ 自適應實體相框外殼 */
+.s7-photo-frame-wrapper {
+  position: relative;
+  background: #FFFFFF;
   
-  background: var(--white);
-  /* 💎 實體相框質感：8px 的實心純白內襯卡紙邊框，加上柔和的製圖感細陰影 */
-  border: 1px solid rgba(10, 10, 10, 0.08); /* 改用細緻的深色微邊框，在白底上才顯眼 */
+  /* 💎 頂級實體襯紙質感：四周 10px 純白厚內襯線，加上極微弱製圖感陰影 */
+  border: 1px solid rgba(0, 0, 0, 0.06);
   box-shadow: 
-    0 0 0 8px #ffffff, /* 實體相框內襯白邊 */
-    0 20px 50px rgba(10, 10, 10, 0.08), /* 柔和淡雅的影子，襯托白底層次 */
-    0 5px 15px rgba(10, 10, 10, 0.04);
+    0 0 0 10px #FFFFFF, 
+    0 30px 70px rgba(0, 0, 0, 0.05);
   
-  overflow: hidden;
-  opacity: 1 !important;        
-  visibility: visible !important;
-  transform: scale(1) !important;
+  /* ⚡ 物理性能：當橫直幅切換時，寬高比例會產生絲滑的過渡動畫 */
+  transition: width 0.7s cubic-bezier(0.16, 1, 0.3, 1), 
+              height 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: width, height;
 }
 
-/* 照片框內部的渲染圖 */
+/* 🎞️ 投影片容器 */
+.s7-slides-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* 每一張照片的通用樣式：預設絕對定位、隱形、帶有輕微縮放準備淡入 */
+.s7-slide {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  visibility: hidden;
+  transform: scale(0.98);
+  transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.6s;
+  z-index: 1;
+}
+
+/* 當前作用中的照片：顯示、原比例放大 */
+.s7-slide.active {
+  opacity: 1;
+  visibility: visible;
+  transform: scale(1);
+  z-index: 2;
+}
+
+/* 🖼️ 核心比例：當照片是橫幅 (Landscape) 時的相框尺寸 */
+.s7-photo-frame-wrapper.is-landscape {
+  width: 52vw;
+  aspect-ratio: 16 / 9; /* ⚡ 橫幅完美鎖定 16:9 */
+}
+
+/* 🖼️ 核心比例：當照片是直幅 (Portrait) 時的相框尺寸 */
+.s7-photo-frame-wrapper.is-portrait {
+  width: 32vw;
+  aspect-ratio: 3 / 4;  /* ⚡ 直幅完美鎖定 3:4 */
+}
+
 .s7-slide img {
-  width: 100%; height: 100%;
-  object-fit: cover; 
-  filter: brightness(0.98); /* 在白底背景下，還原大圖最純淨的亮度 */
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
   display: block;
 }
 
-/* 🏷️ 美術館標籤風格標題（吸附在白色相框左下方，改為高級深灰字） */
+/* 🏷️ 美術館標籤風格標題（掛在白色相框左下方） */
 .s7-caption {
   position: absolute;
-  bottom: -2.4rem; /* 掛在白色相框邊緣下方 */
-  left: -8px;      /* 對齊最外圈的白襯底邊緣 */
-  z-index: 10;
-  font-size: 0.54rem;
-  letter-spacing: 0.25em;
+  bottom: -2.6rem;
+  left: -10px;
+  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-size: 0.56rem;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: rgba(10, 10, 10, 0.4); /* 適應白底的優雅碳灰字 */
+  color: rgba(0, 0, 0, 0.35);
   font-weight: 300;
-  pointer-events: none;
+  white-space: nowrap;
 }
 
-/* ✂️ 徹底拔除不需要的箭頭與進度線條樣式 */
-.s7-nav-btn, .s7-timeline {
-  display: none !important;
+/* ⬅️ ➡️ 高奢極簡細線導覽按鈕 */
+.s7-gallery-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  width: 70px;
+  height: 70px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  z-index: 10;
+  border-radius: 50%;
+  transition: background-color 0.3s, transform 0.3s;
+}
+.s7-btn-prev { left: 4vw; }
+.s7-btn-next { right: 4vw; }
+.s7-gallery-btn:hover { background-color: rgba(0, 0, 0, 0.02); transform: translateY(-50%) scale(1.05); }
+
+/* 🔢 底部極簡頁碼計數器 */
+.s7-gallery-counter {
+  position: absolute;
+  bottom: 5vh;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 1.1rem;
+  color: #1A1A1A;
+  letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 300;
+}
+.s7-counter-divider {
+  font-size: 0.8rem;
+  opacity: 0.3;
+}
+#s7CurrentNum {
+  font-weight: 400;
+}
+.s7-total-num {
+  opacity: 0.4;
 }
 
+/* ==========================================================================
+   ⚡ S7 FORCE BLACK CURSOR PATCH (S7 藝廊專屬鼠標剛性黑化補丁)
+   ========================================================================== */
+
+/* 1. 當滑鼠游標在 S7 展廳範圍內活動時，強行將大圓圈與點點變黑 */
+#proj-gallery-s7:hover ~ #cursor-dot,
+body:has(#proj-gallery-s7:hover) #cursor-dot {
+  background-color: #1A1A1A !important;
+}
+
+body:has(#proj-gallery-s7:hover) #cursor-ring {
+  border-color: #1A1A1A !important;
+}
+
+/* 2. 雙重保險：確保在 CSS 裡滑鼠指到 S7 的自適應相框或左右按鈕時，大圓圈能順暢放大 */
+#proj-gallery-s7 .s7-gallery-btn:hover ~ #cursor-ring,
+#proj-gallery-s7 .s7-photo-frame-wrapper:hover ~ #cursor-ring,
+body:has(#proj-gallery-s7 .s7-gallery-btn:hover) #cursor-ring,
+body:has(#proj-gallery-s7 .s7-photo-frame-wrapper:hover) #cursor-ring {
+  transform: translate(-50%, -50%) scale(1.5); /* 觸發高奢大圓圈放大反饋 */
+}
+
+/* 📱 手機端安全安全降級 */
+@media (max-width: 900px) {
+  .s7-photo-frame-wrapper.is-landscape { width: 85vw; }
+  .s7-photo-frame-wrapper.is-portrait { width: 75vw; }
+  .s7-gallery-btn { width: 50px; height: 50px; }
+  .s7-btn-prev { left: 2vw; }
+  .s7-btn-next { right: 2vw; }
+}
 /* ═══════════════════════════════════════
    SECTION 8 — NEXT PROJECT (HERO 下沉版)
 ═══════════════════════════════════════ */
@@ -901,7 +1182,7 @@ nav {
   position: absolute; 
   inset: 0; 
   z-index: 0;
-  background-image: url('img/project4-warm.jpg');
+  background-image: url('img/project7-loft.jpg');
   background-size: cover;
   background-position: center;
   filter: brightness(0.3) saturate(0.5);
@@ -1241,8 +1522,8 @@ nav {
     <div class="proj-hero-vignette"></div>
 
     <div class="proj-hero-content">
-      <p class="proj-index">003 · 2023 · Architectural Design</p>
-      <h1 class="proj-title">Within the<br>Block</h1>
+      <p class="proj-index">006 · 2024 · Architectural Design</p>
+      <h1 class="proj-title">Urban<br>Hideaway</h1>
       <div class="proj-meta-row">
         <div class="proj-meta-item">
           <span class="proj-meta-label">Discipline</span>
@@ -1254,7 +1535,7 @@ nav {
         </div>
         <div class="proj-meta-item">
           <span class="proj-meta-label">Year</span>
-          <span class="proj-meta-value">2023</span>
+          <span class="proj-meta-value">2024</span>
         </div>
       </div>
     </div>
@@ -1272,11 +1553,9 @@ nav {
   <section id="proj-overview">
     <div class="overview-left sr">
       <p class="overview-eyebrow">Project Overview</p>
-      <h2 class="overview-heading">Collective<br>Living</h2>
+      <h2 class="overview-heading">Architecture<br>as a Story</h2>
       <p class="overview-body">
-      This project explores how spatial enclosure can create a sense of privacy within a dense urban environment. By organising the building mass around a central courtyard, the design establishes a protected interior landscape that contrasts with the surrounding city.
-
-At intermediate levels, shared communal spaces are introduced to encourage interaction among residents, balancing individual privacy with collective living. 
+     Urban Hideaway explores how narrative techniques from films and literature can be translated into spatial experience. Through sequences of concealment, encounter, pursuit, and revelation, the project transforms a bookstore into a journey of self-discovery, where architecture becomes a medium for storytelling rather than simply a container for books.
       </p>
     </div>
     <div class="overview-right sr sr-d2">
@@ -1297,86 +1576,117 @@ At intermediate levels, shared communal spaces are introduced to encourage inter
     </div>
   </section>
 
-
-  <!-- ══════════════════════════
-       S3 — BA
-  ══════════════════════════ -->
-<section id="proj-render-comp-s5">
-    
-    <div class="render-stage">
-      
-      <div class="render-layer AO-layer">
-        <img src="within_img/vp1.jpg" alt="Ambient Occlusion Render">
-      </div>
-
-      <div class="render-layer Final-layer">
-        <img src="img/project3-within.jpg" alt="When Space Remembers — Main Render">
-      </div>
-
-      <div class="render-handle-wrapper" id="compLine">
-        <div class="render-handle-line"></div>
-      </div>
-      
-    </div>
-
-    <p class="full-img-caption">Six-Person Cell — Reconstruction from historical archives // Before/After Comp.</p>
-    
-  </section>
 <!-- ══════════════════════════
-       S4 — BA
+       S3 — Full img
+  ══════════════════════════ -->
+<section id="proj-reflection-combined">
+  
+  <div class="s6-fixed-bg bg-grayscale"></div>
+  
+  <div class="s6-fixed-bg bg-color" id="spotlightImg"></div>
+
+</section>
+
+  
+<!-- ══════════════════════════
+       S4 — 繪本
   ══════════════════════════ -->
   <section id="proj-process">
   
-  <div class="s4-full-bg"></div>
+  <div class="s4-paper-bg"></div>
 
-  <div class="s4-inner-scene s4-scene-1">
-    <div class="process-left-wing">
-      <div class="wing-sticky-content">
-        <div class="process-step sr">
-          <p class="step-num">Phase 01</p>
-          <h3 class="step-title">Site Analysis</h3>
-          <p class="step-desc narrow-box">
-            Located in the dense urban fabric of Shilin, Taipei, this residential project explores how spatial enclosure can create privacy and environmental comfort within the city. The building mass is organised around a central courtyard to improve natural light, ventilation, and climatic responsiveness, while creating a protected interior landscape separated from the surrounding urban context.<br><br>
-            Shared communal platforms are introduced at intermediate levels to encourage social interaction and strengthen the relationship between private and collective living within the vertical structure.
-          </p>
-        </div>
+  <div class="s4-inner-scene s4-scene-1" id="s4Scene1">
+    <div class="s4-narrative-container">
+      <div class="s4-text-side">
+        <span class="story-index">01 / 06</span>
+        <h3 class="story-title">The City of Masks</h3>
+        <p class="story-desc">
+        The city teaches people how to behave, what to say, and who to become.
+Over time, the distance between appearance and reality begins to disappear.  
+        </p>
       </div>
-    </div>
-    
-    <div class="process-right-wing">
-      <div class="wing-sticky-content">
-        <div class="process-step sr">
-          <h3 class="step-title">Plan</h3>
-          <p class="step-desc">
-            The ground floor is designed as a semi-public interface between the city and the residential community. Circulation routes, entrances, and landscaped areas guide movement into the central courtyard.
-          </p>
-        </div>
-        <div class="plan-imgs-grid full-grid sr sr-d2">
-          <div class="grid-cell"><img src="within_img/1fplan-04.jpg" alt="1F Plan"></div>
-          <div class="grid-cell"><img src="within_img/3fplan-04.jpg" alt="3F Plan"></div>
-          <div class="grid-cell"><img src="within_img/5fplan-04.jpg" alt="5F Plan"></div>
-          <div class="grid-cell"><img src="within_img/8fplan-04.jpg" alt="8F Plan"></div>
-        </div>
+      <div class="s4-illustration-side">
+        <img src="urban_img/c1.png" alt="Site Context" class="png-artwork">
       </div>
     </div>
   </div>
 
-  <div class="s4-inner-scene s4-scene-2 s4-fade-out">
-    <div class="s4-scene2-top-meta">
-      <p class="step-num">Phase 02</p>
-      <h3 class="step-title">Section</h3>
-      <p class="step-desc wide-box">
-      The section illustrates how the enclosed building form frames a central courtyard, allowing light and views to penetrate deep into the block while supporting both privacy and shared living.
-  
-      </p>
-    </div>
-
-    <div class="scene2-horizontal-stage">
-      <div class="landscape-img-box">
-        <img src="within_img/section1.jpg" alt="Section Drawing">
+  <div class="s4-inner-scene s4-scene-2 s4-fade-out" id="s4Scene2">
+    <div class="s4-narrative-container">
+      <div class="s4-text-side">
+        <span class="story-index">02 / 06</span>
+        <h3 class="story-title">A Glimpse Beyond</h3>
+        <p class="story-desc">
+        Among familiar streets and everyday routines, a small opening appears.
+A place that seems ordinary, yet quietly invites another possibility.  
+        </p>
       </div>
-      <div class="landscape-img-box">
-        <img src="within_img/section2.jpg" alt="Material Palette">
+      <div class="s4-illustration-side">
+        <img src="urban_img/c2.png" alt="Central Courtyard" class="png-artwork">
+      </div>
+    </div>
+  </div>
+
+  <div class="s4-inner-scene s4-scene-3 s4-fade-out" id="s4Scene3">
+    <div class="s4-narrative-container">
+      <div class="s4-text-side">
+        <span class="story-index">03 / 06</span>
+        <h3 class="story-title">Entering the Hideaway</h3>
+        <p class="story-desc">
+        The path narrows.
+The noise of the city fades behind layers of walls, trees, and shadows.  
+        </p>
+      </div>
+      <div class="s4-illustration-side">
+        <img src="urban_img/c3.png" alt="Vertical Platform" class="png-artwork">
+      </div>
+    </div>
+  </div>
+
+  <div class="s4-inner-scene s4-scene-4 s4-fade-out" id="s4Scene4">
+    <div class="s4-narrative-container">
+      <div class="s4-text-side">
+        <span class="story-index">04 / 06</span>
+        <h3 class="story-title">The Hidden World</h3>
+        <p class="story-desc">
+        Behind ordinary walls lies another reality.
+A place where time slows down, and forgotten parts of ourselves quietly return.  
+        </p>
+      </div>
+      <div class="s4-illustration-side">
+        <img src="urban_img/c4.png" alt="Light Study" class="png-artwork">
+      </div>
+    </div>
+  </div>
+
+  <div class="s4-inner-scene s4-scene-5 s4-fade-out" id="s4Scene5">
+    <div class="s4-narrative-container">
+      <div class="s4-text-side">
+        <span class="story-index">05 / 06</span>
+        <h3 class="story-title">The Encounter</h3>
+        <p class="story-desc">
+        Not every encounter needs a destination.
+Sometimes a glance, a silhouette, or a shared moment of silence is enough to change a story. 
+        </p>
+      </div>
+      <div class="s4-illustration-side">
+        <img src="urban_img/c5.png" alt="Material Tactility" class="png-artwork">
+      </div>
+    </div>
+  </div>
+
+  <div class="s4-inner-scene s4-scene-6 s4-fade-out" id="s4Scene6">
+    <div class="s4-narrative-container">
+      <div class="s4-text-side">
+        <span class="story-index">06 / 06</span>
+        <h3 class="story-title">Return</h3>
+        <p class="story-desc">
+        The path leads back to the city.
+But after crossing through hidden spaces and forgotten memories, the reflection in the mirror no longer feels the same.  
+        </p>
+      </div>
+      <div class="s4-illustration-side">
+        <img src="urban_img/c6.png" alt="Final Space" class="png-artwork">
       </div>
     </div>
   </div>
@@ -1386,101 +1696,214 @@ At intermediate levels, shared communal spaces are introduced to encourage inter
 <!-- ══════════════════════════
        S5 — Full img
   ══════════════════════════ -->
-<section id="proj-reflection-combined">
-    
-    <div class="s6-fixed-bg"></div>
+<section id="section-five-universe">
+  
+  <div class="s5-fullscreen-bg" id="s5BgImg"></div>
 
-    <div class="s6-layer-lead">
-      <div class="lead-content-left">
-        <p class="combined-section-label">Design Process</p>
-        <h2 class="combined-headline">VERTICAL<br>COMMUNITY</h2>
-        <div class="combined-text-block">
-          <p class="combined-paragraph">
-        The project organises residential spaces around a central courtyard to create a quieter and more protected living environment within Taipei’s dense urban context. Layered communal platforms introduce natural light, ventilation, and opportunities for social interaction throughout the vertical structure.
-        </p>
+  <div class="s5-gallery-overlay">
+    
+    <div class="s5-title-area">
+      <h2 class="s5-section-title">Section</h2>
+    </div>
+
+    <div class="s5-slider-container">
+      
+      <button class="s5-nav-btn s5-prev" id="s5PrevBtn" aria-label="Previous Photo">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M15 19l-7-7 7-7" stroke="#2C221E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+
+      <div class="s5-photo-stage">
+        <div class="s5-photo-item active">
+          <img src="urban_img/s1.jpeg" alt="Render Asset 1">
+        </div>
+        <div class="s5-photo-item">
+          <img src="urban_img/s2.jpeg" alt="Render Asset 2">
+        </div>
+        <div class="s5-photo-item">
+          <img src="urban_img/s3.jpeg" alt="Render Asset 3">
         </div>
       </div>
+
+      <button class="s5-nav-btn s5-next" id="s5NextBtn" aria-label="Next Photo">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M9 5l7 7-7 7" stroke="#2C221E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      
     </div>
 
-  
+  </div>
 
-    <div class="s6-global-hint">
-      <div class="s6-hint-line"></div>
-      <span id="s6HintText">Scroll</span>
+</section>
+<!-- ══════════════════════════
+       S5.2 — plan
+  ══════════════════════════ -->
+<section id="section-five-plan">
+  <div class="s52-container">
+    
+    <div class="s52-header-area">
+      <h2 class="s52-main-title">Plan</h2>
+      <p class="s52-sub-paragraph">
+        Designed as a late-night bookstore, the space combines quiet reading with anonymous social interaction, expressing themes of concealment and openness. The massing is shaped by site circulation and connected through elevated bridges overlooking the surrounding landscape.
+      </p>
     </div>
 
+    <div class="s52-plans-grid">
+      
+      <div class="s52-plan-card" data-index="0">
+        <div class="s52-img-wrapper">
+          <img src="urban_img/siteplan.jpg" alt="Site Plan">
+        </div>
+      </div>
+
+      <div class="s52-plan-card" data-index="1">
+        <div class="s52-img-wrapper">
+          <img src="urban_img/gfplan1-03.jpg" alt="GF Plan">
+        </div>
+      </div>
+
+      <div class="s52-plan-card" data-index="2">
+        <div class="s52-img-wrapper">
+          <img src="urban_img/1fplan-03.jpg" alt="1F Plan">
+        </div>
+      </div>
+
+      <div class="s52-plan-card" data-index="3">
+        <div class="s52-img-wrapper">
+          <img src="urban_img/2fplan-03.jpg" alt="2F Plan">
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="s52-lightbox" id="s52Lightbox">
+    
+    <button class="s52-close-btn" id="s52Close" aria-label="Close Gallery">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#1A1A1A" stroke-width="1.2" stroke-linecap="round"/></svg>
+    </button>
+
+    <button class="s52-nav-btn s52-lightbox-prev" id="s52LightboxPrev" aria-label="Previous">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M15 19l-7-7 7-7" stroke="#1A1A1A" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+
+    <div class="s52-lightbox-stage">
+      <img src="" id="s52LightboxImg" alt="Expanded Plan View">
+    </div>
+
+    <button class="s52-nav-btn s52-lightbox-next" id="s52LightboxNext" aria-label="Next">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M9 5l7 7-7 7" stroke="#1A1A1A" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+
+  </div>
+</section>
+
+
+
+<!-- ══════════════════════════
+       S5.5 — BA
+  ══════════════════════════ -->
+<section id="proj-render-comp-s5">
+    
+    <div class="render-stage">
+      
+      <div class="render-layer AO-layer">
+        <img src="urban_img/vp2.jpg" alt="Ambient Occlusion Render">
+      </div>
+
+      <div class="render-layer Final-layer">
+        <img src="urban_img/render2.jpg" alt="When Space Remembers — Main Render">
+      </div>
+
+      <div class="render-handle-wrapper" id="compLine">
+        <div class="render-handle-line"></div>
+      </div>
+      
+    </div>
+
+    <p class="full-img-caption">Urban Hideaway // Before/After Comp.</p>
+    
   </section>
+
+
+
+<!-- ══════════════════════════
+       S5.7 — FULL IMAGE
+  ══════════════════════════ -->
+  <section id="section-five-analysis">
+  <div class="s57-image-container">
+    <img src="urban_img/analysis.jpg" alt="Spatial and Narrative Analysis Diagram" class="s57-main-diagram">
+  </div>
+</section>
+
 
 <!-- ══════════════════════════
        S6 — FULL IMAGE
   ══════════════════════════ -->
 <section id="proj-gallery-s7">
   
-  <div class="s7-inner-scene s7-scene-1">
-    <div class="s7-scene-1-collage">
-      
-      <div class="collage-header sr">
-        <h2 class="collage-main-title">Spatial Strategies</h2>
-        <p class="collage-sub-desc">
-          The exterior responds to the dense urban surroundings, while the interior courtyard offers a contrasting atmosphere of calm and openness. This duality defines the spatial experience of the project.
-        </p>
-      </div>
-
-      <div class="collage-grid-container sr sr-d1">
-        
-        <div class="collage-item">
-          <div class="collage-img-wrapper">
-            <img src="within_img/c1-05.png" alt="Interaction Collage"> </div>
-          <div class="collage-text-meta">
-            <h4 class="collage-item-title">Interaction</h4>
-            <p class="collage-item-desc">Shared spaces are distributed throughout the building to encourage informal encounters. Rather than prescribing interaction, the design allows varying degrees of visibility and proximity supporting both connection and privacy.</p>
-          </div>
-        </div>
-
-        <div class="collage-item">
-          <div class="collage-img-wrapper">
-            <img src="within_img/c2-05.png" alt="Material Collage">
-          </div>
-          <div class="collage-text-meta">
-            <h4 class="collage-item-title">Material</h4>
-            <p class="collage-item-desc">A curated palette of concrete, stone, and timber defines the tactile quality of the project. Material contrasts are used to articulate spatial hierarchy while reinforcing a calm and cohesive architectural language.</p>
-          </div>
-        </div>
-
-        <div class="collage-item">
-          <div class="collage-img-wrapper">
-            <img src="within_img/c3-05.png" alt="Enclosure Collage">
-          </div>
-          <div class="collage-text-meta">
-            <h4 class="collage-item-title">Enclosure</h4>
-            <p class="collage-item-desc">The project is organised around an inward-facing courtyard, creating a sense of protection and intimacy. Solid volumes and framed openings define a spatial rhythm between enclosure and openness.</p>
-          </div>
-        </div>
-
-        <div class="collage-item">
-          <div class="collage-img-wrapper">
-            <img src="within_img/c4-05.png" alt="Landscape Collage">
-          </div>
-          <div class="collage-text-meta">
-            <h4 class="collage-item-title">Landscape</h4>
-            <p class="collage-item-desc">The landscape is conceived as an extension of the architecture, introducing softness within a dense urban setting. Vegetation and terrain shape a central courtyard that mediates between built form and natural environment.</p>
-          </div>
-        </div>
-
-      </div> </div>
-  </div>
-
-  <div class="s7-gallery-stage s7-stage-hidden">
+  <div class="s7-gallery-stage">
     
-    <div class="s7-slide">
-      <img src="within_img/render3.jpg" alt="Final Master Render">
-      <p class="s7-caption">Final Render // Spatial Masterpiece Overview</p>
+    <button class="s7-gallery-btn s7-btn-prev" id="s7GalleryPrev" aria-label="Previous Slide">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none"><path d="M15 19l-7-7 7-7" stroke="#1A1A1A" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+
+    <div class="s7-photo-frame-wrapper">
+      <div class="s7-slides-container">
+        
+        <div class="s7-slide landscape active">
+          <img src="urban_img/fat1.jpeg" alt="Landscape Render 1">
+          <span class="s7-caption">Exhibition Gallery // Spatial Perspective 01</span>
+        </div>
+        <div class="s7-slide landscape">
+          <img src="urban_img/fat2.jpeg" alt="Landscape Render 2">
+          <span class="s7-caption">Exhibition Gallery // Spatial Perspective 02</span>
+        </div>
+        <div class="s7-slide landscape">
+          <img src="urban_img/fat3.jpeg" alt="Landscape Render 3">
+          <span class="s7-caption">Exhibition Gallery // Spatial Perspective 03</span>
+        </div>
+        <div class="s7-slide landscape">
+          <img src="urban_img/fat4.jpeg" alt="Landscape Render 4">
+          <span class="s7-caption">Exhibition Gallery // Spatial Perspective 04</span>
+        </div>
+        <div class="s7-slide landscape">
+          <img src="urban_img/fat5.jpg" alt="Landscape Render 5">
+          <span class="s7-caption">Exhibition Gallery // Spatial Perspective 05</span>
+        </div>
+        <div class="s7-slide landscape">
+          <img src="urban_img/fat7.jpeg" alt="Landscape Render 6">
+          <span class="s7-caption">Exhibition Gallery // Spatial Perspective 06</span>
+        </div>
+
+        <div class="s7-slide portrait">
+          <img src="urban_img/tall1.jpeg" alt="Portrait Render 1">
+          <span class="s7-caption">Material Microscopic // Tectonic Detail 01</span>
+        </div>
+        <div class="s7-slide portrait">
+          <img src="urban_img/tall2.jpeg" alt="Portrait Render 2">
+          <span class="s7-caption">Material Microscopic // Tectonic Detail 02</span>
+        </div>
+        <div class="s7-slide portrait">
+          <img src="urban_img/tall3.jpeg" alt="Portrait Render 3">
+          <span class="s7-caption">Material Microscopic // Tectonic Detail 03</span>
+        </div>
+        <div class="s7-slide portrait">
+          <img src="urban_img/tall4.jpeg" alt="Portrait Render 4">
+          <span class="s7-caption">Material Microscopic // Tectonic Detail 04</span>
+        </div>
+
+      </div>
+    </div>
+
+    <button class="s7-gallery-btn s7-btn-next" id="s7GalleryNext" aria-label="Next Slide">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none"><path d="M9 5l7 7-7 7" stroke="#1A1A1A" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+
+    <div class="s7-gallery-counter">
+      <span id="s7CurrentNum">01</span><span class="s7-counter-divider">/</span><span class="s7-total-num">10</span>
     </div>
 
   </div>
-
 </section>
-
 
 
   <!-- ══════════════════════════
@@ -1514,11 +1937,11 @@ At intermediate levels, shared communal spaces are introduced to encourage inter
 
     <div class="next-hero-wrapper">
       <div class="next-content">
-        <a href="project-warm.html" class="next-title">The Warm<br>Living</a>
+        <a href="project-echoes.html" class="next-title">Echoes<br>in the Attic</a>
       </div>
       
       <div class="next-bottom">
-        <span class="next-meta">004 · Interior design · Blender · Photoshop</span>
+        <span class="next-meta">007 · 3D Environment · Blender · Photoshop</span>
         
         <a href="#" class="next-back-to-top" id="backToTopBtn" aria-label="Back to top">
           <span class="btn-arrow">↑</span>
@@ -1574,8 +1997,12 @@ At intermediate levels, shared communal spaces are introduced to encourage inter
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 <script>
-/* ── 核心容器定義 ── */
+/* ==========================================================================
+   ⚙️ CORE SETTING — 核心容器與全域變數
+   ========================================================================== */
 const container = document.querySelector('.scroll-container');
+const scrollWrapper = container || window;
+
 
 /* ── 1. CURSOR (滑鼠大圓圈與點點追蹤) ── */
 const dot  = document.getElementById('cursor-dot');
@@ -1595,15 +2022,16 @@ document.addEventListener('mousemove', e => {
   requestAnimationFrame(raf);
 })();
 
-// 讓自訂按鈕與聯絡膠囊也能觸發大圓圈放大效果
-document.querySelectorAll('a, .gallery-cell, .video-ui-btn, .capsule-btn, .s7-nav-btn, .s7-line-btn').forEach(el => {
+// 自訂元素觸發大圓圈放大回饋
+document.querySelectorAll('a, .gallery-cell, .video-ui-btn, .capsule-btn, .s7-nav-btn, .s7-line-btn, .s5-nav-btn').forEach(el => {
   el.addEventListener('mouseenter', () => document.body.classList.add('cursor-grow'));
   el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-grow'));
 });
 
 
 /* ── 2. LIGHT BG DETECTION (黑白背景色塊動態切換) ── */
-const lightSections = document.querySelectorAll('#proj-overview, #proj-process, #proj-reflection');
+// ⚡ 修正：把 #section-five-plan 填入陣列中，讓系統知道這一頁也是亮色背景！
+const lightSections = document.querySelectorAll('#proj-overview, #proj-process, #proj-reflection, #section-five-plan');
 
 if (container) {
   lightSections.forEach(sec => {
@@ -1625,7 +2053,11 @@ if (container) {
 }
 
 
-/* ── 4. MOUES HOVER 3D 微立體視差 + SCROLL 滾動位移 (第一幕 Hero) ── */
+/* ==========================================================================
+   🖼️ SECTION-SPECIFIC MOTIONS — 各單元獨立動態邏輯
+   ========================================================================== */
+
+/* ── 4. HERO SECTION (3D 微立體視差 + 滾動位移) ── */
 const heroSection = document.getElementById('proj-hero');
 const heroBg = document.getElementById('projHeroBg');
 let tiltX = 0, tiltY = 0, moveX = 0, moveY = 0;
@@ -1662,70 +2094,79 @@ function updateHeroTransform() {
   `;
 }
 
-
-/* ── 5. HERO 滾動視差位移監聽 ── */
 if (container) {
   container.addEventListener('scroll', () => {
     const sy = container.scrollTop;
     const vh = window.innerHeight;
-    
-    if (sy < vh) {
-      scrollTranslateY = sy * 0.15;
-    } else {
-      scrollTranslateY = vh * 0.15;
-    }
+    if (sy < vh) scrollTranslateY = sy * 0.15;
+    else scrollTranslateY = vh * 0.15;
     updateHeroTransform();
   }, { passive: true });
 }
 
 
-/* ── 6. 🎬 建築圖 SECTION 4 — 雙幕定格滾動切換核心 ── */
+/* ── 5.🔍 SPOTLIGHT MASK (S3 黑白轉彩色柔邊聚光燈) ── */
 document.addEventListener("DOMContentLoaded", () => {
-  const s4Section = document.getElementById('proj-process');
-  const scene1 = document.querySelector('.s4-scene-1');
-  const scene2 = document.querySelector('.s4-scene-2');
+  const spotlightSection = document.getElementById('proj-reflection-combined');
+  const spotlightImg = document.getElementById('spotlightImg');
 
-  let s4CurrentPhase = 1; // 1 = 第一幕 (Analysis), 2 = 第二幕 (Section)
-  let s4IsTransitioning = false;
+  if (spotlightSection && spotlightImg) {
+    spotlightSection.addEventListener('mouseenter', () => spotlightSection.classList.add('active'));
+    spotlightSection.addEventListener('mouseleave', () => spotlightSection.classList.remove('active'));
 
-  if (container && s4Section && scene1 && scene2) {
-    container.addEventListener('wheel', (e) => {
-      const rect = s4Section.getBoundingClientRect();
-      
+    function syncSpotlightWithCursor() {
+      if (spotlightSection.classList.contains('active')) {
+        const rect = spotlightSection.getBoundingClientRect();
+        const spotlightX = rx - rect.left;
+        const spotlightY = ry - rect.top;
+        const maskStyle = `radial-gradient(circle 180px at ${spotlightX}px ${spotlightY}px, rgba(0,0,0,1) 40px, rgba(0,0,0,0) 100%)`;
+        
+        spotlightImg.style.webkitMaskImage = maskStyle;
+        spotlightImg.style.maskImage = maskStyle;
+      }
+      requestAnimationFrame(syncSpotlightWithCursor);
+    }
+    requestAnimationFrame(syncSpotlightWithCursor);
+  }
+});
+
+
+/* ── 6. 📖 ARCHITECTURAL NARRATIVE (S4 六幕翻頁故事核心) ── */
+document.addEventListener("DOMContentLoaded", () => {
+  const processSection = document.getElementById('proj-process');
+  const scenes = Array.from({ length: 6 }, (_, i) => document.getElementById(`s4Scene${i + 1}`));
+
+  let currentStoryPhase = 1;
+  let storyIsTransitioning = false;
+  const maxStoryPhases = 6;
+
+  if (processSection && scenes.every(el => el)) {
+    window.addEventListener('wheel', (e) => {
+      const rect = processSection.getBoundingClientRect();
       if (Math.abs(rect.top) > 10) return;
 
       if (e.deltaY > 0) {
-        if (s4CurrentPhase === 1) {
-          e.preventDefault();
-          e.stopPropagation();
-          
-          if (!s4IsTransitioning) {
-            s4IsTransitioning = true;
-            scene1.classList.add('s4-fade-out');
-            scene2.classList.remove('s4-fade-out');
-            
-            setTimeout(() => {
-              s4CurrentPhase = 2;
-              s4IsTransitioning = false;
-            }, 800);
+        if (currentStoryPhase < maxStoryPhases) {
+          e.preventDefault(); e.stopPropagation();
+          if (!storyIsTransitioning) {
+            storyIsTransitioning = true;
+            scenes[currentStoryPhase - 1].classList.add('s4-fade-out');
+            scenes[currentStoryPhase].classList.remove('s4-fade-out');
+            currentStoryPhase++;
+            setTimeout(() => { storyIsTransitioning = false; }, 1200);
           }
           return;
         }
       } 
       else if (e.deltaY < 0) {
-        if (s4CurrentPhase === 2) {
-          e.preventDefault();
-          e.stopPropagation();
-          
-          if (!s4IsTransitioning) {
-            s4IsTransitioning = true;
-            scene2.classList.add('s4-fade-out');
-            scene1.classList.remove('s4-fade-out');
-            
-            setTimeout(() => {
-              s4CurrentPhase = 1;
-              s4IsTransitioning = false;
-            }, 800);
+        if (currentStoryPhase > 1) {
+          e.preventDefault(); e.stopPropagation();
+          if (!storyIsTransitioning) {
+            storyIsTransitioning = true;
+            scenes[currentStoryPhase - 1].classList.add('s4-fade-out');
+            scenes[currentStoryPhase - 2].classList.remove('s4-fade-out');
+            currentStoryPhase--;
+            setTimeout(() => { storyIsTransitioning = false; }, 1200);
           }
           return;
         }
@@ -1735,142 +2176,216 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 
-/* ── 7. 🎬 S5 RENDER COMPARISON ── */
-const s5CompSection = document.getElementById('proj-render-comp-s5');
-const s5AoLayer = document.querySelector('#proj-render-comp-s5 .AO-layer');
-const s5HandleWrapper = document.querySelector('#proj-render-comp-s5 .render-handle-wrapper');
-
-if (s5CompSection && s5AoLayer && s5HandleWrapper) {
-
-  s5CompSection.addEventListener('mousemove', (e) => {
-    const rect = s5CompSection.getBoundingClientRect();
-    const mouseX = e.clientX - rect.left;
-    const sectionW = rect.width;
-    const sectionH = rect.height;
-
-    let pct = (mouseX / sectionW) * 100;
-    pct = Math.max(0, Math.min(pct, 50));
-
-    const skewOffsetPct = (sectionH * 0.1763 / sectionW) * 100;
-
-    s5AoLayer.style.clipPath =
-      `polygon(0 0, calc(${pct}% + ${skewOffsetPct.toFixed(2)}%) 0, ${pct}% 100%, 0 100%)`;
-
-    s5HandleWrapper.style.left =
-      `calc(${pct}% + ${(skewOffsetPct * 0.5).toFixed(2)}%)`;
-  });
-
-  s5CompSection.addEventListener('mouseleave', () => {
-    s5AoLayer.style.transition = 'clip-path 0.4s cubic-bezier(.16,1,.3,1)';
-    s5HandleWrapper.style.transition = 'left 0.4s cubic-bezier(.16,1,.3,1)';
-
-    const rect = s5CompSection.getBoundingClientRect();
-    const skewOffsetPct = (rect.height * 0.1763 / rect.width) * 100;
-
-    s5AoLayer.style.clipPath =
-      `polygon(0 0, calc(0% + ${skewOffsetPct.toFixed(2)}%) 0, 0% 100%, 0 100%)`;
-    s5HandleWrapper.style.left =
-      `calc(0% + ${(skewOffsetPct * 0.5).toFixed(2)}%)`;
-
-    setTimeout(() => {
-      s5AoLayer.style.transition = '';
-      s5HandleWrapper.style.transition = '';
-    }, 400);
-  });
-}
-
-
-/* ── 8. 🎬 SECTION 6 (S7) — 網格拼貼與大畫廊雙幕滑移核心（🔥 完美重構修復版） ── */
+/* ── 7. 🎞️ SECTION 5 (相片集輪播與紙張背景完美消融) ── */
 document.addEventListener("DOMContentLoaded", () => {
-  const s7Section = document.getElementById('proj-gallery-s7');
-  const s7Scene1 = document.querySelector('.s7-scene-1');
-  const s7Stage = document.querySelector('.s7-gallery-stage');
+  const s5Section = document.getElementById('section-five-universe');
+  const s5BgImg = document.getElementById('s5BgImg');
+  const s5Photos = document.querySelectorAll('.s5-photo-item');
+  const s5PrevBtn = document.getElementById('s5PrevBtn');
+  const s5NextBtn = document.getElementById('s5NextBtn');
+  
+  let s5CurrentIndex = 0;
 
-  let s7CurrentPhase = 1; // 1 = 第一幕 (Collage), 2 = 第二幕 (Big Gallery)
-  let s7IsPhaseTransitioning = false;
+  function showPhoto(index) {
+    if (s5Photos.length === 0) return;
+    if (index >= s5Photos.length) s5CurrentIndex = 0;
+    else if (index < 0) s5CurrentIndex = s5Photos.length - 1;
+    else s5CurrentIndex = index;
 
-  if (container && s7Section && s7Scene1 && s7Stage) {
-    container.addEventListener('wheel', (e) => {
-      const rect = s7Section.getBoundingClientRect();
-      
-      // 💡 當這個區塊頂部精準卡死在視窗最上方時，攔截滾輪進行內部跨幕轉場
-      if (Math.abs(rect.top) > 10) return;
-
-      if (e.deltaY > 0) {
-        // 🛑 【往下滾動】從第一幕網格切換到第二幕大渲染圖
-        if (s7CurrentPhase === 1) {
-          e.preventDefault();
-          e.stopPropagation();
-          
-          if (!s7IsPhaseTransitioning) {
-            s7IsPhaseTransitioning = true;
-            s7Scene1.classList.add('s7-scene1-fadeout'); 
-            s7Stage.classList.remove('s7-stage-hidden'); 
-            
-            setTimeout(() => {
-              s7CurrentPhase = 2;
-              s7IsPhaseTransitioning = false;
-            }, 900);
-          }
-          return;
-        }
-      } 
-      else if (e.deltaY < 0) {
-        // 🛑 【往上滾動】從第二幕大圖退回第一幕網格
-        if (s7CurrentPhase === 2) {
-          e.preventDefault();
-          e.stopPropagation();
-          
-          if (!s7IsPhaseTransitioning) {
-            s7IsPhaseTransitioning = true;
-            s7Stage.classList.add('s7-stage-hidden'); 
-            s7Scene1.classList.remove('s7-scene1-fadeout'); 
-            s7Section.classList.remove('bg-dark-mode'); 
-            
-            setTimeout(() => {
-              s7CurrentPhase = 1;
-              s7IsPhaseTransitioning = false;
-            }, 900);
-          }
-          return;
-        }
-      }
-    }, { passive: false });
+    s5Photos.forEach((photo, i) => {
+      photo.classList.toggle('active', i === s5CurrentIndex);
+    });
   }
 
-  // ── 🎬 大圖內部的左右切換與底部線條控制 ──
+  if (s5NextBtn) s5NextBtn.addEventListener('click', () => showPhoto(s5CurrentIndex + 1));
+  if (s5PrevBtn) s5PrevBtn.addEventListener('click', () => showPhoto(s5CurrentIndex - 1));
+
+  scrollWrapper.addEventListener('scroll', () => {
+    if (!s5Section || !s5BgImg) return;
+
+    const rect = s5Section.getBoundingClientRect();
+    const vh = window.innerHeight;
+
+    if (rect.top < vh && rect.bottom > 0) {
+      const scrolledAmount = Math.abs(rect.top); 
+      let progress = scrolledAmount / vh;
+      progress = Math.max(0, Math.min(progress, 1));
+
+      s5BgImg.style.opacity = (1 - progress) * 0.7;
+
+      if (progress > 0.1) {
+        s5Section.style.setProperty('background-color', `rgb(${244 + (11 * progress)}, ${241 + (14 * progress)}, ${234 + (21 * progress)})`, 'important');
+      } else {
+        s5Section.style.setProperty('background-color', '#F4F1EA', 'important');
+      }
+    }
+  }, { passive: true });
+});
+
+
+/* ── 7.2. 📐 SECTION 5.2 (PLAN LIGHTBOX — 平面圖全白點擊燈箱控制) ── */
+document.addEventListener("DOMContentLoaded", () => {
+  const planCards = document.querySelectorAll('.s52-plan-card');
+  const lightbox = document.getElementById('s52Lightbox');
+  const lightboxImg = document.getElementById('s52LightboxImg');
+  const closeBtn = document.getElementById('s52Close');
+  const prevBtn = document.getElementById('s52LightboxPrev');
+  const nextBtn = document.getElementById('s52LightboxNext');
+
+  // 1. 自動收集網格內四張平面圖的原圖路徑
+  const planSrcs = Array.from(planCards).map(card => card.querySelector('img').src);
+  let currentPlanIndex = 0;
+
+  // 2. 打開燈箱函數
+  function openPlanLightbox(index) {
+    currentPlanIndex = index;
+    lightboxImg.src = planSrcs[currentPlanIndex];
+    lightbox.classList.add('active');
+    document.body.classList.add('cursor-grow'); // 讓大鼠標反饋保持
+  }
+
+  // 3. 燈箱內切換照片函數 (循環翻頁)
+  function switchPlan(step) {
+    currentPlanIndex += step;
+    if (currentPlanIndex >= planSrcs.length) currentPlanIndex = 0;
+    if (currentPlanIndex < 0) currentPlanIndex = planSrcs.length - 1;
+    
+    // 絲滑淡入效果切換 src
+    lightboxImg.style.opacity = '0';
+    setTimeout(() => {
+      lightboxImg.src = planSrcs[currentPlanIndex];
+      lightboxImg.style.opacity = '1';
+    }, 150);
+  }
+
+  // 4. 綁定監聽事件
+  planCards.forEach((card, idx) => {
+    card.addEventListener('click', () => openPlanLightbox(idx));
+  });
+
+  if (closeBtn) {
+    closeBtn.addEventListener('click', () => {
+      lightbox.classList.remove('active');
+      document.body.classList.remove('cursor-grow');
+    });
+  }
+
+  if (nextBtn) nextBtn.addEventListener('click', (e) => { e.stopPropagation(); switchPlan(1); });
+  if (prevBtn) prevBtn.addEventListener('click', (e) => { e.stopPropagation(); switchPlan(-1); });
+  if (lightbox) {
+    lightbox.addEventListener('click', () => lightbox.classList.remove('active'));
+  }
+  
+  // 讓燈箱按鈕也能觸發大圓圈放大效果
+  document.querySelectorAll('.s52-plan-card, .s52-nav-btn, .s52-close-btn').forEach(el => {
+    el.addEventListener('mouseenter', () => document.body.classList.add('cursor-grow'));
+    el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-grow'));
+  });
+});
+
+/* ── 7.5. 🎬 SECTION 5.5 (RENDER COMPARISON — AO 對比滑動特效復活) ── */
+document.addEventListener("DOMContentLoaded", () => {
+  const s5CompSection = document.getElementById('proj-render-comp-s5');
+  const s5AoLayer = document.querySelector('#proj-render-comp-s5 .AO-layer');
+  const s5HandleWrapper = document.querySelector('#proj-render-comp-s5 .render-handle-wrapper');
+
+  if (s5CompSection && s5AoLayer && s5HandleWrapper) {
+    s5CompSection.addEventListener('mousemove', (e) => {
+      const rect = s5CompSection.getBoundingClientRect();
+      const mouseX = e.clientX - rect.left;
+      const sectionW = rect.width;
+      const sectionH = rect.height;
+
+      let pct = (mouseX / sectionW) * 100;
+      pct = Math.max(0, Math.min(pct, 50)); // 限制滑動比例上限
+
+      const skewOffsetPct = (sectionH * 0.1763 / sectionW) * 100;
+
+      s5AoLayer.style.clipPath =
+        `polygon(0 0, calc(${pct}% + ${skewOffsetPct.toFixed(2)}%) 0, ${pct}% 100%, 0 100%)`;
+
+      s5HandleWrapper.style.left =
+        `calc(${pct}% + ${(skewOffsetPct * 0.5).toFixed(2)}%)`;
+    });
+
+    s5CompSection.addEventListener('mouseleave', () => {
+      s5AoLayer.style.transition = 'clip-path 0.4s cubic-bezier(.16,1,.3,1)';
+      s5HandleWrapper.style.transition = 'left 0.4s cubic-bezier(.16,1,.3,1)';
+
+      const rect = s5CompSection.getBoundingClientRect();
+      const skewOffsetPct = (rect.height * 0.1763 / rect.width) * 100;
+
+      s5AoLayer.style.clipPath =
+        `polygon(0 0, calc(0% + ${skewOffsetPct.toFixed(2)}%) 0, 0% 100%, 0 100%)`;
+      s5HandleWrapper.style.left =
+        `calc(0% + ${(skewOffsetPct * 0.5).toFixed(2)}%)`;
+
+      setTimeout(() => {
+        s5AoLayer.style.transition = '';
+        s5HandleWrapper.style.transition = '';
+      }, 400);
+    });
+  }
+});
+
+
+/* ── 8. 🎬 SECTION 6 (S7) — 純白高奢自適應畫廊控制器（🔥 完美重構版） ── */
+document.addEventListener("DOMContentLoaded", () => {
+  const s7Section = document.getElementById('proj-gallery-s7');
+  const frameWrapper = document.querySelector('.s7-photo-frame-wrapper');
   const s7Slides = document.querySelectorAll('.s7-slide');
-  const s7LineBtns = document.querySelectorAll('.s7-line-btn');
-  const s7PrevBtn = document.getElementById('s7PrevBtn');
-  const s7NextBtn = document.getElementById('s7NextBtn');
+  const prevBtn = document.getElementById('s7GalleryPrev');
+  const nextBtn = document.getElementById('s7GalleryNext');
+  const currentNumEl = document.getElementById('s7CurrentNum');
 
   let s7CurrentIndex = 0;
 
-  function s7GoToSlide(index) {
-    if (s7Slides.length === 0) return;
+  if (!s7Section || s7Slides.length === 0 || !frameWrapper) return;
+
+  // ⚡ 核心函數：切換並動態計算當前圖片是橫幅還是直幅
+  function updateGallerySlide(index) {
+    // 邊界循環處理
     if (index >= s7Slides.length) s7CurrentIndex = 0;
     else if (index < 0) s7CurrentIndex = s7Slides.length - 1;
     else s7CurrentIndex = index;
 
+    // 1. 切換投影片 active 狀態
     s7Slides.forEach((slide, i) => {
       slide.classList.toggle('active', i === s7CurrentIndex);
     });
-    s7LineBtns.forEach((btn, i) => {
-      btn.classList.toggle('active', i === s7CurrentIndex);
-    });
+
+    // 2. ⚡ 物理感應：檢查當前作用中的投影片是橫幅還是直幅，動態更改外框比例類名
+    const currentSlide = s7Slides[s7CurrentIndex];
+    if (currentSlide.classList.contains('portrait')) {
+      frameWrapper.classList.remove('is-landscape');
+      frameWrapper.classList.add('is-portrait');
+    } else {
+      frameWrapper.classList.remove('is-portrait');
+      frameWrapper.classList.add('is-landscape');
+    }
+
+    // 3. 更新計數器文字 (補零格式，例如 03)
+    if (currentNumEl) {
+      currentNumEl.innerText = String(s7CurrentIndex + 1).padStart(2, '0');
+    }
   }
 
-  if (s7NextBtn) s7NextBtn.addEventListener('click', () => s7GoToSlide(s7CurrentIndex + 1));
-  if (s7PrevBtn) s7PrevBtn.addEventListener('click', () => s7GoToSlide(s7CurrentIndex - 1));
+  // 綁定左右按鈕點擊
+  if (nextBtn) nextBtn.addEventListener('click', () => updateGallerySlide(s7CurrentIndex + 1));
+  if (prevBtn) prevBtn.addEventListener('click', () => updateGallerySlide(s7CurrentIndex - 1));
 
-  s7LineBtns.forEach((btn, i) => {
-    btn.addEventListener('click', () => {
-      const targetIdx = parseInt(btn.getAttribute('data-to'));
-      s7GoToSlide(targetIdx);
-    });
+  // 初始化：第一張大圖的比例讀取
+  updateGallerySlide(0);
+
+  // 讓左右細線按鈕也能觸發妳最愛的大圓圈滑鼠放大反饋
+  document.querySelectorAll('.s7-gallery-btn').forEach(el => {
+    el.addEventListener('mouseenter', () => document.body.classList.add('cursor-grow'));
+    el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-grow'));
   });
 });
-
+/* ==========================================================================
+   🌐 GLOBAL UTILITIES — 全域輔助工具
+   ========================================================================== */
 
 /* ── 9. MOBILE OPTIMIZATION (手機版安全降級機制) ── */
 const isMobile = () => window.innerWidth <= 900;
@@ -1883,17 +2398,15 @@ if (isMobile()) {
 }
 
 
-/* ── 10. ⚡ CLASSIC DECODE-TEXT OBSERVER DRIVER (原汁原味黑客亂碼核心) ── */
+/* ── 10. ⚡ CLASSIC DECODE-TEXT OBSERVER DRIVER (黑客亂碼核心) ── */
 const decodeLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789%#$&@*_+?=";
 
 function startDecodeAnimation(element) {
   if (!element.getAttribute("data-value")) {
     element.setAttribute("data-value", element.innerText);
   }
-  
   const finalOutput = element.getAttribute("data-value");
   let currentIteration = 0;
-  
   if (element.decodeInterval) clearInterval(element.decodeInterval);
 
   element.decodeInterval = setInterval(() => {
@@ -1905,30 +2418,22 @@ function startDecodeAnimation(element) {
       })
       .join("");
 
-    if (currentIteration >= finalOutput.length) {
-      clearInterval(element.decodeInterval);
-    }
+    if (currentIteration >= finalOutput.length) clearInterval(element.decodeInterval);
     currentIteration += 1 / 3;
   }, 30);
 }
 
-const decodeObserver = new IntersectionObserver(
-  (entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        const currentTargets = entry.target.querySelectorAll(".decode-text");
-        currentTargets.forEach((target) => startDecodeAnimation(target));
-      }
-    });
-  },
-  { root: container, threshold: 0.1 }
-);
+const decodeObserver = new IntersectionObserver((entries) => {
+  entries.forEach((entry) => {
+    if (entry.isIntersecting) {
+      entry.target.querySelectorAll(".decode-text").forEach((target) => startDecodeAnimation(target));
+    }
+  });
+}, { root: container, threshold: 0.1 });
 
 document.addEventListener("DOMContentLoaded", () => {
   const contactSection = document.getElementById("contact");
-  if (contactSection) {
-    decodeObserver.observe(contactSection);
-  }
+  if (contactSection) decodeObserver.observe(contactSection);
   
   document.querySelectorAll(".decode-text").forEach(el => {
     el.addEventListener("mouseenter", () => startDecodeAnimation(el));
@@ -1936,17 +2441,13 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 
-// ⚡ 點擊圓形按鈕，絲滑滑回網頁最頂端
+/* ── 11. BACK TO TOP (絲滑滑回頂端) ── */
 const backToTopBtn = document.getElementById('backToTopBtn');
-
 if (backToTopBtn) {
   backToTopBtn.addEventListener('click', function(e) {
     e.preventDefault();
-    if (container) {
-      container.scrollTo({ top: 0, behavior: 'smooth' });
-    } else {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
+    if (container) container.scrollTo({ top: 0, behavior: 'smooth' });
+    else window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 }
 </script>
