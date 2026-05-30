@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Game Environments — Emily Wang</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100;0,9..40,200;0,9..40,300;0,9..40,400;1,9..40,200&display=swap" rel="stylesheet">
+<style>
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+:root {
+  --black: #0A0A0A;
+  --white: #F8F8F6;
+  --gray:  #888;
+  --mid:   #555;
+  --font-display: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+}
+
+html, body { height: 100%; }
+
+body {
+  background: var(--black);
+  color: var(--white);
+  font-family: var(--font-body);
+  font-weight: 300;
+  cursor: none;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+/* ─── CURSOR ─── */
+#cursor-dot {
+  width: 6px; height: 6px;
+  background: var(--white);
+  border-radius: 50%;
+  position: fixed; z-index: 9999;
+  pointer-events: none;
+  transform: translate(-50%,-50%);
+  transition: opacity .3s, transform .2s;
+}
+#cursor-ring {
+  width: 32px; height: 32px;
+  border: 1px solid rgba(248,248,246,0.45);
+  border-radius: 50%;
+  position: fixed; z-index: 9998;
+  pointer-events: none;
+  transform: translate(-50%,-50%);
+  transition: width .4s cubic-bezier(.16,1,.3,1),
+              height .4s cubic-bezier(.16,1,.3,1),
+              border-color .3s, opacity .3s;
+}
+body.cursor-hover #cursor-dot  { transform: translate(-50%,-50%) scale(2.5); opacity: 0; }
+body.cursor-hover #cursor-ring { width: 60px; height: 60px; border-color: rgba(248,248,246,0.7); }
+
+@media (max-width: 900px) {
+  #cursor-dot, #cursor-ring { display: none; }
+}
+
+/* ─── NAV ─── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0;
+  z-index: 500;
+  padding: 2rem 3rem;
+  display: flex; align-items: center; justify-content: space-between;
+  mix-blend-mode: difference;
+}
+.nav-logo {
+  font-size: 0.72rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--white);
+  text-decoration: none;
+  font-weight: 400;
+}
+.nav-back {
+  display: flex; align-items: center; gap: 0.6rem;
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--white);
+  text-decoration: none;
+  font-weight: 300;
+  opacity: .55;
+  transition: opacity .3s, gap .3s;
+}
+.nav-back:hover { opacity: 1; gap: 0.9rem; }
+
+@media (max-width: 900px) {
+  nav { padding: 1.5rem; }
+}
+
+/* ─── PAGE HEADER ─── */
+.page-header {
+  padding: 12rem 3rem 4rem;
+  border-bottom: 1px solid rgba(248,248,246,0.07);
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+.page-header-left {}
+.page-eyebrow {
+  font-size: 0.58rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: rgba(248,248,246,0.3);
+  font-weight: 300;
+  margin-bottom: 1.2rem;
+  display: flex; align-items: center; gap: 0.8rem;
+}
+.page-eyebrow::before {
+  content: '';
+  width: 20px; height: 1px;
+  background: rgba(248,248,246,0.3);
+  display: inline-block;
+}
+.page-title {
+  font-family: var(--font-display);
+  font-size: clamp(2.8rem, 7vw, 7rem);
+  font-weight: 200;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  line-height: 0.9;
+  opacity: 0;
+  transform: translateY(30px);
+  animation: fadeUp .9s cubic-bezier(.16,1,.3,1) forwards .2s;
+}
+.page-count {
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(248,248,246,0.2);
+  font-weight: 300;
+  padding-bottom: 0.5rem;
+  opacity: 0;
+  animation: fadeIn .8s ease forwards .6s;
+}
+
+@keyframes fadeUp {
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  to { opacity: 1; }
+}
+
+/* ─── PROJECTS GRID ─── */
+.projects-grid {
+  padding: 0 3rem 6rem;
+}
+
+/* ─── PROJECT CARD ─── */
+.project-card {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-bottom: 1px solid rgba(248,248,246,0.07);
+  text-decoration: none;
+  color: var(--white);
+  position: relative;
+  overflow: hidden;
+  min-height: 52vh;
+  cursor: none;
+  transition: border-color .4s;
+}
+.project-card:first-child { border-top: 1px solid rgba(248,248,246,0.07); }
+.project-card:hover { border-color: rgba(248,248,246,0.18); }
+
+/* alternating layout */
+.project-card:nth-child(even) { direction: rtl; }
+.project-card:nth-child(even) > * { direction: ltr; }
+
+/* image side */
+.card-img-wrap {
+  position: relative;
+  overflow: hidden;
+  background: #111;
+}
+.card-img-wrap img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  filter: brightness(0.75) saturate(0.8);
+  transform: scale(1.06);
+  transition: transform .9s cubic-bezier(.16,1,.3,1),
+              filter .7s ease;
+  display: block;
+}
+.project-card:hover .card-img-wrap img {
+  transform: scale(1);
+  filter: brightness(0.9) saturate(0.95);
+}
+
+/* image label */
+.card-img-label {
+  position: absolute; bottom: 1.5rem; left: 1.8rem;
+  font-size: 0.54rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(248,248,246,0.35);
+  font-weight: 300;
+  z-index: 2;
+  transition: color .4s;
+}
+.project-card:hover .card-img-label { color: rgba(248,248,246,0.65); }
+
+/* info side */
+.card-info {
+  padding: 3.5rem 3.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  background: var(--black);
+  transition: background .5s;
+}
+.project-card:hover .card-info { background: #0f0f0f; }
+
+.card-top {}
+.card-num {
+  font-size: 0.55rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(248,248,246,0.18);
+  margin-bottom: 2rem;
+  font-weight: 300;
+}
+.card-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 3vw, 2.8rem);
+  font-weight: 200;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  line-height: 1.05;
+  margin-bottom: 1.2rem;
+  transition: letter-spacing .5s ease;
+}
+.project-card:hover .card-title { letter-spacing: 0.01em; }
+
+.card-tags {
+  display: flex; gap: 0.6rem; flex-wrap: wrap;
+  margin-bottom: 2rem;
+}
+.card-tag {
+  font-size: 0.55rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  border: 1px solid rgba(248,248,246,0.1);
+  padding: 0.28rem 0.75rem;
+  color: rgba(248,248,246,0.3);
+  font-weight: 300;
+  transition: border-color .4s, color .4s;
+}
+.project-card:hover .card-tag {
+  border-color: rgba(248,248,246,0.25);
+  color: rgba(248,248,246,0.6);
+}
+
+.card-desc {
+  font-size: 0.8rem;
+  line-height: 1.85;
+  color: rgba(248,248,246,0.3);
+  font-weight: 300;
+  max-width: 380px;
+  transform: translateY(6px);
+  opacity: 0;
+  transition: opacity .5s ease, transform .5s cubic-bezier(.16,1,.3,1);
+}
+.project-card:hover .card-desc {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.card-bottom {
+  display: flex; align-items: center; justify-content: space-between;
+}
+.card-year {
+  font-size: 0.58rem;
+  letter-spacing: 0.15em;
+  color: rgba(248,248,246,0.18);
+  font-weight: 300;
+}
+.card-arrow {
+  width: 36px; height: 36px;
+  border: 1px solid rgba(248,248,246,0.12);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.9rem;
+  color: rgba(248,248,246,0.2);
+  transition: all .4s cubic-bezier(.16,1,.3,1);
+}
+.project-card:hover .card-arrow {
+  border-color: rgba(248,248,246,0.5);
+  color: var(--white);
+  transform: translate(3px,-3px);
+}
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 900px) {
+  .page-header { padding: 9rem 1.5rem 3rem; }
+  .page-title { font-size: clamp(2.2rem, 10vw, 3.5rem); }
+
+  .projects-grid { padding: 0 0 5rem; }
+
+  .project-card {
+    grid-template-columns: 1fr;
+    min-height: auto;
+    direction: ltr !important;
+  }
+  .project-card:nth-child(even) { direction: ltr; }
+
+  .card-img-wrap { height: 55vw; }
+  .card-info { padding: 2rem 1.5rem 2.5rem; }
+  .card-desc { opacity: 1; transform: none; }
+
+  /* nav mobile */
+  .nav-back span { display: none; }
+}
+
+/* ─── CONTACT (exact match from main) ─── */
+#contact {
+  background: #000000;
+  color: #ffffff;
+  min-height: 100vh;
+  padding: 6rem 5rem;
+  position: relative; overflow: hidden;
+  display: flex; flex-direction: column; justify-content: space-between;
+  font-family: var(--font-body);
+}
+.contact-left { display: flex; flex-direction: column; align-items: flex-start; z-index: 2; }
+.contact-section-label {
+  font-size: 0.65rem; letter-spacing: 0.4em; text-transform: uppercase;
+  color: #666666; margin-bottom: 4rem; font-weight: 300;
+}
+.contact-headline {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 8vw, 6.5rem); font-weight: 700;
+  letter-spacing: -0.05em; text-transform: uppercase; line-height: 0.9;
+  margin: 0; color: #ffffff;
+}
+.contact-right {
+  display: flex; justify-content: flex-end;
+  margin-top: 2rem; margin-bottom: 6rem; z-index: 2;
+}
+.contact-info-block { max-width: 600px; width: 100%; }
+.contact-links-row {
+  display: flex; flex-direction: row;
+  justify-content: flex-end; gap: 1.2rem; flex-wrap: wrap;
+}
+.capsule-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  text-decoration: none;
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 100px; cursor: pointer;
+  width: 44px; height: 44px; box-sizing: border-box; padding: 0;
+  transition: width .5s cubic-bezier(.4,0,.2,1),
+              background-color .5s cubic-bezier(.4,0,.2,1),
+              border-color .5s cubic-bezier(.4,0,.2,1),
+              padding .5s cubic-bezier(.4,0,.2,1);
+}
+.capsule-icon { width: 16px; height: 16px; object-fit: contain; flex-shrink: 0; transition: filter .5s cubic-bezier(.4,0,.2,1); }
+.capsule-text-wrapper { display: grid; grid-template-columns: 0fr; opacity: 0; transition: grid-template-columns .5s cubic-bezier(.4,0,.2,1), opacity .4s cubic-bezier(.4,0,.2,1) .05s; }
+.capsule-text { overflow: hidden; white-space: nowrap; font-size: 0.85rem; font-weight: 400; color: #fff; padding-left: 0; transition: padding .5s cubic-bezier(.4,0,.2,1), color .5s ease; }
+.capsule-btn:hover { background-color: #fff; border-color: #fff; width: max-content; padding-left: 1.1rem; padding-right: 1.2rem; justify-content: flex-start; }
+.capsule-btn:hover .capsule-icon { filter: invert(1); }
+.capsule-btn:hover .capsule-text-wrapper { grid-template-columns: 1fr; opacity: 1; }
+.capsule-btn:hover .capsule-text { color: #000; padding-left: 0.6rem; }
+.contact-footer {
+  position: absolute; bottom: 3rem; left: 5rem; right: 5rem;
+  display: flex; justify-content: space-between;
+  font-size: 0.75rem; color: #444444; font-weight: 300; z-index: 2;
+}
+
+@media (max-width: 900px) {
+  #contact { padding: 6rem 1.5rem 4rem !important; justify-content: center !important; gap: 2rem !important; }
+  .contact-section-label { margin-bottom: 1.5rem !important; }
+  .contact-headline { font-size: 3.2rem !important; }
+  .contact-right { margin-top: 1rem !important; margin-bottom: 2rem !important; justify-content: flex-start !important; }
+  .contact-links-row { justify-content: flex-start !important; gap: 1rem !important; }
+  .contact-footer { position: relative !important; left: auto !important; right: auto !important; bottom: auto !important; flex-direction: column !important; gap: 0.8rem !important; margin-top: 2rem !important; }
+}
+
+/* ─── SCROLL REVEAL ─── */
+.sr { opacity: 0; transform: translateY(28px); transition: opacity .85s ease, transform .85s cubic-bezier(.16,1,.3,1); }
+.sr.in { opacity: 1; transform: translateY(0); }
+.sr-d1 { transition-delay: .1s; }
+.sr-d2 { transition-delay: .2s; }
+
+/* ─── MOBILE MENU ─── */
+.mobile-menu-toggle {
+  display: none; flex-direction: column; justify-content: space-between;
+  width: 24px; height: 16px; background: transparent; border: none; cursor: pointer; z-index: 600;
+}
+.mobile-menu-toggle span { width: 100%; height: 1.5px; background-color: var(--white); transition: all .3s cubic-bezier(.16,1,.3,1); }
+.mobile-menu-toggle.active span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.mobile-menu-toggle.active span:nth-child(2) { opacity: 0; }
+.mobile-menu-toggle.active span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+.mobile-full-menu {
+  position: fixed; inset: 0; background-color: var(--black); z-index: 550;
+  display: flex; flex-direction: column; justify-content: center; padding: 4rem;
+  opacity: 0; pointer-events: none; transition: opacity .5s ease;
+}
+.mobile-full-menu.active { opacity: 1; pointer-events: auto; }
+.mobile-nav-links { list-style: none; display: flex; flex-direction: column; gap: 2rem; }
+.mobile-nav-links a { font-size: 1.5rem; letter-spacing: .15em; text-transform: uppercase; color: var(--white); text-decoration: none; font-weight: 300; }
+@media (max-width: 900px) {
+  .mobile-menu-toggle { display: flex !important; }
+}
+
+/* decode text */
+.decode-text { display: inline-block; }
+</style>
+</head>
+<body>
+
+<div id="cursor-dot"></div>
+<div id="cursor-ring"></div>
+
+<nav>
+  <a class="nav-logo" href="index.html">Emily Wang</a>
+  <a class="nav-back" href="index.html">
+    <span>←</span>
+    <span>Back</span>
+  </a>
+</nav>
+
+<!-- ══ PAGE HEADER ══ -->
+<header class="page-header">
+  <div class="page-header-left">
+    <p class="page-eyebrow">Discipline 01</p>
+    <h1 class="page-title">3D<br>Environments</h1>
+  </div>
+  <span class="page-count">— 04 Projects</span>
+</header>
+
+<!-- ══ PROJECTS ══ -->
+<main class="projects-grid">
+
+  <!-- PROJECT 01 -->
+  <a href="project-holloway.html" class="project-card sr">
+    <div class="card-img-wrap">
+      <!-- Replace src with your actual render image -->
+      <img src="img/project1-holloway.jpg" alt="When Space Remembers">
+      <span class="card-img-label">Game Environment · UE5</span>
+    </div>
+    <div class="card-info">
+      <div class="card-top">
+        <p class="card-num">001 · 2026</p>
+        <h2 class="card-title">When Space<br>Remembers</h2>
+        <div class="card-tags">
+          <span class="card-tag">Unreal Engine 5</span>
+          <span class="card-tag">Blender</span>
+          <span class="card-tag">AfterEffects</span>
+        </div>
+        <p class="card-desc">
+          A digital spatial experience reconstructing HM Prison Holloway. First-person navigation through overlapping layers of history, testimony, and fragmented memory.
+        </p>
+      </div>
+      <div class="card-bottom">
+        <span class="card-year">2026</span>
+        <span class="card-arrow">↗</span>
+      </div>
+    </div>
+  </a>
+
+  <!-- PROJECT 02 -->
+  <a href="project-echoes.html" class="project-card sr sr-d1">
+    <div class="card-img-wrap">
+      <img src="img/project7-loft.jpg" alt="Echoes in the Attic">
+      <span class="card-img-label">3D Environment · Blender</span>
+    </div>
+    <div class="card-info">
+      <div class="card-top">
+        <p class="card-num">002 · 2026</p>
+        <h2 class="card-title">Echoes in<br>the Attic</h2>
+        <div class="card-tags">
+          <span class="card-tag">Blender</span>
+          <span class="card-tag">Photoshop</span>
+          <span class="card-tag">AfterEffects</span>
+        </div>
+        <p class="card-desc">
+          A narrative loft environment exploring the tension between personal memory and architectural decay. Atmospheric lighting as emotional language.
+        </p>
+      </div>
+      <div class="card-bottom">
+        <span class="card-year">2026</span>
+        <span class="card-arrow">↗</span>
+      </div>
+    </div>
+  </a>
+
+  <!-- PROJECT 03 -->
+  <a href="project-sculpture.html" class="project-card sr sr-d2">
+    <div class="card-img-wrap">
+      <img src="img/project5-forest.jpg" alt="Sculpture in the Woods">
+      <span class="card-img-label">3D Environment · Blender</span>
+    </div>
+    <div class="card-info">
+      <div class="card-top">
+        <p class="card-num">003 · 2026</p>
+        <h2 class="card-title">Sculpture in<br>the Woods</h2>
+        <div class="card-tags">
+          <span class="card-tag">Blender</span>
+          <span class="card-tag">AfterEffects</span>
+        </div>
+        <p class="card-desc">
+          A forest environment study in stillness and scale — an abstract sculpture placed in a natural setting to explore the dialogue between the man-made and organic.
+        </p>
+      </div>
+      <div class="card-bottom">
+        <span class="card-year">2026</span>
+        <span class="card-arrow">↗</span>
+      </div>
+    </div>
+  </a>
+
+</main>
+
+<!-- ══ CONTACT (exact match) ══ -->
+<section id="contact">
+  <div class="contact-left sr">
+    <p class="contact-section-label">Contact</p>
+    <h2 class="contact-headline">
+      <span class="decode-text" data-value="GET IN">GET IN</span><br>
+      <span class="decode-text" data-value="TOUCH">TOUCH</span>
+    </h2>
+  </div>
+  <div class="contact-right sr">
+    <div class="contact-info-block">
+      <div class="contact-links-row">
+        <a href="mailto:wangxinhui1010@gmail.com" class="capsule-btn">
+          <img src="img/contact-letter.png" alt="Email" class="capsule-icon">
+          <div class="capsule-text-wrapper"><span class="capsule-text">Email</span></div>
+        </a>
+        <a href="https://www.instagram.com/hsinnh__/" target="_blank" rel="noopener" class="capsule-btn">
+          <img src="img/contact-photo.png" alt="Instagram" class="capsule-icon">
+          <div class="capsule-text-wrapper"><span class="capsule-text">@hsinnh__</span></div>
+        </a>
+        <a href="https://www.linkedin.com/in/emily-wang-4558962b3" target="_blank" rel="noopener" class="capsule-btn">
+          <img src="img/contact-business.png" alt="LinkedIn" class="capsule-icon">
+          <div class="capsule-text-wrapper"><span class="capsule-text">LinkedIn</span></div>
+        </a>
+      </div>
+    </div>
+  </div>
+  <div class="contact-footer">
+    <span>© 2026 Emily Wang</span>
+    <span>London · Taipei</span>
+  </div>
+</section>
+
+<script>
+const isMobile = () => window.innerWidth <= 900;
+
+/* ── CURSOR ── */
+const dot  = document.getElementById('cursor-dot');
+const ring = document.getElementById('cursor-ring');
+let mx=0,my=0,rx=0,ry=0;
+
+document.addEventListener('mousemove', e => {
+  mx=e.clientX; my=e.clientY;
+  if(dot) { dot.style.left=mx+'px'; dot.style.top=my+'px'; }
+});
+(function raf(){
+  rx+=(mx-rx)*.1; ry+=(my-ry)*.1;
+  if(ring){ ring.style.left=rx+'px'; ring.style.top=ry+'px'; }
+  requestAnimationFrame(raf);
+})();
+
+document.querySelectorAll('.project-card, a, .capsule-btn').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{ if(!isMobile()) document.body.classList.add('cursor-hover'); });
+  el.addEventListener('mouseleave',()=>{ if(!isMobile()) document.body.classList.remove('cursor-hover'); });
+});
+
+/* ── SCROLL REVEAL ── */
+new IntersectionObserver(entries=>{
+  entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('in'); });
+},{threshold:0.1}).observe && document.querySelectorAll('.sr').forEach(el=>{
+  new IntersectionObserver(entries=>{
+    if(entries[0].isIntersecting) entries[0].target.classList.add('in');
+  },{threshold:0.1}).observe(el);
+});
+
+/* ── DECODE TEXT (contact) ── */
+const decodeLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789%#$&@*_+?=";
+function startDecode(el){
+  if(!el.getAttribute('data-value')) el.setAttribute('data-value', el.innerText);
+  const final = el.getAttribute('data-value');
+  let iter = 0;
+  if(el._dec) clearInterval(el._dec);
+  el._dec = setInterval(()=>{
+    el.innerText = final.split('').map((l,i)=>{
+      if(i < iter) return final[i];
+      return decodeLetters[Math.floor(Math.random()*decodeLetters.length)];
+    }).join('');
+    if(iter >= final.length) clearInterval(el._dec);
+    iter += 1/3;
+  }, 30);
+}
+
+new IntersectionObserver(entries=>{
+  if(entries[0].isIntersecting){
+    document.querySelectorAll('#contact .decode-text').forEach(startDecode);
+  }
+},{threshold:0.15}).observe(document.getElementById('contact'));
+
+document.querySelectorAll('.decode-text').forEach(el=>{
+  el.addEventListener('mouseenter',()=>startDecode(el));
+});
+
+/* ── MOBILE MENU ── */
+document.addEventListener('DOMContentLoaded',()=>{
+  const nav = document.querySelector('nav');
+  if(nav && !document.querySelector('.mobile-menu-toggle')){
+    const btn = document.createElement('button');
+    btn.className='mobile-menu-toggle';
+    btn.innerHTML='<span></span><span></span><span></span>';
+    nav.appendChild(btn);
+
+    const menu = document.createElement('div');
+    menu.className='mobile-full-menu';
+    menu.innerHTML=`<ul class="mobile-nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="index.html#disciplines">Work</a></li>
+      <li><a href="index.html#works">Projects</a></li>
+      <li><a href="index.html#about">About</a></li>
+      <li><a href="index.html#contact">Contact</a></li>
+    </ul>`;
+    document.body.appendChild(menu);
+
+    btn.addEventListener('click',()=>{
+      btn.classList.toggle('active');
+      menu.classList.toggle('active');
+    });
+    menu.querySelectorAll('a').forEach(a=>{
+      a.addEventListener('click',()=>{
+        btn.classList.remove('active');
+        menu.classList.remove('active');
+      });
+    });
+  }
+});
+</script>
+</body>
+</html>
+
+
+
+
